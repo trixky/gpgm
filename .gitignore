@@ -1,3 +1,8 @@
+# Misc
+
+*.todo
+*.test
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
