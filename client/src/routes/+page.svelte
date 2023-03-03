@@ -1,7 +1,5 @@
 <!-- ---------------------------------------------- SCRIPT -->
-<script>
-	import { onMount } from 'svelte';
-
+<script lang="ts">
 	// delay in ms
 	const delay_min = 500; // put in me in config PLEASE
 	const delay_max = 60000; // put in me in config PLEASE
@@ -10,17 +8,6 @@
 	let delay = delay_default;
 	let input = '';
 	let output = '';
-
-	onMount(() => {
-		// @ts-ignore
-		const goWasm = new Go();
-
-		WebAssembly.instantiateStreaming(fetch('wasm/src/main.wasm'), goWasm.importObject).then(
-			(result) => {
-				goWasm.run(result.instance);
-			}
-		);
-	});
 
 	function handle_run() {
 		// @ts-ignore
@@ -45,31 +32,32 @@
 </main>
 
 <!-- ---------------------------------------------- STYLE -->
-<style>
+<style lang="postcss">
 	main {
-		text-align: center;
+		@apply text-center;
 	}
 
 	h1 {
-		margin-bottom: 70px;
+		@apply mb-12 mt-4;
 	}
 
 	button {
-		margin-top: 20px;
-		padding: 3px 10px;
+		@apply mt-5 px-3 py-1;
+	}
+
+	input {
+		@apply mt-5 px-3 py-1;
 	}
 
 	.text-container {
-		margin: auto;
-		width: fit-content;
+		@apply m-auto w-fit;
 	}
 
 	.text-container > h2 {
-		margin-top: 0;
-		text-align: left;
+		@apply mt-0 text-left;
 	}
 
 	textarea {
-		padding: 10px;
+		@apply p-3;
 	}
 </style>
