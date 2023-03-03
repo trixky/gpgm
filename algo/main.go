@@ -1,10 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"syscall/js" // Skip the error vvv
+
 	// syscall/js package is supposed to be compiled on wasm
 	// architecture with js as the OS but the editor is not aware of this
+
+	"github.com/trixky/krpsim/algo/parser"
 )
 
 type Arguments struct {
@@ -14,9 +18,12 @@ type Arguments struct {
 
 // runSimulation run the main simulation
 func runSimulation(args Arguments) string {
-	// put the parsing / gens / simulations etc... here
+	// put the gens / simulations etc... here
 
-	return "#result#"
+	sm, _ := parser.ParseSimulationFile(args.Text)
+	s, _ := json.MarshalIndent(sm, "", "\t")
+
+	return string(s)
 }
 
 // runWasm parse arguments, run the simulation and return its result
