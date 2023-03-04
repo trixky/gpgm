@@ -1,11 +1,8 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
-	// delay in ms
-	const delay_min = 500; // put in me in config PLEASE
-	const delay_max = 60000; // put in me in config PLEASE
-	const delay_default = 2000; // put in me in config PLEASE
+	import Config from '../config'
 
-	let delay = delay_default;
+	let delay = Config.io.delay.default;
 	let input = '';
 	let output = '';
 
@@ -21,13 +18,13 @@
 
 	<div class="text-container">
 		<h2>Input</h2>
-		<textarea cols="42" rows="10" placeholder="" bind:value={input} />
+		<textarea cols={Config.io.input.cols} rows={Config.io.input.row} placeholder="" bind:value={input} />
 	</div>
-	<input type="number" min={delay_min} max={delay_max} value={delay} />
+	<input type="number" min={Config.io.delay.min} max={Config.io.delay.max} value={delay} />
 	<button on:click={handle_run}>Run</button>
 	<div class="text-container">
 		<h2>Output</h2>
-		<textarea cols="42" rows="10" placeholder="" value={output} readonly />
+		<textarea cols={Config.io.output.cols} rows={Config.io.output.row} placeholder="" value={output} readonly />
 	</div>
 </main>
 
