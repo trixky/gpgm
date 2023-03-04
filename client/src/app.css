@@ -4,23 +4,35 @@
 
 * {
     @apply text-white;
+    font-family: 'Chakra Petch', sans-serif;
+
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 html {
-    background-color: rgb(0, 0, 0)
+    background-color: rgb(109, 109, 109)
 }
 
 h1 {
-    @apply text-3xl
+    @apply text-5xl;
 }
 
 h2 {
-    @apply text-xl
+    @apply text-xl ml-3 w-fit px-2;
 }
 
 textarea {
     @apply mt-2;
     border: solid 1px black;
+    outline: none;
+
+    -webkit-user-select: auto; /* Safari */        
+    -moz-user-select: auto; /* Firefox */
+    -ms-user-select: auto; /* IE10+/Edge */
+    user-select: auto; /* Standard */
 }
 
 button, input {
@@ -28,7 +40,7 @@ button, input {
 }
 
 input, button, textarea {
-    @apply bg-slate-200 text-black;
-    background-color: rgb(190, 255, 233)
+    background-color: rgb(34, 34, 34);
+    box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.2);
 }
 
