@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  algo:
+    build: ./algo
+    environment:
+      GOOS: js # wasm compilation
+      GOARCH: wasm # wasm compilation
+    volumes:
+      # ----------- go
+      - ./algo:/krpsim/app
+      # ----------- wasm
+      - go-wasm:/krpsim/app/build
+    restart: unless-stopped
+
+  client:
+    build: ./client
+    environment:
+      PORT: 4242
+    volumes:
+      # ----------- svelte
+      - ./client/src:/krpsim/app/src
+      - ./client/static:/krpsim/app/static
+      - ./client/prettierrc:/krpsim/app/prettierrc
+      - ./client/postcss.config.cjs:/krpsim/app/postcss.config.cjs
+      - ./client/svelte.config.js:/krpsim/app/svelte.config.js
+      - ./client/tailwind.config.cjs:/krpsim/app/tailwind.config.cjs
+      - ./client/tsconfig.json:/krpsim/app/tsconfig.json
+      # ignore the node_modules dependencies
+      # ----------- wasm
+      - go-wasm:/krpsim/app/static/wasm/src
+    depends_on:
+      - algo
+    ports:
+      - "${PORT}:4242"
+    restart: unless-stopped
+
+volumes:
+  go-wasm:
+    driver: local
