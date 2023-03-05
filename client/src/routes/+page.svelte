@@ -1,15 +1,111 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import Config from '../config';
+	import Visual from '../components/visual/visual.svelte';
+	import GenerationStore from '../stores/generation';
+
+	let population = Config.io.population.default;
 
 	let delay = Config.io.delay.default;
 	let input = '';
 	let output = '';
 
-	function handle_run() {
-		// @ts-ignore
-		output = Run(input, delay);
+	let running = false;
+	let stop = false;
+	let stopped = false;
+	let frame = 0;
+
+	$: disabled_reset = !running || !stopped;
+
+	function handle_top() {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
 	}
+
+	function handle_bottom() {
+		window.scrollTo({
+			top: document.body.scrollHeight,
+			behavior: 'smooth'
+		});
+	}
+
+	function new_generation() {
+		if (stop || stopped) {
+			stop = false;
+			stopped = true;
+			return;
+		}
+		GenerationStore.push_random();
+		frame++;
+		setTimeout(() => {
+			new_generation();
+		}, 3);
+	}
+
+	function handle_run() {
+		if (!running) {
+			running = true;
+			stop = false;
+			stopped = false;
+
+			// @ts-ignore
+			output = Run(input, delay);
+
+			new_generation();
+		}
+	}
+
+	function handle_stop() {
+		if (running) {
+			stop = true;
+			stopped = true;
+		}
+	}
+
+	function handle_reset() {
+		if (running && stopped) {
+			running = false;
+			stop = false;
+			stopped = false;
+
+			GenerationStore.reset();
+			frame++;
+		}
+	}
+
+	function handle_continue() {
+		stop = false;
+		stopped = false;
+
+		new_generation();
+	}
+
+	// ***************** avoid scrolling
+	// https://svelte.dev/repl/2bdbf66371a3418e9e3eda076df6e32d?version=3.18.1
+	$: scrollable = !running || stopped;
+	
+	const wheel = (node: any, options: any) => {
+		let { scrollable } = options;
+		
+		const handler = (e: any) => {
+			if (!scrollable) e.preventDefault();
+		};
+		
+		node.addEventListener('wheel', handler, { passive: false });
+		
+		return {
+			update(options: any) {
+				scrollable = options.scrollable;
+			},
+			destroy() {
+				node.removeEventListener('wheel', handler, { passive: false });
+			}
+		};
+	// *****************
+
+  };
 </script>
 
 <!-- ---------------------------------------------- CONTENT -->
@@ -32,10 +128,34 @@
 		/>
 		<img src="/mascot.png" alt="" />
 	</div>
-	<div class="run-container">
-		<input type="number" min={Config.io.delay.min} max={Config.io.delay.max} value={delay} />
+	<div class="form-container">
+		<input
+			type="number"
+			min={Config.io.population.min}
+			max={Config.io.population.max}
+			value={population}
+			disabled={running}
+		/>
+		<p class="pop">pop</p>
+		<input
+			type="number"
+			min={Config.io.delay.min}
+			max={Config.io.delay.max}
+			value={delay}
+			disabled={running}
+		/>
 		<p class="ms">ms</p>
-		<button on:click={handle_run}>Run</button>
+	</div>
+	<div class="state-container">
+		<button class="side-button" on:click={handle_bottom}>Bottom</button>
+		{#if !running}
+			<button class="play-button" on:click={handle_run}>Run</button>
+		{:else if !stopped}
+			<button class="play-button" on:click={handle_stop}>Stop</button>
+		{:else}
+			<button class="play-button" on:click={handle_continue}>Continue</button>
+		{/if}
+		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
 	</div>
 	<div class="text-container">
 		<h2>Output</h2>
@@ -47,8 +167,21 @@
 			readonly
 		/>
 	</div>
+	<Visual {frame} />
+	<div class="state-container">
+		<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
+		{#if !running}
+			<button class="play-button" on:click={handle_run}>Run</button>
+		{:else if !stopped}
+			<button class="play-button" on:click={handle_stop}>Stop</button>
+		{:else}
+			<button class="play-button" on:click={handle_continue}>Continue</button>
+		{/if}
+		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
+	</div>
 </main>
 
+<svelte:window use:wheel={{scrollable}} />
 <!-- ---------------------------------------------- STYLE -->
 <style lang="postcss">
 	header {
@@ -56,22 +189,30 @@
 	}
 
 	main {
-		@apply text-center;
+		@apply text-center mb-16;
 	}
 
 	img {
 		@apply absolute -top-[43px] -right-[0px];
 		width: 100px;
 		height: 100px;
-		filter: drop-shadow(12px 12px 2px rgba(0, 0, 0, 0.2));
 	}
+
+	.state-container {
+		@apply mb-4;
+	}
+
 
 	button {
-		@apply mt-5 px-3 py-1 transition-all duration-150;
+		@apply mt-5 px-3 py-1;
 	}
 
-	button:hover {
-		@apply bg-black;
+	.play-button {
+		@apply w-24;
+	}
+
+	.side-button {
+		@apply w-24;
 	}
 
 	input {
@@ -85,12 +226,21 @@
 		margin: 0;
 	}
 
-	.run-container {
+	.form-container {
 		@apply relative w-fit m-auto;
 	}
 
+	.pop,
 	.ms {
-		@apply absolute left-[70px] top-[25px];
+		@apply absolute top-[25px] opacity-20;
+	}
+
+	.pop {
+		@apply left-[60px];
+	}
+
+	.ms {
+		@apply left-[172px];
 	}
 
 	.text-container {

@@ -6,10 +6,14 @@
     @apply text-white;
     font-family: 'Chakra Petch', sans-serif;
 
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
+    user-select: none;
+    /* Standard */
 }
 
 html {
@@ -29,18 +33,45 @@ textarea {
     border: solid 1px black;
     outline: none;
 
-    -webkit-user-select: auto; /* Safari */        
-    -moz-user-select: auto; /* Firefox */
-    -ms-user-select: auto; /* IE10+/Edge */
-    user-select: auto; /* Standard */
+    -webkit-user-select: auto;
+    /* Safari */
+    -moz-user-select: auto;
+    /* Firefox */
+    -ms-user-select: auto;
+    /* IE10+/Edge */
+    user-select: auto;
+    /* Standard */
 }
 
-button, input {
+button,
+input {
     border: solid 1px black;
 }
 
-input, button, textarea {
+input,
+button,
+textarea,
+.shadow {
     background-color: rgb(34, 34, 34);
     box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.2);
 }
 
+img {
+    filter: drop-shadow(12px 12px 2px rgba(0, 0, 0, 0.2));
+}
+
+button, input {
+    @apply mx-1;
+}
+
+button:not([disabled]):hover, input:not([disabled]):hover {
+    @apply bg-black;
+}
+
+button:disabled, input:disabled {
+    @apply opacity-50;
+}
+
+button, input, .transition {
+    @apply transition-all duration-150;
+}

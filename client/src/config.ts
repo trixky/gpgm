@@ -4,6 +4,11 @@ export default {
             cols: 42,
             row: 10,
         },
+        population: {
+            min: 100,
+            max: 1000,
+            default: 300
+        },
         delay: {
             min: 500,
             max: 60000,
