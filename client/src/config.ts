@@ -10,9 +10,14 @@ export default {
             default: 1000
         },
         population: {
-            min: 100,
+            min: 10,
             max: 1000,
             default: 300
+        },
+        deep: {
+            min: 10,
+            max: 1000,
+            default: 100
         },
         delay: {
             min: 500,
