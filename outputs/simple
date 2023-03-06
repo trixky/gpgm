@@ -1,0 +1,4 @@
+0: achat_materiel:1
+10: realisation_produit:1
+40: livraison:1
+stock: euro:2;materiel:0;produit:0;client_content:1

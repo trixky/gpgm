@@ -5,7 +5,6 @@ import (
 
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/instance"
-	"github.com/trixky/krpsim/algo/parser"
 )
 
 type ProcessToBeExecuted struct {
@@ -14,14 +13,14 @@ type ProcessToBeExecuted struct {
 }
 
 type Simulation struct {
-	InitialContext parser.SimulationInitialContext
+	InitialContext core.SimulationInitialContext
 	Stock          core.Stock
 	ExpectedStock  []ExpectedStock
 	Time           int
 	Instance       instance.Instance
 }
 
-func NewSimulation(info parser.SimulationInitialContext, instance instance.Instance) Simulation {
+func NewSimulation(info core.SimulationInitialContext, instance instance.Instance) Simulation {
 	return Simulation{
 		InitialContext: info,
 		Stock:          info.Stock.DeepCopy(),
@@ -84,7 +83,7 @@ func (s *Simulation) Run(maxCycle int) {
 			for name, quantity := range process.Outputs {
 				s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
 					name:            name,
-					quantity:        quantity,
+					quantity:        quantity * action.Amount,
 					remainingCycles: process.Delay,
 				})
 			}

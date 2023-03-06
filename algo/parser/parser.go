@@ -9,23 +9,6 @@ import (
 	"github.com/trixky/krpsim/algo/core"
 )
 
-type SimulationInitialContext struct {
-	Stock     core.Stock
-	Processes []core.Process
-	Optimize  map[string]bool
-}
-
-func (sm *SimulationInitialContext) isInOutput(product string) bool {
-	for _, process := range sm.Processes {
-		for outputProduct := range process.Outputs {
-			if product == outputProduct {
-				return true
-			}
-		}
-	}
-	return false
-}
-
 var lineStartWithComment = regexp.MustCompile(`^\s*#`)
 var lineEndWithComment = regexp.MustCompile(`(.+)\s*#`)
 
@@ -354,7 +337,7 @@ func parseOptimize(line string) *map[string]bool {
 	return &optimizeFor
 }
 
-func ParseSimulationFile(input string) (sm SimulationInitialContext, err error) {
+func ParseSimulationFile(input string) (sm core.SimulationInitialContext, err error) {
 	sm.Stock = make(map[string]int)
 
 	// Split and strip comments
@@ -413,7 +396,7 @@ func ParseSimulationFile(input string) (sm SimulationInitialContext, err error) 
 			for product := range *asOptimize {
 				if product == "time" {
 					continue
-				} else if !sm.isInOutput(product) && !sm.Stock.Exists(product) {
+				} else if !sm.IsInOutput(product) && !sm.Stock.Exists(product) {
 					return sm, fmt.Errorf("parser: Unexpected optimize for %s, not in any process output", product)
 				}
 			}
