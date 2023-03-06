@@ -1,7 +1,7 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import GenerationSortedStore from '../../stores/generation_sorted';
+	import GenerationStore from '../../stores/generation';
 	import { get_color_from_percentage } from '../../utils/color';
 	import type GenerationModel from '../../models/generation';
 
@@ -19,8 +19,8 @@
     let width = 0
     let height = 0
     
-	$: width = $GenerationSortedStore.length ? $GenerationSortedStore[0].instances.length : 0;
-	$: height = $GenerationSortedStore.length;
+	$: width = $GenerationStore.length ? $GenerationStore[0].instances.length : 0;
+	$: height = $GenerationStore.length;
 
 	let canvas: any = undefined;
 	let ctx: any = undefined;
@@ -71,7 +71,7 @@
 			canvas.height = height;
             handle_bottom()
 			await tick();
-			draw($GenerationSortedStore);
+			draw($GenerationStore);
             handle_bottom()
 		})();
 	}

@@ -4,32 +4,22 @@
 	import Visual from '../components/visual/visual.svelte';
 	import GenerationStore from '../stores/generation';
 
+	// ------------------------------ Inputs
 	let population = Config.io.population.default;
-
+	let generations = Config.io.generations.default;
 	let delay = Config.io.delay.default;
 	let input = '';
 	let output = '';
 
+	// ------------------------------ State
 	let running = false;
 	let stop = false;
 	let stopped = false;
-	let frame = 0;
-
+	
 	$: disabled_reset = !running || !stopped;
-
-	function handle_top() {
-		window.scrollTo({
-			top: 0,
-			behavior: 'smooth'
-		});
-	}
-
-	function handle_bottom() {
-		window.scrollTo({
-			top: document.body.scrollHeight,
-			behavior: 'smooth'
-		});
-	}
+	
+	// ------------------------------ Loop
+	let frame = 0; // Used to refresh the visualizator
 
 	function new_generation() {
 		if (stop || stopped) {
@@ -40,10 +30,28 @@
 		GenerationStore.push_random();
 		frame++;
 		setTimeout(() => {
+			// Recursive loop
 			new_generation();
 		}, 3);
 	}
 
+	// ------------------------------ Handlers
+	// -------- Navigation
+	function handle_top() {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
+	}
+	
+	function handle_bottom() {
+		window.scrollTo({
+			top: document.body.scrollHeight,
+			behavior: 'smooth'
+		});
+	}
+	
+	// -------- State
 	function handle_run() {
 		if (!running) {
 			running = true;
@@ -51,6 +59,7 @@
 			stopped = false;
 
 			// @ts-ignore
+			// Run is loaded from the layout (wasm)
 			output = Run(input, delay);
 
 			new_generation();
@@ -64,6 +73,14 @@
 		}
 	}
 
+
+	function handle_continue() {
+		stop = false;
+		stopped = false;
+
+		new_generation();
+	}
+
 	function handle_reset() {
 		if (running && stopped) {
 			running = false;
@@ -75,26 +92,19 @@
 		}
 	}
 
-	function handle_continue() {
-		stop = false;
-		stopped = false;
-
-		new_generation();
-	}
-
-	// ***************** avoid scrolling
+	// ------------------------------ Scrolling blocker
 	// https://svelte.dev/repl/2bdbf66371a3418e9e3eda076df6e32d?version=3.18.1
 	$: scrollable = !running || stopped;
-	
+
 	const wheel = (node: any, options: any) => {
 		let { scrollable } = options;
-		
+
 		const handler = (e: any) => {
 			if (!scrollable) e.preventDefault();
 		};
-		
+
 		node.addEventListener('wheel', handler, { passive: false });
-		
+
 		return {
 			update(options: any) {
 				scrollable = options.scrollable;
@@ -103,9 +113,7 @@
 				node.removeEventListener('wheel', handler, { passive: false });
 			}
 		};
-	// *****************
-
-  };
+	};
 </script>
 
 <!-- ---------------------------------------------- CONTENT -->
@@ -129,22 +137,36 @@
 		<img src="/mascot.png" alt="" />
 	</div>
 	<div class="form-container">
-		<input
-			type="number"
-			min={Config.io.population.min}
-			max={Config.io.population.max}
-			value={population}
-			disabled={running}
-		/>
-		<p class="pop">pop</p>
-		<input
-			type="number"
-			min={Config.io.delay.min}
-			max={Config.io.delay.max}
-			value={delay}
-			disabled={running}
-		/>
-		<p class="ms">ms</p>
+		<div class="input-container">
+			<input
+				type="number"
+				min={Config.io.generations.min}
+				max={Config.io.generations.max}
+				value={generations}
+				disabled={running}
+			/>
+			<p class="input-label">gen</p>
+		</div>
+		<div class="input-container">
+			<input
+				type="number"
+				min={Config.io.population.min}
+				max={Config.io.population.max}
+				value={population}
+				disabled={running}
+			/>
+			<p class="input-label">pop</p>
+		</div>
+		<div class="input-container">
+			<input
+				type="number"
+				min={Config.io.delay.min}
+				max={Config.io.delay.max}
+				value={delay}
+				disabled={running}
+			/>
+			<p class="input-label">ms</p>
+		</div>
 	</div>
 	<div class="state-container">
 		<button class="side-button" on:click={handle_bottom}>Bottom</button>
@@ -181,9 +203,11 @@
 	</div>
 </main>
 
-<svelte:window use:wheel={{scrollable}} />
+<svelte:window use:wheel={{ scrollable }} />
+
 <!-- ---------------------------------------------- STYLE -->
 <style lang="postcss">
+	/* ----------------------- Global */
 	header {
 		@apply relative w-fit m-auto mb-12 mt-8;
 	}
@@ -198,10 +222,10 @@
 		height: 100px;
 	}
 
+	/* ----------------------- Buttons */
 	.state-container {
 		@apply mb-4;
 	}
-
 
 	button {
 		@apply mt-5 px-3 py-1;
@@ -215,8 +239,21 @@
 		@apply w-24;
 	}
 
+	/* ----------------------- Form/Inputs */
+	.form-container {
+		@apply relative w-fit flex m-auto;
+	}
+
+	.input-container {
+		@apply relative;
+	}
+
 	input {
-		@apply mt-5 px-3 py-1 w-[102px];
+		@apply mt-5 px-3 py-1 w-[116px];
+	}
+
+	.input-label {
+		@apply absolute top-[25px] opacity-20 right-[16px] text-right w-8;
 	}
 
 	input::-webkit-outer-spin-button,
@@ -226,23 +263,7 @@
 		margin: 0;
 	}
 
-	.form-container {
-		@apply relative w-fit m-auto;
-	}
-
-	.pop,
-	.ms {
-		@apply absolute top-[25px] opacity-20;
-	}
-
-	.pop {
-		@apply left-[60px];
-	}
-
-	.ms {
-		@apply left-[172px];
-	}
-
+	/* ----------------------- Textarea */
 	.text-container {
 		@apply relative m-auto w-fit;
 	}

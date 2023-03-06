@@ -4,6 +4,11 @@ export default {
             cols: 42,
             row: 10,
         },
+        generations: {
+            min: 50,
+            max: 10000,
+            default: 1000
+        },
         population: {
             min: 100,
             max: 1000,
