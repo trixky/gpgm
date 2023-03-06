@@ -22,7 +22,7 @@ type Process struct {
 type SimulationParameters struct {
 	Stock     map[string]int
 	Processes []Process
-	Optimize  []string
+	Optimize  map[string]bool
 }
 
 func (sm *SimulationParameters) hasStock(product string) bool {
@@ -50,8 +50,8 @@ func (sm *SimulationParameters) isInOutput(product string) bool {
 	return false
 }
 
-var lineStartWithComment = regexp.MustCompile("^\\s*#")
-var lineEndWithComment = regexp.MustCompile("(.+)\\s*#")
+var lineStartWithComment = regexp.MustCompile(`^\s*#`)
+var lineEndWithComment = regexp.MustCompile(`(.+)\s*#`)
 
 func peekToken(line string, offset int) (string, int) {
 	token := ""
@@ -62,7 +62,7 @@ func peekToken(line string, offset int) (string, int) {
 	}
 
 	for ; j < len(line); j++ {
-		if line[j] == ':' || line[j] == ';' || line[j] == '(' || line[j] == ')' {
+		if line[j] == ':' || line[j] == ';' || line[j] == '(' || line[j] == ')' || line[j] == '|' {
 			if len(token) == 0 {
 				token = token + string(line[j])
 			} else {
@@ -268,10 +268,13 @@ func parseProcess(line string) *Process {
 }
 
 // TODO return []string, err ?
-func parseOptimize(line string) *[]string {
+func parseOptimize(line string) *map[string]bool {
 	step := 0
 	shouldEnd := false
-	var optimizeFor []string
+	leftToken := ""
+	expectTwo := -1
+	rightToken := ""
+	optimizeFor := make(map[string]bool)
 
 	for i := 0; i < len(line); i++ {
 		// Peek next token
@@ -311,17 +314,64 @@ func parseOptimize(line string) *[]string {
 
 		// Optimize for
 		if token == ")" {
+			if leftToken != "" && rightToken != "" {
+				if rightToken == "time" {
+					return nil
+				}
+				optimizeFor[rightToken] = true
+			} else {
+				optimizeFor[leftToken] = false
+			}
 			shouldEnd = true
 			continue
 		}
 		if token == ";" {
+			if leftToken == "" {
+				return nil
+			}
+			if expectTwo > 0 && rightToken == "" {
+				return nil
+			}
+			if leftToken != "" && rightToken != "" {
+				optimizeFor[rightToken] = true
+			} else {
+				optimizeFor[leftToken] = false
+			}
+			leftToken = ""
+			rightToken = ""
+			expectTwo = -1
+			continue
+		} else if token == "|" {
+			if expectTwo > 0 {
+				return nil
+			}
+			if leftToken == "" {
+				return nil
+			}
+			expectTwo = 1
 			continue
 		} else {
-			optimizeFor = append(optimizeFor, token)
+			if rightToken != "" {
+				return nil
+			}
+			if leftToken == "" {
+				leftToken = token
+			} else {
+				if token == "time" {
+					return nil
+				}
+				if leftToken != "time" {
+					return nil
+				}
+				rightToken = token
+			}
 		}
 	}
 
 	if step < 3 || !shouldEnd {
+		return nil
+	}
+	if len(optimizeFor) == 0 {
 		return nil
 	}
 
@@ -384,10 +434,10 @@ func ParseSimulationFile(input string) (sm SimulationParameters, err error) {
 
 		asOptimize := parseOptimize(line)
 		if asOptimize != nil && len(*asOptimize) > 0 {
-			for _, product := range *asOptimize {
+			for product := range *asOptimize {
 				if product == "time" {
 					continue
-				} else if !sm.isInOutput(product) {
+				} else if !sm.isInOutput(product) && !sm.hasStock(product) {
 					return sm, fmt.Errorf("parser: Unexpected optimize for %s, not in any process output", product)
 				}
 			}

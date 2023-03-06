@@ -238,3 +238,66 @@ func TestInexistingOptimizeProduct(t *testing.T) {
 		t.Errorf("Expected error but got nothing")
 	}
 }
+
+func TestMultipleOptimize1(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(time|stuff)")
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}
+
+func TestMultipleOptimize2(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(time|stuff;thing)")
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}
+
+func TestMultipleOptimize3(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(time|;thing)")
+	if err == nil {
+		t.Errorf("Expected error but got nothing")
+	}
+}
+
+func TestMultipleOptimize4(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(|stuff;thing)")
+	if err == nil {
+		t.Errorf("Expected error but got nothing")
+	}
+}
+
+func TestMultipleOptimize5(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(|;thing)")
+	if err == nil {
+		t.Errorf("Expected error but got nothing")
+	}
+}
+
+func TestMultipleOptimize6(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(time|stuff;time|thing)")
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}
+
+func TestMultipleOptimize7(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(time|stuff;thing|time)")
+	if err == nil {
+		t.Errorf("Expected error but got nothing")
+	}
+}
+
+func TestMultipleOptimize8(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(time||stuff)")
+	if err == nil {
+		t.Errorf("Expected error but got nothing")
+	}
+}
+
+func TestMultipleOptimize9(t *testing.T) {
+	_, err := ParseSimulationFile("thing:12\nmake:(thing:8):(stuff:1):1\noptimize:(time;stuff)")
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}
