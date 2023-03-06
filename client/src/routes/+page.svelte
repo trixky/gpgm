@@ -4,6 +4,7 @@
 	import Visual from '../components/visual/visual.svelte';
 	import GenerationStore from '../stores/generation';
 	import ArgumentStore from '../stores/arguments';
+	import StatisticStore from '../stores/statistic';
 
 	// ------------------------------ IO
 	let input = '';
@@ -13,16 +14,20 @@
 	let running = false;
 	let stop = false;
 	let stopped = false;
+	let finished = false;
 
 	$: disabled_reset = !running || !stopped;
 
 	// ------------------------------ Loop
 	let frame = 0; // Used to refresh the visualizator
+	let generation = 0;
 
 	function new_generation() {
-		if (stop || stopped) {
+		generation++;
+		if (stop || stopped || generation >= $ArgumentStore.generations) {
 			stop = false;
 			stopped = true;
+			finished = true;
 			return;
 		}
 		GenerationStore.push_random($ArgumentStore.population);
@@ -30,7 +35,7 @@
 		setTimeout(() => {
 			// Recursive loop
 			new_generation();
-		}, 3);
+		}, 1);
 	}
 
 	// ------------------------------ Handlers
@@ -83,6 +88,8 @@
 			running = false;
 			stop = false;
 			stopped = false;
+			generation = 0;
+			finished = false;
 
 			GenerationStore.reset();
 			frame++;
@@ -134,10 +141,6 @@
 	<header>
 		<h1>GPGM</h1>
 		<p class="opacity-30">genetic process graph manager</p>
-		<p>gen: {$ArgumentStore.generations}</p>
-		<p>pop: {$ArgumentStore.population}</p>
-		<p>dp: {$ArgumentStore.deep}</p>
-		<p>delay: {$ArgumentStore.delay}</p>
 	</header>
 
 	<div class="text-container">
@@ -221,6 +224,16 @@
 		/>
 	</div>
 	<Visual {frame} />
+	<div class="statistic-container shadow">
+		<p class="statistic">
+			<span class="statistic-label">generation</span>:
+			<span class="statistic-value">{generation}</span>
+		</p>
+		<p class="statistic">
+			<span class="statistic-label">best score</span>:
+			<span class="statistic-value">{$StatisticStore.scores.global.best}</span>
+		</p>
+	</div>
 	<div class="state-container">
 		<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
 		{#if !running}
@@ -228,7 +241,7 @@
 		{:else if !stopped}
 			<button class="play-button" on:click={handle_stop}>Stop</button>
 		{:else}
-			<button class="play-button" on:click={handle_continue}>Continue</button>
+			<button class="play-button" on:click={handle_continue} disabled={finished}>Continue</button>
 		{/if}
 		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
 	</div>
@@ -305,5 +318,22 @@
 
 	textarea {
 		@apply relative p-3 z-10;
+	}
+
+	/* ----------------------- Textarea */
+	.statistic-container {
+		@apply flex m-auto w-fit py-2;
+	}
+
+	.statistic > span {
+		@apply inline-block;
+	}
+
+	.statistic-label {
+		@apply text-right w-24;
+	}
+
+	.statistic-value {
+		@apply text-left w-16;
 	}
 </style>
