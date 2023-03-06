@@ -5,41 +5,17 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/trixky/krpsim/algo/core"
 )
 
-type Product struct {
-	Name     string
-	Quantity int
-}
-
-type Process struct {
-	Name    string
-	Inputs  map[string]int
-	Outputs map[string]int
-	Delay   int
-}
-
-type SimulationParameters struct {
-	Stock     map[string]int
-	Processes []Process
+type SimulationInitialContext struct {
+	Stock     core.Stock
+	Processes []core.Process
 	Optimize  map[string]bool
 }
 
-func (sm *SimulationParameters) hasStock(product string) bool {
-	_, exists := sm.Stock[product]
-	return exists
-}
-
-func (sm *SimulationParameters) canExecuteProcess(process Process) bool {
-	for product, quantity := range process.Inputs {
-		if sm.Stock[product] < quantity {
-			return false
-		}
-	}
-	return true
-}
-
-func (sm *SimulationParameters) isInOutput(product string) bool {
+func (sm *SimulationInitialContext) isInOutput(product string) bool {
 	for _, process := range sm.Processes {
 		for outputProduct := range process.Outputs {
 			if product == outputProduct {
@@ -77,8 +53,8 @@ func peekToken(line string, offset int) (string, int) {
 }
 
 // TODO return Product, err ?
-func parseStock(line string) *Product {
-	product := Product{
+func parseStock(line string) *core.Product {
+	product := core.Product{
 		Name:     "",
 		Quantity: -1,
 	}
@@ -120,8 +96,8 @@ func parseStock(line string) *Product {
 }
 
 // TODO return Process, err ?
-func parseProcess(line string) *Process {
-	process := Process{
+func parseProcess(line string) *core.Process {
+	process := core.Process{
 		Name:    "",
 		Inputs:  make(map[string]int),
 		Outputs: make(map[string]int),
@@ -378,7 +354,7 @@ func parseOptimize(line string) *map[string]bool {
 	return &optimizeFor
 }
 
-func ParseSimulationFile(input string) (sm SimulationParameters, err error) {
+func ParseSimulationFile(input string) (sm SimulationInitialContext, err error) {
 	sm.Stock = make(map[string]int)
 
 	// Split and strip comments
@@ -419,12 +395,12 @@ func ParseSimulationFile(input string) (sm SimulationParameters, err error) {
 		asProcess := parseProcess(line)
 		if asProcess != nil {
 			for key := range asProcess.Inputs {
-				if !sm.hasStock(key) {
+				if !sm.Stock.Exists(key) {
 					sm.Stock[key] = 0
 				}
 			}
 			for key := range asProcess.Outputs {
-				if !sm.hasStock(key) {
+				if !sm.Stock.Exists(key) {
 					sm.Stock[key] = 0
 				}
 			}
@@ -437,7 +413,7 @@ func ParseSimulationFile(input string) (sm SimulationParameters, err error) {
 			for product := range *asOptimize {
 				if product == "time" {
 					continue
-				} else if !sm.isInOutput(product) && !sm.hasStock(product) {
+				} else if !sm.isInOutput(product) && !sm.Stock.Exists(product) {
 					return sm, fmt.Errorf("parser: Unexpected optimize for %s, not in any process output", product)
 				}
 			}
