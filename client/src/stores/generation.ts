@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
-import {generate_empty_generations, generate_random_generation, random_instance_number} from './temp_generations';
+import { generate_empty_generations, generate_random_generation, random_instance_number } from './temp_generations';
 import type GenerationModel from '../models/generation';
 
 function sort_generation(generation: GenerationModel): GenerationModel {
-        return <GenerationModel>{
-            instances: generation.instances.filter(_ => true).sort((a, b) => b.score - a.score)
-        }
+	return <GenerationModel>{
+		instances: generation.instances.filter(_ => true).sort((a, b) => b.score - a.score)
+	}
 }
 
 function create_generation_store() {
@@ -19,9 +19,11 @@ function create_generation_store() {
 				return generations
 			})
 		},
-		push_random: () => {
+		push_random: (width: number | undefined = undefined) => {
 			update(generations => {
-				const width = generations.length ? generations[0].instances.length : random_instance_number()
+				if (!width) {
+					width = generations.length ? generations[0].instances.length : random_instance_number()
+				}
 				generations.push(sort_generation(generate_random_generation(width)))
 				return generations
 			})
@@ -32,7 +34,6 @@ function create_generation_store() {
 	};
 }
 
-const generationStore = create_generation_store();
+const generation_store = create_generation_store();
 
-
-export default generationStore;
+export default generation_store;

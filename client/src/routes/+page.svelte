@@ -3,11 +3,9 @@
 	import Config from '../config';
 	import Visual from '../components/visual/visual.svelte';
 	import GenerationStore from '../stores/generation';
+	import ArgumentStore from '../stores/arguments';
 
-	// ------------------------------ Inputs
-	let population = Config.io.population.default;
-	let generations = Config.io.generations.default;
-	let delay = Config.io.delay.default;
+	// ------------------------------ IO
 	let input = '';
 	let output = '';
 
@@ -15,9 +13,9 @@
 	let running = false;
 	let stop = false;
 	let stopped = false;
-	
+
 	$: disabled_reset = !running || !stopped;
-	
+
 	// ------------------------------ Loop
 	let frame = 0; // Used to refresh the visualizator
 
@@ -27,7 +25,7 @@
 			stopped = true;
 			return;
 		}
-		GenerationStore.push_random();
+		GenerationStore.push_random($ArgumentStore.population);
 		frame++;
 		setTimeout(() => {
 			// Recursive loop
@@ -43,14 +41,14 @@
 			behavior: 'smooth'
 		});
 	}
-	
+
 	function handle_bottom() {
 		window.scrollTo({
 			top: document.body.scrollHeight,
 			behavior: 'smooth'
 		});
 	}
-	
+
 	// -------- State
 	function handle_run() {
 		if (!running) {
@@ -60,7 +58,7 @@
 
 			// @ts-ignore
 			// Run is loaded from the layout (wasm)
-			output = Run(input, delay);
+			output = Run(input, $ArgumentStore.delay);
 
 			new_generation();
 		}
@@ -72,7 +70,6 @@
 			stopped = true;
 		}
 	}
-
 
 	function handle_continue() {
 		stop = false;
@@ -90,6 +87,22 @@
 			GenerationStore.reset();
 			frame++;
 		}
+	}
+	// -------- Inputs
+	function handle_generations(e: any) {
+		ArgumentStore.update_generations(+e.target.value);
+	}
+
+	function handle_population(e: any) {
+		ArgumentStore.update_population(+e.target.value);
+	}
+
+	function handle_deep(e: any) {
+		ArgumentStore.update_deep(+e.target.value);
+	}
+
+	function handle_delay(e: any) {
+		ArgumentStore.update_deep(+e.target.value);
 	}
 
 	// ------------------------------ Scrolling blocker
@@ -121,6 +134,10 @@
 	<header>
 		<h1>GPGM</h1>
 		<p class="opacity-30">genetic process graph manager</p>
+		<p>gen: {$ArgumentStore.generations}</p>
+		<p>pop: {$ArgumentStore.population}</p>
+		<p>dp: {$ArgumentStore.deep}</p>
+		<p>delay: {$ArgumentStore.delay}</p>
 	</header>
 
 	<div class="text-container">
@@ -142,8 +159,9 @@
 				type="number"
 				min={Config.io.generations.min}
 				max={Config.io.generations.max}
-				value={generations}
+				value={$ArgumentStore.generations}
 				disabled={running}
+				on:input={handle_generations}
 			/>
 			<p class="input-label">gen</p>
 		</div>
@@ -152,18 +170,31 @@
 				type="number"
 				min={Config.io.population.min}
 				max={Config.io.population.max}
-				value={population}
+				value={$ArgumentStore.population}
 				disabled={running}
+				on:input={handle_population}
 			/>
 			<p class="input-label">pop</p>
 		</div>
 		<div class="input-container">
 			<input
 				type="number"
+				min={Config.io.deep.min}
+				max={Config.io.deep.max}
+				value={$ArgumentStore.deep}
+				disabled={running}
+				on:input={handle_deep}
+			/>
+			<p class="input-label">dp</p>
+		</div>
+		<div class="input-container">
+			<input
+				type="number"
 				min={Config.io.delay.min}
 				max={Config.io.delay.max}
-				value={delay}
+				value={$ArgumentStore.delay}
 				disabled={running}
+				on:input={handle_delay}
 			/>
 			<p class="input-label">ms</p>
 		</div>
