@@ -1,6 +1,6 @@
 package simulation
 
-func Fitnesss(simulation Simulation) int {
+func Fitness(simulation Simulation) int {
 	score := 0
 	factor := 1
 

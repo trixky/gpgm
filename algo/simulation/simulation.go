@@ -18,7 +18,6 @@ type Simulation struct {
 	Stock          core.Stock
 	ExpectedStock  []ExpectedStock
 	Cycle          int
-	Score          int
 }
 
 func NewSimulation(info core.InitialContext, instance instance.Instance) Simulation {
@@ -28,12 +27,11 @@ func NewSimulation(info core.InitialContext, instance instance.Instance) Simulat
 		Stock:          info.Stock.DeepCopy(),
 		ExpectedStock:  []ExpectedStock{},
 		Cycle:          0,
-		Score:          0,
 	}
 }
 
-func (s *Simulation) calulateFitness() {
-	s.Score = Fitnesss(*s)
+func (s *Simulation) CalulateFitness() int {
+	return Fitness(*s)
 }
 
 func (s *Simulation) canExecuteAnyProcess() bool {
@@ -103,6 +101,4 @@ func (s *Simulation) Run(maxCycle int) {
 			}
 		}
 	}
-
-	s.calulateFitness()
 }
