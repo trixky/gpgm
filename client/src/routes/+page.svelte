@@ -156,6 +156,32 @@
 		/>
 		<img src="/mascot.png" alt="" />
 	</div>
+	<div class="state-container">
+		<button class="side-button" on:click={handle_bottom}>Bottom</button>
+		<button class="play-button" on:click={handle_run} disabled={!input.length || running}>Clear</button>
+	</div>
+	<Visual {frame} />
+	<div class="statistic-container shadow">
+		<p class="statistic">
+			<span class="statistic-label">generation</span>:
+			<span class="statistic-value">{generation}</span>
+		</p>
+		<p class="statistic">
+			<span class="statistic-label">best score</span>:
+			<span class="statistic-value">{$StatisticStore.scores.global.best}</span>
+		</p>
+	</div>
+	<div class="state-container">
+		<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
+		{#if !running}
+			<button class="play-button" on:click={handle_run}>Run</button>
+		{:else if !stopped}
+			<button class="play-button" on:click={handle_stop}>Stop</button>
+		{:else}
+			<button class="play-button" on:click={handle_continue} disabled={finished}>Continue</button>
+		{/if}
+		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
+	</div>
 	<div class="form-container">
 		<div class="input-container">
 			<input
@@ -202,17 +228,6 @@
 			<p class="input-label">ms</p>
 		</div>
 	</div>
-	<div class="state-container">
-		<button class="side-button" on:click={handle_bottom}>Bottom</button>
-		{#if !running}
-			<button class="play-button" on:click={handle_run}>Run</button>
-		{:else if !stopped}
-			<button class="play-button" on:click={handle_stop}>Stop</button>
-		{:else}
-			<button class="play-button" on:click={handle_continue}>Continue</button>
-		{/if}
-		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
-	</div>
 	<div class="text-container">
 		<h2>Output</h2>
 		<textarea
@@ -222,28 +237,6 @@
 			value={output}
 			readonly
 		/>
-	</div>
-	<Visual {frame} />
-	<div class="statistic-container shadow">
-		<p class="statistic">
-			<span class="statistic-label">generation</span>:
-			<span class="statistic-value">{generation}</span>
-		</p>
-		<p class="statistic">
-			<span class="statistic-label">best score</span>:
-			<span class="statistic-value">{$StatisticStore.scores.global.best}</span>
-		</p>
-	</div>
-	<div class="state-container">
-		<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
-		{#if !running}
-			<button class="play-button" on:click={handle_run}>Run</button>
-		{:else if !stopped}
-			<button class="play-button" on:click={handle_stop}>Stop</button>
-		{:else}
-			<button class="play-button" on:click={handle_continue} disabled={finished}>Continue</button>
-		{/if}
-		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
 	</div>
 </main>
 
@@ -268,7 +261,7 @@
 
 	/* ----------------------- Buttons */
 	.state-container {
-		@apply mb-4;
+		/* @apply mb-4; */
 	}
 
 	button {

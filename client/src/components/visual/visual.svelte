@@ -109,7 +109,7 @@
 <!-- ---------------------------------------------- STYLE -->
 <style lang="postcss">
 	.visual {
-		@apply m-auto w-fit mt-8 mb-3 overflow-hidden;
+		@apply m-auto w-fit mt-8 mb-5 overflow-hidden;
 		border: solid 1px black;
 	}
 </style>
