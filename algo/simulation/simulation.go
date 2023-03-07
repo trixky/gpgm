@@ -18,6 +18,7 @@ type Simulation struct {
 	ExpectedStock  []ExpectedStock
 	Time           int
 	Instance       instance.Instance
+	Score          int
 }
 
 func NewSimulation(info core.SimulationInitialContext, instance instance.Instance) Simulation {
@@ -27,21 +28,17 @@ func NewSimulation(info core.SimulationInitialContext, instance instance.Instanc
 		ExpectedStock:  []ExpectedStock{},
 		Time:           0,
 		Instance:       instance,
+		Score:          0,
 	}
 }
 
-func (s *Simulation) canExecuteProcess(process core.Process) bool {
-	for product, quantity := range process.Inputs {
-		if s.Stock.Get(product) < quantity {
-			return false
-		}
-	}
-	return true
+func (s *Simulation) calulateFitness() {
+	s.Score = Fitnesss(*s)
 }
 
 func (s *Simulation) canExecuteAnyProcess() bool {
 	for _, process := range s.InitialContext.Processes {
-		if s.canExecuteProcess(process) {
+		if process.CanBeExecuted(s.Stock) {
 			return true
 		}
 	}
@@ -71,21 +68,23 @@ func (s *Simulation) Run(maxCycle int) {
 		s.ExpectedStock = incomplete
 
 		// ? Execute actions from genes
-		// actions := s.ApplyGenes()
-		var actions []ProcessToBeExecuted
+		if s.canExecuteAnyProcess() {
+			// actions := s.ApplyGenes()
+			var actions []ProcessToBeExecuted
 
-		// * Calculate stock
-		for _, action := range actions {
-			process := s.InitialContext.Processes[action.Process]
-			for name, quantity := range process.Inputs {
-				s.Stock.Remove(name, quantity)
-			}
-			for name, quantity := range process.Outputs {
-				s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
-					name:            name,
-					quantity:        quantity * action.Amount,
-					remainingCycles: process.Delay,
-				})
+			// * Calculate stock
+			for _, action := range actions {
+				process := s.InitialContext.Processes[action.Process]
+				for name, quantity := range process.Inputs {
+					s.Stock.Remove(name, quantity)
+				}
+				for name, quantity := range process.Outputs {
+					s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
+						name:            name,
+						quantity:        quantity * action.Amount,
+						remainingCycles: process.Delay,
+					})
+				}
 			}
 		}
 
@@ -104,4 +103,6 @@ func (s *Simulation) Run(maxCycle int) {
 			}
 		}
 	}
+
+	s.calulateFitness()
 }

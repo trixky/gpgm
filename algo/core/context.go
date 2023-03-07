@@ -13,9 +13,12 @@ type Process struct {
 }
 
 func (p *Process) CanBeExecuted(stock Stock) bool {
+	return p.CanBeExecutedXTimes(stock, 1)
+}
+
+func (p *Process) CanBeExecutedXTimes(stock Stock, amount int) bool {
 	for product, quantity := range p.Inputs {
-		if stock.Get(product) < quantity {
-			println("got", stock.Get(product), product, "needed", quantity)
+		if stock.Get(product) < quantity*amount {
 			return false
 		}
 	}

@@ -127,21 +127,18 @@ func CheckOutput(simulationFile string, outputFile string) (res bool, err error)
 				}
 
 				// Execute process and update stock
-				for i := 0; i < processToken.Quantity; i++ {
-					if process.CanBeExecuted(simulationStock) {
-						for name, quantity := range process.Inputs {
-							simulationStock.Remove(name, quantity)
-						}
-						for name, quantity := range process.Outputs {
-							expectedStock = append(expectedStock, LocalExpectedStock{
-								Product:          name,
-								Quantity:         quantity,
-								AvailableAtCycle: cycle + process.Delay,
-							})
-						}
-					} else {
-						return false, fmt.Errorf("can't execute process `%s` on cycle %d", processToken.Name, cycle)
-					}
+				if !process.CanBeExecutedXTimes(simulationStock, processToken.Quantity) {
+					return false, fmt.Errorf("can't execute process `%s` on cycle %d", processToken.Name, cycle)
+				}
+				for name, quantity := range process.Inputs {
+					simulationStock.Remove(name, quantity*processToken.Quantity)
+				}
+				for name, quantity := range process.Outputs {
+					expectedStock = append(expectedStock, LocalExpectedStock{
+						Product:          name,
+						Quantity:         quantity * processToken.Quantity,
+						AvailableAtCycle: cycle + process.Delay,
+					})
 				}
 			}
 		}
