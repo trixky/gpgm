@@ -22,6 +22,10 @@ func (s Stock) Remove(name string, quantity int) {
 	s[name] = s[name] - quantity
 }
 
+func (s Stock) Insert(name string, quantity int) {
+	s[name] = quantity
+}
+
 func (s Stock) Add(name string, quantity int) {
 	s[name] = s[name] + quantity
 }

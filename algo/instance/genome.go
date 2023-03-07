@@ -4,6 +4,7 @@ type Genome struct {
 	Chromosomes []Chromosome
 }
 
+// # EXPERIMENTAL #
 // Cross generates two childs by cross overing itself with another one
 func (c *Genome) Cross(cc *Genome) (child_1 Genome, child_2 Genome) {
 	chromosome_nb := len(c.Chromosomes)
@@ -18,6 +19,7 @@ func (c *Genome) Cross(cc *Genome) (child_1 Genome, child_2 Genome) {
 	return
 }
 
+// # EXPERIMENTAL #
 // Mutate generates a child by mutation
 func (c *Genome) Mutate(max int) (child Genome) {
 	for index, chromosome := range c.Chromosomes {

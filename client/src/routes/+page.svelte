@@ -261,7 +261,6 @@
 
 	/* ----------------------- Buttons */
 	.state-container {
-		/* @apply mb-4; */
 	}
 
 	button {

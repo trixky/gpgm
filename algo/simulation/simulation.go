@@ -36,7 +36,7 @@ func (s *Simulation) CalulateFitness() int {
 
 func (s *Simulation) canExecuteAnyProcess() bool {
 	for _, process := range s.InitialContext.Processes {
-		if process.CanBeExecuted(s.Stock) {
+		if process.CanBeExecuted(&s.Stock) {
 			return true
 		}
 	}

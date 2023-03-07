@@ -127,7 +127,7 @@ func CheckOutput(simulationFile string, outputFile string) (res bool, err error)
 				}
 
 				// Execute process and update stock
-				if !process.CanBeExecutedXTimes(simulationStock, processToken.Quantity) {
+				if !process.CanBeExecutedXTimes(&simulationStock, processToken.Quantity) {
 					return false, fmt.Errorf("can't execute process `%s` on cycle %d", processToken.Name, cycle)
 				}
 				for name, quantity := range process.Inputs {
