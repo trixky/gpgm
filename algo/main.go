@@ -29,11 +29,13 @@ type RunningSolver struct {
 }
 
 // * Run a single generation for the given RunningSolver
-func runGeneration(solver RunningSolver) {
+func runGeneration(solver RunningSolver) (population.ScoredPopulation, RunningSolver) {
 	scored := solver.population.RunAllSimulations(solver.context, solver.options)
 	solver.population = scored.Crossover(solver.options)
 	solver.population.Mutate(solver.options)
 	solver.generation += 1
+
+	return scored, solver
 }
 
 // * Initialize a RunningSolver from the given args
