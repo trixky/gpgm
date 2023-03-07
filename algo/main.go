@@ -15,9 +15,10 @@ import (
 )
 
 type Arguments struct {
-	Text  string `json:"text"`
-	Delay int    `json:"delay"`
-	// ...
+	Text           string `json:"text"`
+	MaxGeneration  int    `json:"generations"`
+	MaxCycle       int    `json:"deep"`
+	PopulationSize int    `json:"population"`
 }
 
 type RunningSolver struct {
@@ -50,9 +51,9 @@ func initialize(args Arguments) (RunningSolver, error) {
 		return RunningSolver{}, err
 	}
 	options := core.Options{ // TODO Collect Options
-		PopulationSize:   50,
-		MaxGeneration:    100,
-		MaxCycle:         100,
+		PopulationSize:   args.PopulationSize,
+		MaxGeneration:    args.MaxGeneration,
+		MaxCycle:         args.MaxCycle,
 		TimeLimitSeconds: 60,
 	}
 
@@ -114,6 +115,7 @@ func initializeWasm() js.Func {
 			return nil
 		}
 
+		// --------- call
 		running_solver, err := initialize(arguments)
 
 		if err != nil {
@@ -142,18 +144,29 @@ func runGenerationWasm() js.Func {
 	run := js.FuncOf(func(this js.Value, args []js.Value) any {
 		solver := RunningSolver{}
 
+		// --------- extract the response
 		if err := json.Unmarshal([]byte(args[0].String()), &solver); err != nil {
 			fmt.Print(err.Error())
 
 			return nil
 		}
 
+		// --------- call
 		population, new_solver := runGeneration(solver)
 
-		return WASMGenerationReturn{
+		// --------- insert the response
+		scored_population_running_solver_json, err := json.Marshal(WASMGenerationReturn{
 			ScoredPopulation: population,
 			RunningSolver:    new_solver,
+		})
+
+		if err != nil {
+			fmt.Print(err.Error())
+
+			return nil
 		}
+
+		return string(scored_population_running_solver_json)
 	})
 
 	return run
@@ -161,8 +174,8 @@ func runGenerationWasm() js.Func {
 
 func main() {
 	// Register the shared function
-	// js.Global().Set("WASM_runGeneration", runGenerationWasm())
 	js.Global().Set("WASM_initialize", initializeWasm())
+	js.Global().Set("WASM_run_generation", runGenerationWasm())
 
 	fmt.Println("Go Web Assembly Loaded")
 

@@ -21,6 +21,7 @@
 	// ------------------------------ Loop
 	let frame = 0; // Used to refresh the visualizator
 	let generation = 0;
+	let result_wasm_json: any = undefined;
 
 	function new_generation() {
 		generation++;
@@ -30,10 +31,23 @@
 			finished = true;
 			return;
 		}
+
 		GenerationStore.push_random($ArgumentStore.population);
 		frame++;
 		setTimeout(() => {
 			// Recursive loop
+
+			// @ts-ignore
+			// loaded from the layout (wasm)
+			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json.running_solver));
+			result_wasm_json = JSON.parse(result_wasm);
+
+			output = JSON.stringify(
+				result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].Simulation
+					.Stock,
+				null,
+				'\t'
+			);
 			new_generation();
 		}, 1);
 	}
@@ -62,17 +76,30 @@
 			stopped = false;
 
 			// @ts-ignore
-			const initialization = WASM_initialize(
+			// loaded from the layout (wasm)
+			const running_solver = WASM_initialize(
 				JSON.stringify({
 					text: input,
-					delay: $ArgumentStore.delay
+					generations: $ArgumentStore.generations,
+					deep: $ArgumentStore.deep,
+					population: $ArgumentStore.population
 				})
 			);
 
-			if (initialization == undefined || initialization == null) {
-				output = "error"
+			if (running_solver == undefined || running_solver == null) {
+				output = 'error';
 			} else {
-				output = initialization
+				// @ts-ignore
+				// loaded from the layout (wasm)
+				const result_wasm = WASM_run_generation(running_solver);
+				result_wasm_json = JSON.parse(result_wasm);
+
+				output = JSON.stringify(
+					result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].Simulation
+						.Stock,
+					null,
+					'\t'
+				);
 				new_generation();
 			}
 		}

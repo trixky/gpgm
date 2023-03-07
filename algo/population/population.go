@@ -18,7 +18,7 @@ type ScoredInstance struct {
 }
 
 type ScoredPopulation struct {
-	Instances []ScoredInstance
+	Instances []ScoredInstance `json:"instances"`
 }
 
 type Population struct {
