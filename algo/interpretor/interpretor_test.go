@@ -15,7 +15,7 @@ func TestInterpretor(t *testing.T) {
 		"pig": 0,
 	}
 
-	initial_context := core.SimulationInitialContext{
+	initial_context := core.InitialContext{
 		Stock: core.Stock{
 			"cat": 5,
 			"dog": 0,

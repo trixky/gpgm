@@ -1,6 +1,7 @@
 package population
 
 import (
+	"math"
 	"math/rand"
 	"sort"
 
@@ -25,9 +26,19 @@ type Population struct {
 }
 
 func NewPopulation(options core.Options) Population {
+	// TODO generate from InitialContext to have the correct amount of genes and other things ?
 	return Population{
-		// TODO generate from InitialContext to have the correct amount of genes and other things
 		Instances: make([]instance.Instance, options.PopulationSize),
+	}
+}
+
+func NewRandomPopulation(context core.InitialContext, options core.Options) Population {
+	instances := make([]instance.Instance, options.PopulationSize)
+	for i := range instances {
+		instances[i].Init(context)
+	}
+	return Population{
+		Instances: instances,
 	}
 }
 
@@ -97,6 +108,8 @@ func (s *ScoredPopulation) Crossover(options core.Options) Population {
 	return population
 }
 
-func (p *Population) Mutate(options core.Options) Population {
-	return *p // TODO
+func (p *Population) Mutate(options core.Options) {
+	for _, instance := range p.Instances {
+		instance.Chromosome.Mutate(math.MaxUint16 / 2) // TODO pass options
+	}
 }

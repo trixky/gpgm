@@ -5,7 +5,7 @@ import (
 	"github.com/trixky/krpsim/algo/instance"
 )
 
-func Interpret(i instance.Instance, initial_context core.SimulationInitialContext, stock core.Stock) (processes []core.Process) {
+func Interpret(i instance.Instance, initial_context core.InitialContext, stock core.Stock) (processes []core.Process) {
 	i_genes_cpy := make([]instance.Gene, len(i.Chromosome.Genes))
 	processes_order := []core.Process{}
 	copy(i_genes_cpy, i.Chromosome.Genes)

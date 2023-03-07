@@ -5,6 +5,7 @@ import (
 
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/instance"
+	"github.com/trixky/krpsim/algo/interpretor"
 )
 
 type ProcessToBeExecuted struct {
@@ -67,8 +68,21 @@ func (s *Simulation) Run(maxCycle int) {
 
 		// ? Execute actions from genes
 		if s.canExecuteAnyProcess() {
-			// actions := s.ApplyGenes()
+			actions1 := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock)
 			var actions []ProcessToBeExecuted
+			for _, process := range actions1 {
+				var processId int
+				for i, maybeProcess := range s.InitialContext.Processes {
+					if maybeProcess.Name == process.Name {
+						processId = i
+						break
+					}
+				}
+				actions = append(actions, ProcessToBeExecuted{
+					Process: processId,
+					Amount:  1,
+				})
+			}
 
 			// * Calculate stock
 			for _, action := range actions {

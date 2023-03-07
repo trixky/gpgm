@@ -11,10 +11,11 @@ type Instance struct {
 	Chromosome Chromosome
 }
 
-func (i *Instance) Init(initial_context core.SimulationInitialContext) {
+func (i *Instance) Init(initial_context core.InitialContext) {
 	// priority
 
-	for _ = range initial_context.Processes {
+	i.Chromosome.Genes = make([]Gene, 0)
+	for range initial_context.Processes {
 		i.Chromosome.Genes = append(i.Chromosome.Genes, Gene{
 			Value: uint16(rand.Intn(math.MaxUint16)),
 		})
@@ -22,8 +23,8 @@ func (i *Instance) Init(initial_context core.SimulationInitialContext) {
 }
 
 func (i *Instance) Cross(ii *Instance) (child_1 Instance, child_2 Instance) {
-	genome_1, genome_2 := i.Genome.Cross(&ii.Genome)
-	child_1.Genome = genome_1
-	child_2.Genome = genome_2
+	chromosome_1, chromosome_2 := i.Chromosome.Cross(&ii.Chromosome)
+	child_1.Chromosome = chromosome_1
+	child_2.Chromosome = chromosome_2
 	return
 }
