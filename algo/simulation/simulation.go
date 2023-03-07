@@ -118,6 +118,10 @@ func (s *Simulation) Run(maxCycle int) {
 			}
 		}
 	}
+	for _, e := range s.ExpectedStock {
+		s.Stock.Add(e.name, e.quantity)
+	}
+	s.ExpectedStock = []ExpectedStock{}
 }
 
 func (s *Simulation) GenerateOutputFile() string {
