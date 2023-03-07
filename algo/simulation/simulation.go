@@ -1,7 +1,9 @@
 package simulation
 
 import (
+	"fmt"
 	"math"
+	"strings"
 
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/instance"
@@ -116,4 +118,21 @@ func (s *Simulation) Run(maxCycle int) {
 			}
 		}
 	}
+}
+
+func (s *Simulation) GenerateOutputFile() string {
+	lines := make([]string, 0)
+	for _, action := range s.History {
+		lines = append(lines, fmt.Sprintf("%d: %s:%d", action.Cycle, action.Process.Name, action.Amount))
+	}
+	stock := ""
+	for product, quantity := range s.Stock {
+		if stock == "" {
+			stock = fmt.Sprintf("%s:%d", product, quantity)
+		} else {
+			stock = fmt.Sprintf("%s;%s:%d", stock, product, quantity)
+		}
+	}
+	lines = append(lines, fmt.Sprintf("stock: %s", stock))
+	return strings.Join(lines, "\n")
 }
