@@ -15,25 +15,30 @@ import (
 )
 
 type Arguments struct {
-	Text  string
-	Delay int
+	Text  string `json:"text"`
+	Delay int    `json:"delay"`
 	// ...
 }
 
 type RunningSolver struct {
-	population population.Population
-	context    core.InitialContext
-	options    core.Options
-	generation int
-	start      time.Time
+	Population population.Population `json:"population"`
+	Context    core.InitialContext   `json:"context"`
+	Options    core.Options          `json:"options"`
+	Generation int                   `json:"generation"`
+	Start      time.Time             `json:"start"`
+}
+
+type WASMGenerationReturn struct {
+	ScoredPopulation population.ScoredPopulation `json:"scored_population"`
+	RunningSolver    RunningSolver               `json:"running_solver"`
 }
 
 // * Run a single generation for the given RunningSolver
 func runGeneration(solver RunningSolver) (population.ScoredPopulation, RunningSolver) {
-	scored := solver.population.RunAllSimulations(solver.context, solver.options)
-	solver.population = scored.Crossover(solver.options)
-	solver.population.Mutate(solver.options)
-	solver.generation += 1
+	scored := solver.Population.RunAllSimulations(solver.Context, solver.Options)
+	solver.Population = scored.Crossover(solver.Options)
+	solver.Population.Mutate(solver.Options)
+	solver.Generation += 1
 
 	return scored, solver
 }
@@ -52,11 +57,11 @@ func initialize(args Arguments) (RunningSolver, error) {
 	}
 
 	return RunningSolver{
-		population: population.NewRandomPopulation(context, options),
-		context:    context,
-		options:    options,
-		generation: 1,
-		start:      time.Now(),
+		Population: population.NewRandomPopulation(context, options),
+		Context:    context,
+		Options:    options,
+		Generation: 1,
+		Start:      time.Now(),
 	}, nil
 }
 
@@ -98,16 +103,57 @@ func runSimulation(args Arguments) string {
 }
 
 // runWasm parse arguments, run the simulation and return its result
-func runWasm() js.Func {
+func initializeWasm() js.Func {
 	run := js.FuncOf(func(this js.Value, args []js.Value) any {
-		parsed_args := Arguments{
-			Text:  args[0].String(),
-			Delay: args[1].Int(),
+		arguments := Arguments{}
+
+		// --------- extract the response
+		if err := json.Unmarshal([]byte(args[0].String()), &arguments); err != nil {
+			fmt.Print(err.Error())
+
+			return nil
 		}
 
-		result := runSimulation(parsed_args)
+		running_solver, err := initialize(arguments)
 
-		return result
+		if err != nil {
+			fmt.Print(err.Error())
+
+			return nil
+		}
+
+		// --------- insert the response
+		running_solver_json, err := json.Marshal(running_solver)
+
+		if err != nil {
+			fmt.Print(err.Error())
+
+			return nil
+		}
+
+		return string(running_solver_json)
+	})
+
+	return run
+}
+
+// runWasm parse arguments, run the simulation and return its result
+func runGenerationWasm() js.Func {
+	run := js.FuncOf(func(this js.Value, args []js.Value) any {
+		solver := RunningSolver{}
+
+		if err := json.Unmarshal([]byte(args[0].String()), &solver); err != nil {
+			fmt.Print(err.Error())
+
+			return nil
+		}
+
+		population, new_solver := runGeneration(solver)
+
+		return WASMGenerationReturn{
+			ScoredPopulation: population,
+			RunningSolver:    new_solver,
+		}
 	})
 
 	return run
@@ -115,7 +161,8 @@ func runWasm() js.Func {
 
 func main() {
 	// Register the shared function
-	js.Global().Set("Run", runWasm())
+	// js.Global().Set("WASM_runGeneration", runGenerationWasm())
+	js.Global().Set("WASM_initialize", initializeWasm())
 
 	fmt.Println("Go Web Assembly Loaded")
 

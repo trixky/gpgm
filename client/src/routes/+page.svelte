@@ -62,10 +62,19 @@
 			stopped = false;
 
 			// @ts-ignore
-			// Run is loaded from the layout (wasm)
-			output = Run(input, $ArgumentStore.delay);
+			const initialization = WASM_initialize(
+				JSON.stringify({
+					text: input,
+					delay: $ArgumentStore.delay
+				})
+			);
 
-			new_generation();
+			if (initialization == undefined || initialization == null) {
+				output = "error"
+			} else {
+				output = initialization
+				new_generation();
+			}
 		}
 	}
 
@@ -158,7 +167,9 @@
 	</div>
 	<div class="state-container">
 		<button class="side-button" on:click={handle_bottom}>Bottom</button>
-		<button class="play-button" on:click={handle_run} disabled={!input.length || running}>Clear</button>
+		<button class="play-button" on:click={handle_run} disabled={!input.length || running}
+			>Clear</button
+		>
 	</div>
 	<Visual {frame} />
 	<div class="statistic-container shadow">
