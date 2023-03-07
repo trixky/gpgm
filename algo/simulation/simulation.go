@@ -9,7 +9,13 @@ import (
 )
 
 type ProcessToBeExecuted struct {
-	Process int
+	Process core.Process
+	Amount  int
+}
+
+type ExecutedProcess struct {
+	Cycle   int
+	Process core.Process
 	Amount  int
 }
 
@@ -18,6 +24,7 @@ type Simulation struct {
 	Instance       instance.Instance
 	Stock          core.Stock
 	ExpectedStock  []ExpectedStock
+	History        []ExecutedProcess
 	Cycle          int
 }
 
@@ -68,35 +75,25 @@ func (s *Simulation) Run(maxCycle int) {
 
 		// ? Execute actions from genes
 		if s.canExecuteAnyProcess() {
-			actions1 := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock)
-			var actions []ProcessToBeExecuted
-			for _, process := range actions1 {
-				var processId int
-				for i, maybeProcess := range s.InitialContext.Processes {
-					if maybeProcess.Name == process.Name {
-						processId = i
-						break
-					}
-				}
-				actions = append(actions, ProcessToBeExecuted{
-					Process: processId,
-					Amount:  1,
-				})
-			}
+			actions := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock)
 
 			// * Calculate stock
 			for _, action := range actions {
-				process := s.InitialContext.Processes[action.Process]
-				for name, quantity := range process.Inputs {
+				for name, quantity := range action.Inputs {
 					s.Stock.Remove(name, quantity)
 				}
-				for name, quantity := range process.Outputs {
+				for name, quantity := range action.Outputs {
 					s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
 						name:            name,
-						quantity:        quantity * action.Amount,
-						remainingCycles: process.Delay,
+						quantity:        quantity * 1, /* action.Amount */
+						remainingCycles: action.Delay,
 					})
 				}
+				s.History = append(s.History, ExecutedProcess{
+					Cycle:   s.Cycle,
+					Process: action,
+					Amount:  1,
+				})
 			}
 		}
 
@@ -104,14 +101,18 @@ func (s *Simulation) Run(maxCycle int) {
 		if !s.canExecuteAnyProcess() && len(s.ExpectedStock) > 0 {
 			var closer ExpectedStock
 			closer.remainingCycles = math.MaxInt
-			for _, e := range s.ExpectedStock {
-				if e.remainingCycles < closer.remainingCycles {
-					closer = e
+			for i := range s.ExpectedStock {
+				if s.ExpectedStock[i].remainingCycles < closer.remainingCycles {
+					closer = s.ExpectedStock[i]
 				}
 			}
-			s.Cycle += closer.remainingCycles
-			for _, e := range s.ExpectedStock {
-				e.remainingCycles -= closer.remainingCycles
+			s.Cycle += closer.remainingCycles - 1
+			for i := range s.ExpectedStock {
+				s.ExpectedStock[i].remainingCycles -= closer.remainingCycles
+			}
+		} else {
+			for i := range s.ExpectedStock {
+				s.ExpectedStock[i].remainingCycles -= 1
 			}
 		}
 	}
