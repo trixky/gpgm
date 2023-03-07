@@ -20,7 +20,7 @@ type TokenWithQuantity struct {
 	Quantity int
 }
 
-func parseOutputLine(sm core.SimulationInitialContext, line string) (products []TokenWithQuantity, err error) {
+func parseOutputLine(sm core.InitialContext, line string) (products []TokenWithQuantity, err error) {
 	pairs := strings.Split(line, ";")
 	for _, pair := range pairs {
 		infos := strings.Split(pair, ":")

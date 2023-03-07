@@ -25,13 +25,13 @@ func (p *Process) CanBeExecutedXTimes(stock Stock, amount int) bool {
 	return true
 }
 
-type SimulationInitialContext struct {
+type InitialContext struct {
 	Stock     Stock
 	Processes []Process
 	Optimize  map[string]bool
 }
 
-func (sm *SimulationInitialContext) IsInOutput(product string) bool {
+func (sm *InitialContext) IsInOutput(product string) bool {
 	for _, process := range sm.Processes {
 		for outputProduct := range process.Outputs {
 			if product == outputProduct {

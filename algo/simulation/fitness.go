@@ -7,7 +7,7 @@ func Fitnesss(simulation Simulation) int {
 	for name, forTime := range simulation.InitialContext.Optimize {
 		quantity := simulation.Stock.Get(name)
 		if forTime {
-			score += (quantity / simulation.Time) * factor
+			score += (quantity / simulation.Cycle) * factor
 		} else {
 			score += quantity * factor
 		}

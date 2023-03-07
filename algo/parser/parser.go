@@ -337,7 +337,7 @@ func parseOptimize(line string) *map[string]bool {
 	return &optimizeFor
 }
 
-func ParseSimulationFile(input string) (sm core.SimulationInitialContext, err error) {
+func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
 	sm.Stock = make(map[string]int)
 
 	// Split and strip comments

@@ -13,21 +13,21 @@ type ProcessToBeExecuted struct {
 }
 
 type Simulation struct {
-	InitialContext core.SimulationInitialContext
+	InitialContext core.InitialContext
+	Instance       instance.Instance
 	Stock          core.Stock
 	ExpectedStock  []ExpectedStock
-	Time           int
-	Instance       instance.Instance
+	Cycle          int
 	Score          int
 }
 
-func NewSimulation(info core.SimulationInitialContext, instance instance.Instance) Simulation {
+func NewSimulation(info core.InitialContext, instance instance.Instance) Simulation {
 	return Simulation{
 		InitialContext: info,
+		Instance:       instance,
 		Stock:          info.Stock.DeepCopy(),
 		ExpectedStock:  []ExpectedStock{},
-		Time:           0,
-		Instance:       instance,
+		Cycle:          0,
 		Score:          0,
 	}
 }
@@ -46,7 +46,7 @@ func (s *Simulation) canExecuteAnyProcess() bool {
 }
 
 func (s *Simulation) Run(maxCycle int) {
-	for ; s.Time < maxCycle; s.Time++ {
+	for ; s.Cycle < maxCycle; s.Cycle++ {
 		// ? Abort early if there is no executable processes and no expected stocks
 		if !s.canExecuteAnyProcess() && len(s.ExpectedStock) == 0 {
 			break
@@ -97,7 +97,7 @@ func (s *Simulation) Run(maxCycle int) {
 					closer = e
 				}
 			}
-			s.Time += closer.remainingCycles
+			s.Cycle += closer.remainingCycles
 			for _, e := range s.ExpectedStock {
 				e.remainingCycles -= closer.remainingCycles
 			}
