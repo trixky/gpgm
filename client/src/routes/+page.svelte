@@ -27,10 +27,14 @@
 
 	function new_generation() {
 		generation++;
-		if (stop || stopped || generation >= $ArgumentStore.generations) {
+		if (generation >= $ArgumentStore.generations) {
+			finished = true;
+			stopped = true;
+		}
+
+		if (stop || stopped) {
 			stop = false;
 			stopped = true;
-			finished = true;
 			return;
 		}
 
