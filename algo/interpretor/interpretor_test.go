@@ -1,14 +1,13 @@
 package interpretor
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/instance"
 )
 
-func TestInterpretor(t *testing.T) {
+func TestInterpretBasicPriority(t *testing.T) {
 	stock := core.Stock{
 		"cat": 3,
 		"dog": 0,
@@ -71,10 +70,7 @@ func TestInterpretor(t *testing.T) {
 		},
 	}
 
-	processes := Interpret(instance, initial_context, stock)
-
-	fmt.Println(len(processes))
-	fmt.Println(stock)
+	processes := InterpretBasicPriority(instance, initial_context, stock)
 
 	if len(processes) != 3 {
 		t.Fatalf(`expected = %d, got = %d`, 3, len(processes))
