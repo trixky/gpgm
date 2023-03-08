@@ -1,35 +1,96 @@
 package instance
 
+import (
+	"math"
+	"math/rand"
+)
+
 type Gene struct {
-	FirstPriorityExon Exon   `json:"first_priority_exon"`
-	LastPriorityExon  Exon   `json:"last_priority_exon"`
-	RatioExons        []Exon `json:"ratio_exons"`
-}
-
-// # EXPERIMENTAL #
-// Cross generates a child by cross overing another one
-func (g *Gene) Cross(gg *Gene) (child Gene) {
-	child.RatioExons = make([]Exon, len(g.RatioExons))
-
-	child.FirstPriorityExon = g.FirstPriorityExon.Cross(&gg.FirstPriorityExon)
-	child.LastPriorityExon = g.LastPriorityExon.Cross(&gg.LastPriorityExon)
-
-	for index, exon := range g.RatioExons {
-		child.RatioExons[index] = exon.Cross(&gg.RatioExons[index])
-	}
-
-	return
+	// Process
+	ProcessId uint16
+	// Minimum quantity
+	MinQuantity       uint16
+	MinQuantityActive bool
+	// Maximum quantity
+	MaxQuantity       uint16
+	MaxQuantityActive bool
 }
 
 // Mutate generates a child by mutation
-func (g *Gene) Mutate(max int) (child Gene) {
-	child.RatioExons = make([]Exon, len(g.RatioExons))
+func (g *Gene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int) (child Gene) {
+	var shift uint16
 
-	child.LastPriorityExon = g.LastPriorityExon.Mutate(max)
-	child.LastPriorityExon = g.LastPriorityExon.Mutate(max)
+	// ---------------------- ProcessId
+	shift = uint16(rand.Intn(process_shift))
 
-	for index, exon := range g.RatioExons {
-		child.RatioExons[index] = exon.Mutate(max)
+	if rand.Intn(2) == 0 {
+		// Substract
+		if shift > g.ProcessId {
+			// Prevent overflow
+			child.ProcessId = 0
+		} else {
+			child.ProcessId = g.ProcessId - shift
+		}
+	} else {
+		// Addition
+		if process_max-shift < g.ProcessId {
+			// Prevent overflow
+			child.ProcessId = process_max - 1
+		} else {
+			child.ProcessId = g.ProcessId + shift
+		}
+	}
+
+	// ---------------------- MinQuantity
+	shift = uint16(rand.Intn(quantity_shift))
+
+	if rand.Intn(2) == 0 {
+		// Substract
+		if quantity_shift > int(g.MinQuantity) {
+			// Prevent overflow
+			child.MinQuantity = 0
+		} else {
+			child.MinQuantity = g.MinQuantity - shift
+		}
+	} else {
+		// Addition
+		if shift > g.MaxQuantity-shift || g.MaxQuantity-shift < g.MinQuantity {
+			// Prevent overflow
+			child.MinQuantity = g.MaxQuantity
+		} else {
+			child.MinQuantity = g.MinQuantity + shift
+		}
+	}
+
+	// ---------------------- MaxQuantity
+	shift = uint16(rand.Intn(int(quantity_shift)))
+
+	if rand.Intn(2) == 0 {
+		// Substract
+		if shift > g.MaxQuantity-shift || g.MaxQuantity-shift < g.MinQuantity {
+			// Prevent overflow
+			child.MaxQuantity = g.MinQuantity
+		} else {
+			child.MaxQuantity = g.MaxQuantity - shift
+		}
+	} else {
+		// Addition
+		if math.MaxUint16-shift < g.MaxQuantity {
+			// Prevent overflow
+			child.MaxQuantity = math.MaxUint16 - shift
+		} else {
+			child.MaxQuantity = g.MaxQuantity - shift
+		}
+	}
+
+	// ---------------------- MinQuantityActive
+	if rand.Intn(activation_chance) == 0 {
+		child.MinQuantityActive = !g.MinQuantityActive
+	}
+
+	// ---------------------- MaxQuantityActive
+	if rand.Intn(activation_chance) == 0 {
+		child.MaxQuantityActive = !g.MaxQuantityActive
 	}
 
 	return

@@ -5,42 +5,26 @@ import (
 	"github.com/trixky/krpsim/algo/instance"
 )
 
-func InterpretBasicPriority(i instance.Instance, initial_context core.InitialContext, stock core.Stock) (processes []core.Process) {
-	processes_order := []core.Process{}
+type ProcessQuantities struct {
+	Process *core.Process `json:"process"`
+	Amount  int           `json:"amount"`
+}
 
-	processes_cpy := make([]core.Process, len(initial_context.Processes))
-	genes_cpy := make([]instance.Gene, len(initial_context.Processes))
+func Interpret(i instance.Instance, initial_context core.InitialContext, stock core.Stock) (process_quantities []ProcessQuantities) {
+	for _, gene := range i.Chromosome.Genes {
+		max_execution_time := initial_context.Processes[gene.ProcessId].CanBeExecutedMaxXTimes(&stock)
 
-	// can be optimized
-	copy(processes_cpy, initial_context.Processes)
-	copy(genes_cpy, i.Chromosome.Genes)
+		if !gene.MinQuantityActive || max_execution_time >= gene.MinQuantity {
+			if !gene.MaxQuantityActive || max_execution_time <= gene.MaxQuantity {
+				initial_context.Processes[gene.ProcessId].ExecuteN(&stock, int(max_execution_time))
 
-	for len(processes_cpy) > 0 {
-		var best_value uint16 = 0
-		var best_index int = 0
-
-		for index, gene := range genes_cpy {
-			if gene.FirstPriorityExon.Value > best_value {
-				best_value = gene.FirstPriorityExon.Value
-				best_index = index
+				process_quantities = append(process_quantities, ProcessQuantities{
+					Process: &initial_context.Processes[gene.ProcessId],
+					Amount:  int(max_execution_time),
+				})
 			}
 		}
 
-		processes_cpy = append(processes_cpy[:best_index], processes_cpy[best_index+1:]...)
-		genes_cpy = append(genes_cpy[:best_index], genes_cpy[best_index+1:]...)
-		processes_order = append(processes_order, initial_context.Processes[best_index])
-	}
-
-	execution := true
-
-	for execution {
-		execution = false
-		for _, process := range processes_order {
-			if ok := process.Execute(&stock); ok {
-				execution = true
-				processes = append(processes, process)
-			}
-		}
 	}
 
 	return

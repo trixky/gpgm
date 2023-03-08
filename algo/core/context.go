@@ -1,5 +1,7 @@
 package core
 
+import "math"
+
 type Product struct {
 	Name     string `json:"name"`
 	Quantity int    `json:"quantity"`
@@ -25,16 +27,34 @@ func (p *Process) CanBeExecutedXTimes(stock *Stock, amount int) bool {
 	return true
 }
 
-func (p *Process) Execute(stock *Stock) bool {
-	new_stock := Stock{}
+func (p *Process) CanBeExecutedMaxXTimes(stock *Stock) uint16 {
+	var max_global uint16 = math.MaxUint16
 
 	for product, quantity := range p.Inputs {
-		stock_quantity := stock.Get(product)
+		max_production := uint16(stock.Get(product) / quantity)
 
-		if stock_quantity < quantity {
+		if max_production < max_global {
+			max_global = max_production
+		}
+
+		if max_global == 0 {
+			return max_global
+		}
+	}
+
+	return max_global
+}
+
+func (p *Process) TryExecute(stock *Stock) bool {
+	new_stock := Stock{}
+
+	for product, cost := range p.Inputs {
+		available := stock.Get(product)
+
+		if available < cost {
 			return false
 		} else {
-			new_stock.Insert(product, stock_quantity-quantity)
+			new_stock.Insert(product, available-cost)
 		}
 	}
 
@@ -51,6 +71,13 @@ func (p *Process) IsInOutput(product string) bool {
 	}
 
 	return false
+}
+
+func (p *Process) ExecuteN(stock *Stock, n int) {
+	for product, cost := range p.Inputs {
+		available := stock.Get(product)
+		stock.Insert(product, available-(cost*n))
+	}
 }
 
 type InitialContext struct {

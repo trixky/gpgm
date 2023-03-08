@@ -15,22 +15,21 @@ type Instance struct {
 func (i *Instance) Init(initial_context core.InitialContext) {
 	i.Chromosome.Genes = make([]Gene, 0)
 	for range initial_context.Processes {
+		quantity_1 := uint16(rand.Intn(math.MaxUint16))
+		quantity_2 := uint16(rand.Intn(math.MaxUint16))
+
 		gene := Gene{
-			// first priority exon
-			FirstPriorityExon: Exon{
-				Value: uint16(rand.Intn(math.MaxUint16)),
-			},
-			// last priority exon
-			LastPriorityExon: Exon{
-				Value: uint16(rand.Intn(math.MaxUint16)),
-			},
-			// ratio exon
-			RatioExons: make([]Exon, len(initial_context.Processes)),
+			ProcessId:         uint16(rand.Intn(len(initial_context.Processes))),
+			MinQuantityActive: rand.Intn(2) == 0,
+			MaxQuantityActive: rand.Intn(2) == 0,
 		}
 
-		// ratio exon
-		for index := range gene.RatioExons {
-			gene.RatioExons[index].Value = uint16(rand.Intn(math.MaxUint16))
+		if quantity_1 < quantity_2 {
+			gene.MinQuantity = quantity_1
+			gene.MaxQuantity = quantity_2
+		} else {
+			gene.MinQuantity = quantity_2
+			gene.MaxQuantity = quantity_1
 		}
 
 		i.Chromosome.Genes = append(i.Chromosome.Genes, gene)

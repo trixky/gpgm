@@ -28,14 +28,14 @@ func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromoso
 }
 
 // Mutate generates a child by mutation
-func (c *Chromosome) Mutate(max int) (child Chromosome) {
+func (c *Chromosome) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int) (child Chromosome) {
 	gene_nb := len(c.Genes)
 
 	child.Genes = make([]Gene, gene_nb)
 
 	for index, gene := range c.Genes {
 		// Extract the mutation of all genes from the parent ones
-		child.Genes[index] = gene.Mutate(max)
+		child.Genes[index] = gene.Mutate(process_max, process_shift, quantity_shift, activation_chance)
 	}
 
 	return

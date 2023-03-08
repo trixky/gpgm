@@ -39,7 +39,7 @@ type WASMGenerationReturn struct {
 func runGeneration(solver RunningSolver) (population.ScoredPopulation, RunningSolver) {
 	scored := solver.Population.RunAllSimulations(solver.Context, solver.Options)
 	solver.Population = scored.Crossover(solver.Options)
-	solver.Population.Mutate(solver.Options)
+	solver.Population.Mutate(solver.Context, solver.Options)
 	solver.Generation += 1
 
 	return scored, solver
@@ -96,7 +96,7 @@ func runSimulation(args Arguments) string {
 		}
 		// fmt.Printf("%v\n", population)
 		population := scored.Crossover(options)
-		population.Mutate(options)
+		population.Mutate(context, options)
 		// fmt.Printf("%v\n", population)
 	}
 	best := scored.Best()

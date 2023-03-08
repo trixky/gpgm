@@ -21,9 +21,9 @@ func (c *Genome) Cross(cc *Genome) (child_1 Genome, child_2 Genome) {
 
 // # EXPERIMENTAL #
 // Mutate generates a child by mutation
-func (c *Genome) Mutate(max int) (child Genome) {
+func (c *Genome) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int) (child Genome) {
 	for index, chromosome := range c.Chromosomes {
-		child.Chromosomes[index] = chromosome.Mutate(max)
+		child.Chromosomes[index] = chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance)
 	}
 
 	return

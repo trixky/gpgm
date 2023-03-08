@@ -10,11 +10,6 @@ import (
 	"github.com/trixky/krpsim/algo/interpretor"
 )
 
-type ProcessToBeExecuted struct {
-	Process core.Process `json:"process"`
-	Amount  int          `json:"amount"`
-}
-
 type ExecutedProcess struct {
 	Cycle   int          `json:"cycle"`
 	Process core.Process `json:"process"`
@@ -77,23 +72,23 @@ func (s *Simulation) Run(maxCycle int) {
 
 		// ? Execute actions from genes
 		if s.canExecuteAnyProcess() {
-			actions := interpretor.InterpretBasicPriority(s.Instance, s.InitialContext, s.Stock)
+			process_quantities := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock)
 
 			// * Calculate stock
-			for _, action := range actions {
-				for name, quantity := range action.Inputs {
-					s.Stock.Remove(name, quantity)
+			for _, process_quantity := range process_quantities {
+				for name, quantity := range process_quantity.Process.Inputs {
+					s.Stock.Remove(name, quantity*process_quantity.Amount)
 				}
-				for name, quantity := range action.Outputs {
+				for name, quantity := range process_quantity.Process.Outputs {
 					s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
 						Name:            name,
-						Quantity:        quantity * 1, /* action.Amount */
-						RemainingCycles: action.Delay,
+						Quantity:        quantity * process_quantity.Amount,
+						RemainingCycles: process_quantity.Process.Delay,
 					})
 				}
 				s.History = append(s.History, ExecutedProcess{
 					Cycle:   s.Cycle,
-					Process: action,
+					Process: *process_quantity.Process,
 					Amount:  1,
 				})
 			}

@@ -1,7 +1,6 @@
 package population
 
 import (
-	"math"
 	"math/rand"
 	"sort"
 
@@ -122,8 +121,14 @@ func (s *ScoredPopulation) Crossover(options core.Options) Population {
 	return population
 }
 
-func (p *Population) Mutate(options core.Options) {
+func (p *Population) Mutate(context core.InitialContext, options core.Options) {
 	for _, instance := range p.Instances {
-		instance.Chromosome.Mutate(math.MaxUint16 / 2) // TODO pass options
+
+		process_max := uint16(len(context.Processes))
+		process_shift := 3
+		quantity_shift := 10
+		activation_chance := 5
+
+		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance) // TODO pass options
 	}
 }
