@@ -77,7 +77,7 @@ func (s *Simulation) Run(maxCycle int) {
 
 		// ? Execute actions from genes
 		if s.canExecuteAnyProcess() {
-			actions := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock)
+			actions := interpretor.InterpretBasicPriority(s.Instance, s.InitialContext, s.Stock)
 
 			// * Calculate stock
 			for _, action := range actions {

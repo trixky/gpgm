@@ -13,9 +13,9 @@ type Instance struct {
 
 // Init initializes an instance with random genes/exons
 func (i *Instance) Init(initial_context core.InitialContext) {
-	i.Chromosome.Genes = make([]Gene, 0)
+	i.Chromosome.Genes = make([]BasicPriorityGene, 0)
 	for range initial_context.Processes {
-		gene := Gene{
+		gene := BasicPriorityGene{
 			// first priority exon
 			FirstPriorityExon: Exon{
 				Value: uint16(rand.Intn(math.MaxUint16)),

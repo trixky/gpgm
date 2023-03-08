@@ -7,7 +7,7 @@ import (
 	"github.com/trixky/krpsim/algo/instance"
 )
 
-func TestInterpretor(t *testing.T) {
+func TestInterpretBasicPriority(t *testing.T) {
 	stock := core.Stock{
 		"cat": 3,
 		"dog": 0,
@@ -49,7 +49,7 @@ func TestInterpretor(t *testing.T) {
 
 	instance := instance.Instance{
 		Chromosome: instance.Chromosome{
-			Genes: []instance.Gene{
+			Genes: []instance.BasicPriorityGene{
 				{
 					FirstPriorityExon: instance.Exon{
 						Value: 1,
@@ -70,7 +70,7 @@ func TestInterpretor(t *testing.T) {
 		},
 	}
 
-	processes := Interpret(instance, initial_context, stock)
+	processes := InterpretBasicPriority(instance, initial_context, stock)
 
 	if len(processes) != 3 {
 		t.Fatalf(`expected = %d, got = %d`, 3, len(processes))
