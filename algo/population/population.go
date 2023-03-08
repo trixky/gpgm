@@ -84,7 +84,9 @@ func (s *ScoredPopulation) Crossover(options core.Options) Population {
 	// TODO Elitism: Select the best and keep them
 	// TODO New Instances: Keep a few open slots for totally new Instances
 
-	for i, scoredInstance := range s.Instances {
+	for i := 0; i < len(s.Instances); i += 2 {
+		scoredInstance := s.Instances[i]
+
 		// Select the other instance to cross with
 		// Add the chance of both instances and roll a dice
 		var with *ScoredInstance
@@ -102,7 +104,8 @@ func (s *ScoredPopulation) Crossover(options core.Options) Population {
 			with = &s.Instances[0]
 		}
 		child1, child2 := scoredInstance.Instance.Cross(&with.Instance)
-		population.Instances = append(population.Instances, child1, child2)
+		population.Instances[i] = child1
+		population.Instances[i+1] = child2
 	}
 
 	return population
