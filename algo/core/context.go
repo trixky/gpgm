@@ -43,18 +43,27 @@ func (p *Process) Execute(stock *Stock) bool {
 	return true
 }
 
+func (p *Process) IsInOutput(product string) bool {
+	for outputProduct := range p.Outputs {
+		if product == outputProduct {
+			return true
+		}
+	}
+
+	return false
+}
+
 type InitialContext struct {
-	Stock     Stock
-	Processes []Process
-	Optimize  map[string]bool
+	Stock      Stock           `json:"stock"`
+	Processes  []Process       `json:"processes"`
+	Optimize   map[string]bool `json:"optimize"`
+	ScoreRatio map[string]int  `json:"score_ratio"`
 }
 
 func (sm *InitialContext) IsInOutput(product string) bool {
 	for _, process := range sm.Processes {
-		for outputProduct := range process.Outputs {
-			if product == outputProduct {
-				return true
-			}
+		if process.IsInOutput(product) {
+			return true
 		}
 	}
 	return false

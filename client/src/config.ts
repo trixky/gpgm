@@ -5,14 +5,14 @@ export default {
             row: 10,
         },
         generations: {
-            min: 50,
+            min: 10,
             max: 10000,
-            default: 1000
+            default: 100
         },
         population: {
             min: 10,
             max: 1000,
-            default: 300
+            default: 50
         },
         deep: {
             min: 10,
@@ -22,7 +22,7 @@ export default {
         delay: {
             min: 500,
             max: 60000,
-            default: 2000
+            default: 5000
         },
         output: {
             cols: 42,

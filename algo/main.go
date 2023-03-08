@@ -12,6 +12,7 @@ import (
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/parser"
 	"github.com/trixky/krpsim/algo/population"
+	"github.com/trixky/krpsim/algo/simulation"
 )
 
 type Arguments struct {
@@ -174,10 +175,31 @@ func runGenerationWasm() js.Func {
 	return run
 }
 
+// runWasm parse arguments, run the simulation and return its result
+func generateOutput() js.Func {
+	run := js.FuncOf(func(this js.Value, args []js.Value) any {
+		simulation := simulation.Simulation{}
+
+		// --------- extract the response
+		if err := json.Unmarshal([]byte(args[0].String()), &simulation); err != nil {
+			fmt.Print(err.Error())
+			return nil
+		}
+
+		// --------- call
+		output := simulation.GenerateOutputFile()
+
+		return output
+	})
+
+	return run
+}
+
 func main() {
 	// Register the shared function
 	js.Global().Set("WASM_initialize", initializeWasm())
 	js.Global().Set("WASM_run_generation", runGenerationWasm())
+	js.Global().Set("WASM_generate_output", generateOutput())
 
 	fmt.Println("Go Web Assembly Loaded")
 
