@@ -52,12 +52,13 @@
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json.running_solver));
 			result_wasm_json = JSON.parse(result_wasm);
 
-			output = JSON.stringify(
-				result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].simulation
-					.stock,
+			output = output = `Cycles: ${
+				result_wasm_json.scored_population.instances[0].cycle
+			}\n${JSON.stringify(
+				result_wasm_json.scored_population.instances[0].simulation.stock,
 				null,
 				'\t'
-			);
+			)}`;
 			new_generation();
 		}, 1);
 	}
@@ -115,12 +116,13 @@
 
 				result_wasm_json = JSON.parse(result_wasm);
 
-				output = JSON.stringify(
-					result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].simulation
-						.stock,
+				output = `Cycles: ${
+					result_wasm_json.scored_population.instances[0].cycle
+				}\n${JSON.stringify(
+					result_wasm_json.scored_population.instances[0].simulation.stock,
 					null,
 					'\t'
-				);
+				)}`;
 
 				new_generation();
 			}
