@@ -1,7 +1,6 @@
 package interpretor
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/trixky/krpsim/algo/core"
@@ -72,9 +71,6 @@ func TestInterpretor(t *testing.T) {
 	}
 
 	processes := Interpret(instance, initial_context, stock)
-
-	fmt.Println(len(processes))
-	fmt.Println(stock)
 
 	if len(processes) != 3 {
 		t.Fatalf(`expected = %d, got = %d`, 3, len(processes))
