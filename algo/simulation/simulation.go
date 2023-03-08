@@ -11,23 +11,23 @@ import (
 )
 
 type ProcessToBeExecuted struct {
-	Process core.Process
-	Amount  int
+	Process core.Process `json:"process"`
+	Amount  int          `json:"amount"`
 }
 
 type ExecutedProcess struct {
-	Cycle   int
-	Process core.Process
-	Amount  int
+	Cycle   int          `json:"cycle"`
+	Process core.Process `json:"process"`
+	Amount  int          `json:"amount"`
 }
 
 type Simulation struct {
-	InitialContext core.InitialContext
-	Instance       instance.Instance
-	Stock          core.Stock
-	ExpectedStock  []ExpectedStock
-	History        []ExecutedProcess
-	Cycle          int
+	InitialContext core.InitialContext `json:"initial_context"`
+	Instance       instance.Instance   `json:"instance"`
+	Stock          core.Stock          `json:"stock"`
+	ExpectedStock  []ExpectedStock     `json:"expected_stock"`
+	History        []ExecutedProcess   `json:"history"`
+	Cycle          int                 `json:"cycle"`
 }
 
 func NewSimulation(info core.InitialContext, instance instance.Instance) Simulation {
