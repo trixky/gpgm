@@ -15,8 +15,8 @@ func Interpret(i instance.Instance, initial_context core.InitialContext, stock c
 		var best_index int = 0
 
 		for index, gene := range i_genes_cpy {
-			if gene.Value > best_value {
-				best_value = gene.Value
+			if gene.FirstPriorityExon.Value > best_value {
+				best_value = gene.FirstPriorityExon.Value
 				best_index = index
 			}
 		}
