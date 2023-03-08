@@ -1,7 +1,7 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-    import "../app.css";
+	import '../app.css';
 
 	onMount(() => {
 		// @ts-ignore
@@ -17,8 +17,12 @@
 </script>
 
 <!-- ---------------------------------------------- CONTENT -->
+<svelte:head>
+	<title>GPGM</title>
+</svelte:head>
+
 <main>
-    <slot />
+	<slot />
 </main>
 
 <!-- ---------------------------------------------- STYLE -->
