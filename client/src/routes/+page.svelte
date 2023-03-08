@@ -7,8 +7,11 @@
 	import StatisticStore from '../stores/statistic';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import examples from '../lib/Examples';
 
 	// ------------------------------ IO
+	let selectedExample = 0;
+	let customInput = '';
 	let input = '';
 	let output = '';
 
@@ -72,6 +75,16 @@
 			top: document.body.scrollHeight,
 			behavior: 'smooth'
 		});
+	}
+
+	// -------- Example
+	function handle_select(e: any) {
+		const index = e.target.value as number;
+		if (index == 0) {
+			input = customInput;
+		} else if (index > 0 && index <= examples.length) {
+			input = examples[index - 1].text;
+		}
 	}
 
 	// -------- State
@@ -182,32 +195,36 @@
 	// ------------------------------ cookie
 	// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies
 	// https://developer.mozilla.org/en-US/docs/Glossary/Base64
-	
-	const COOKIE_KEY_INPUT = "input"
+
+	const COOKIE_KEY_INPUT = 'input';
 
 	function handle_input(e: any) {
 		// encode
-		const input_64 = btoa(e.target.value)
-		
+		const input_64 = btoa(e.target.value);
+
 		if (browser) {
 			// save in cookies
 			document.cookie = COOKIE_KEY_INPUT + '=' + input_64 + '; path=/';
 		}
+
+		selectedExample = 0;
+		customInput = input;
 	}
-	
+
 	onMount(() => {
 		if (browser) {
 			// extract from cookies
-			const input_64 = document.cookie.match('(^|;)\\s*' + COOKIE_KEY_INPUT + '\\s*=\\s*([^;]+)')?.pop();
-			
+			const input_64 = document.cookie
+				.match('(^|;)\\s*' + COOKIE_KEY_INPUT + '\\s*=\\s*([^;]+)')
+				?.pop();
+
 			if (input_64 != undefined) {
 				// decode
-				const input_text = atob(input_64)
+				const input_text = atob(input_64);
 
-				input = input_text
+				input = input_text;
 			}
 		}
-
 	});
 </script>
 
@@ -220,6 +237,14 @@
 
 	<div class="text-container">
 		<h2>Input</h2>
+		<div>
+			<select bind:value={selectedExample} name="examples" id="examples" on:input={handle_select}>
+				<option value={0}>Custom</option>
+				{#each examples as example, index}
+					<option value={index + 1}>{example.name}</option>
+				{/each}
+			</select>
+		</div>
 		<textarea
 			cols={Config.io.input.cols}
 			rows={Config.io.input.row}
