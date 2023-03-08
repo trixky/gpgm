@@ -51,8 +51,22 @@ func TestInterpretor(t *testing.T) {
 	instance := instance.Instance{
 		Chromosome: instance.Chromosome{
 			Genes: []instance.Gene{
-				{Value: 1},
-				{Value: 2},
+				{
+					FirstPriorityExon: instance.Exon{
+						Value: 1,
+					},
+					LastPriorityExon: instance.Exon{
+						Value: 2,
+					},
+					RatioExons: []instance.Exon{
+						{
+							Value: 1,
+						},
+						{
+							Value: 2,
+						},
+					},
+				},
 			},
 		},
 	}

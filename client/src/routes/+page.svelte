@@ -52,6 +52,8 @@
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json.running_solver));
 			result_wasm_json = JSON.parse(result_wasm);
 
+			console.log(result_wasm_json)
+
 			output = JSON.stringify(
 				result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].simulation
 					.stock,
