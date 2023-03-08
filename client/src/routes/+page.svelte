@@ -5,6 +5,8 @@
 	import GenerationStore from '../stores/generation';
 	import ArgumentStore from '../stores/arguments';
 	import StatisticStore from '../stores/statistic';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	// ------------------------------ IO
 	let input = '';
@@ -37,15 +39,9 @@
 		setTimeout(() => {
 			// Recursive loop
 
-			// console.log('on remet quoi dedant ?');
-			// console.log(JSON.stringify(result_wasm_json.running_solver));
-
 			// @ts-ignore
 			// loaded from the layout (wasm)
-
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json.running_solver));
-			console.log("C'EST VIDE ?")
-			console.log(result_wasm)
 			result_wasm_json = JSON.parse(result_wasm);
 
 			output = JSON.stringify(
@@ -95,12 +91,10 @@
 			if (running_solver == undefined || running_solver == null) {
 				output = 'error';
 			} else {
-				// console.log(JSON.stringify(running_solver));
 				// @ts-ignore
 				// loaded from the layout (wasm)
-
-
 				const result_wasm = WASM_run_generation(running_solver);
+
 				result_wasm_json = JSON.parse(result_wasm);
 
 				output = JSON.stringify(
@@ -109,10 +103,6 @@
 					null,
 					'\t'
 				);
-
-				console.log("ouiiiiiiii")
-				console.log(result_wasm_json.running_solver);
-
 
 				new_generation();
 			}
@@ -184,6 +174,37 @@
 			}
 		};
 	};
+
+	// ------------------------------ cookie
+	// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies
+	// https://developer.mozilla.org/en-US/docs/Glossary/Base64
+	
+	const COOKIE_KEY_INPUT = "input"
+
+	function handle_input(e: any) {
+		// encode
+		const input_64 = btoa(e.target.value)
+		
+		if (browser) {
+			// save in cookies
+			document.cookie = COOKIE_KEY_INPUT + '=' + input_64 + '; path=/';
+		}
+	}
+	
+	onMount(() => {
+		if (browser) {
+			// extract from cookies
+			const input_64 = document.cookie.match('(^|;)\\s*' + COOKIE_KEY_INPUT + '\\s*=\\s*([^;]+)')?.pop();
+			
+			if (input_64 != undefined) {
+				// decode
+				const input_text = atob(input_64)
+
+				input = input_text
+			}
+		}
+
+	});
 </script>
 
 <!-- ---------------------------------------------- CONTENT -->
@@ -203,6 +224,7 @@
 			autocorrect="off"
 			autocapitalize="off"
 			spellcheck="false"
+			on:input={handle_input}
 		/>
 		<img src="/mascot.png" alt="" />
 	</div>
