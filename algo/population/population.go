@@ -60,7 +60,7 @@ func (p *Population) RunAllSimulations(context core.InitialContext, options core
 	// Sort by Score
 	// TODO Improve and sort by fitness on each optimize fields instead ?
 	sort.Slice(scored, func(i, j int) bool {
-		return scored[i].Score < scored[j].Score
+		return scored[i].Score > scored[j].Score
 	})
 
 	return ScoredPopulation{
@@ -81,10 +81,20 @@ func (s *ScoredPopulation) Crossover(options core.Options) Population {
 		total += float64(scoredInstance.Score)
 	}
 
-	// TODO Elitism: Select the best and keep them
-	// TODO New Instances: Keep a few open slots for totally new Instances
+	i := 0
+	if options.UseElitism {
+		max := options.ElitismAmount
+		if options.ElitismAmount >= options.PopulationSize {
+			max = int(float64(options.PopulationSize) * 0.9)
+		}
+		for j := 0; j < max; j++ {
+			population.Instances[j] = s.Instances[j].Instance
+		}
+		i = max
+	}
 
-	for i := 0; i < len(s.Instances); i += 2 {
+	// TODO New Instances: Keep a few open slots for totally new Instances ?
+	for ; i < options.PopulationSize; i += 2 {
 		scoredInstance := s.Instances[i]
 
 		// Select the other instance to cross with
@@ -99,13 +109,14 @@ func (s *ScoredPopulation) Crossover(options core.Options) Population {
 				}
 			}
 		}
-		// TODO Generate a new instance if none was selected (instead of selecting the first one)
 		if with == nil {
 			with = &s.Instances[0]
 		}
 		child1, child2 := scoredInstance.Instance.Cross(&with.Instance)
 		population.Instances[i] = child1
-		population.Instances[i+1] = child2
+		if i+1 < options.PopulationSize {
+			population.Instances[i+1] = child2
+		}
 	}
 
 	return population

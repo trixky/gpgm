@@ -55,6 +55,8 @@ func initialize(args Arguments) (RunningSolver, error) {
 		MaxGeneration:    args.MaxGeneration,
 		MaxCycle:         args.MaxCycle,
 		TimeLimitSeconds: 60,
+		UseElitism:       true,
+		ElitismAmount:    1,
 	}
 
 	return RunningSolver{
