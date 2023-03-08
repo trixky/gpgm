@@ -1,6 +1,6 @@
 package instance
 
-type BasicPriorityGene struct {
+type PriorityGene struct {
 	FirstPriorityExon Exon   `json:"first_priority_exon"`
 	LastPriorityExon  Exon   `json:"last_priority_exon"`
 	RatioExons        []Exon `json:"ratio_exons"`
@@ -8,7 +8,7 @@ type BasicPriorityGene struct {
 
 // # EXPERIMENTAL #
 // Cross generates a child by cross overing another one
-func (g *BasicPriorityGene) Cross(gg *BasicPriorityGene) (child BasicPriorityGene) {
+func (g *PriorityGene) Cross(gg *PriorityGene) (child PriorityGene) {
 	child.RatioExons = make([]Exon, len(g.RatioExons))
 
 	child.FirstPriorityExon = g.FirstPriorityExon.Cross(&gg.FirstPriorityExon)
@@ -22,7 +22,7 @@ func (g *BasicPriorityGene) Cross(gg *BasicPriorityGene) (child BasicPriorityGen
 }
 
 // Mutate generates a child by mutation
-func (g *BasicPriorityGene) Mutate(max int) (child BasicPriorityGene) {
+func (g *PriorityGene) Mutate(max int) (child PriorityGene) {
 	child.RatioExons = make([]Exon, len(g.RatioExons))
 
 	child.LastPriorityExon = g.LastPriorityExon.Mutate(max)
