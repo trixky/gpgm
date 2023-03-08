@@ -1,7 +1,7 @@
 package simulation
 
 type ExpectedStock struct {
-	name            string
-	quantity        int
-	remainingCycles int
+	Name            string `json:"name"`
+	Quantity        int    `json:"quantity"`
+	RemainingCycles int    `json:"remaining_cycles"`
 }

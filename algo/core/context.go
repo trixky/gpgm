@@ -1,15 +1,15 @@
 package core
 
 type Product struct {
-	Name     string
-	Quantity int
+	Name     string `json:"name"`
+	Quantity int    `json:"quantity"`
 }
 
 type Process struct {
-	Name    string
-	Inputs  map[string]int
-	Outputs map[string]int
-	Delay   int
+	Name    string         `json:"name"`
+	Inputs  map[string]int `json:"inputs"`
+	Outputs map[string]int `json:"outputs"`
+	Delay   int            `json:"delay"`
 }
 
 func (p *Process) CanBeExecuted(stock *Stock) bool {

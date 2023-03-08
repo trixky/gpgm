@@ -1,7 +1,7 @@
 package instance
 
 type Genome struct {
-	Chromosomes []Chromosome
+	Chromosomes []Chromosome `json:"chromosome"`
 }
 
 // # EXPERIMENTAL #

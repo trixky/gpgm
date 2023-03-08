@@ -6,7 +6,7 @@ import (
 )
 
 type Gene struct {
-	Value uint16
+	Value uint16 `json:"value"`
 }
 
 // # EXPERIMENTAL #

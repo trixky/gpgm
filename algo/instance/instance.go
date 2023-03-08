@@ -8,7 +8,7 @@ import (
 )
 
 type Instance struct {
-	Chromosome Chromosome
+	Chromosome Chromosome `json:"chromosome"`
 }
 
 func (i *Instance) Init(initial_context core.InitialContext) {

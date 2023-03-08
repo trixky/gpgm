@@ -11,10 +11,10 @@ import (
 )
 
 type ScoredInstance struct {
-	Instance   instance.Instance
-	Simulation simulation.Simulation
-	Score      int
-	Cycle      int
+	Instance   instance.Instance     `json:"instance"`
+	Simulation simulation.Simulation `json:"simulation"`
+	Score      int                   `json:"score"`
+	Cycle      int                   `json:"cycle"`
 }
 
 type ScoredPopulation struct {
@@ -22,7 +22,7 @@ type ScoredPopulation struct {
 }
 
 type Population struct {
-	Instances []instance.Instance
+	Instances []instance.Instance `json:"instances"`
 }
 
 func NewPopulation(options core.Options) Population {

@@ -64,14 +64,14 @@ func (s *Simulation) Run(maxCycle int) {
 		ready := []ExpectedStock{}
 		incomplete := []ExpectedStock{}
 		for _, e := range s.ExpectedStock {
-			if e.remainingCycles == 0 {
+			if e.RemainingCycles == 0 {
 				ready = append(ready, e)
 			} else {
 				incomplete = append(incomplete, e)
 			}
 		}
 		for _, e := range ready {
-			s.Stock.Add(e.name, e.quantity)
+			s.Stock.Add(e.Name, e.Quantity)
 		}
 		s.ExpectedStock = incomplete
 
@@ -86,9 +86,9 @@ func (s *Simulation) Run(maxCycle int) {
 				}
 				for name, quantity := range action.Outputs {
 					s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
-						name:            name,
-						quantity:        quantity * 1, /* action.Amount */
-						remainingCycles: action.Delay,
+						Name:            name,
+						Quantity:        quantity * 1, /* action.Amount */
+						RemainingCycles: action.Delay,
 					})
 				}
 				s.History = append(s.History, ExecutedProcess{
@@ -102,24 +102,24 @@ func (s *Simulation) Run(maxCycle int) {
 		// * Skip cycles until the next expected stock is ready if no process can be executed
 		if !s.canExecuteAnyProcess() && len(s.ExpectedStock) > 0 {
 			var closer ExpectedStock
-			closer.remainingCycles = math.MaxInt
+			closer.RemainingCycles = math.MaxInt
 			for i := range s.ExpectedStock {
-				if s.ExpectedStock[i].remainingCycles < closer.remainingCycles {
+				if s.ExpectedStock[i].RemainingCycles < closer.RemainingCycles {
 					closer = s.ExpectedStock[i]
 				}
 			}
-			s.Cycle += closer.remainingCycles - 1
+			s.Cycle += closer.RemainingCycles - 1
 			for i := range s.ExpectedStock {
-				s.ExpectedStock[i].remainingCycles -= closer.remainingCycles
+				s.ExpectedStock[i].RemainingCycles -= closer.RemainingCycles
 			}
 		} else {
 			for i := range s.ExpectedStock {
-				s.ExpectedStock[i].remainingCycles -= 1
+				s.ExpectedStock[i].RemainingCycles -= 1
 			}
 		}
 	}
 	for _, e := range s.ExpectedStock {
-		s.Stock.Add(e.name, e.quantity)
+		s.Stock.Add(e.Name, e.Quantity)
 	}
 	s.ExpectedStock = []ExpectedStock{}
 }

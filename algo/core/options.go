@@ -14,10 +14,10 @@ package core
 // )
 
 type Options struct {
-	MaxGeneration    int
-	TimeLimitSeconds int
-	MaxCycle         int
-	PopulationSize   int
+	MaxGeneration    int `json:"max_generation"`
+	TimeLimitSeconds int `json:"time_limit_seconds"`
+	MaxCycle         int `json:"max_cycle"`
+	PopulationSize   int `json:"population_size"`
 	// MutationMethod   MutationMethod
 	// SelectionMethod  SelectionMethod
 }

@@ -37,14 +37,20 @@
 		setTimeout(() => {
 			// Recursive loop
 
+			// console.log('on remet quoi dedant ?');
+			// console.log(JSON.stringify(result_wasm_json.running_solver));
+
 			// @ts-ignore
 			// loaded from the layout (wasm)
+
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json.running_solver));
+			console.log("C'EST VIDE ?")
+			console.log(result_wasm)
 			result_wasm_json = JSON.parse(result_wasm);
 
 			output = JSON.stringify(
-				result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].Simulation
-					.Stock,
+				result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].simulation
+					.stock,
 				null,
 				'\t'
 			);
@@ -89,17 +95,25 @@
 			if (running_solver == undefined || running_solver == null) {
 				output = 'error';
 			} else {
+				// console.log(JSON.stringify(running_solver));
 				// @ts-ignore
 				// loaded from the layout (wasm)
+
+
 				const result_wasm = WASM_run_generation(running_solver);
 				result_wasm_json = JSON.parse(result_wasm);
 
 				output = JSON.stringify(
-					result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].Simulation
-						.Stock,
+					result_wasm_json.scored_population.instances[$ArgumentStore.population - 1].simulation
+						.stock,
 					null,
 					'\t'
 				);
+
+				console.log("ouiiiiiiii")
+				console.log(result_wasm_json.running_solver);
+
+
 				new_generation();
 			}
 		}

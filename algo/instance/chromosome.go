@@ -3,7 +3,7 @@ package instance
 import "math/rand"
 
 type Chromosome struct {
-	Genes []Gene
+	Genes []Gene `json:"genes"`
 }
 
 // Cross generates two childs by cross overing itself with another one
