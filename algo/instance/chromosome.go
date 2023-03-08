@@ -3,7 +3,7 @@ package instance
 import "math/rand"
 
 type Chromosome struct {
-	Genes []PriorityGene `json:"genes"`
+	Genes []Gene `json:"genes"`
 }
 
 // Cross generates two childs by cross overing itself with another one
@@ -31,7 +31,7 @@ func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromoso
 func (c *Chromosome) Mutate(max int) (child Chromosome) {
 	gene_nb := len(c.Genes)
 
-	child.Genes = make([]PriorityGene, gene_nb)
+	child.Genes = make([]Gene, gene_nb)
 
 	for index, gene := range c.Genes {
 		// Extract the mutation of all genes from the parent ones

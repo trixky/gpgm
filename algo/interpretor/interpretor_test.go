@@ -49,7 +49,7 @@ func TestInterpretBasicPriority(t *testing.T) {
 
 	instance := instance.Instance{
 		Chromosome: instance.Chromosome{
-			Genes: []instance.BasicPriorityGene{
+			Genes: []instance.Gene{
 				{
 					FirstPriorityExon: instance.Exon{
 						Value: 1,

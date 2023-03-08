@@ -9,7 +9,7 @@ func InterpretBasicPriority(i instance.Instance, initial_context core.InitialCon
 	processes_order := []core.Process{}
 
 	processes_cpy := make([]core.Process, len(initial_context.Processes))
-	genes_cpy := make([]instance.PriorityGene, len(initial_context.Processes))
+	genes_cpy := make([]instance.Gene, len(initial_context.Processes))
 
 	// can be optimized
 	copy(processes_cpy, initial_context.Processes)
