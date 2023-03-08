@@ -6,7 +6,7 @@
 	import { get_color_from_percentage } from '../../utils/color';
 	import type GenerationModel from '../../models/generation';
 	import Config from '../../config';
-	import type {Referentiel as ReferentielModel} from '../../models/statistic'
+	import type { Referentiel as ReferentielModel } from '../../models/statistic';
 
 	const PIXEL_SIZE = 4;
 	const COLOR_R = 0;
@@ -32,7 +32,7 @@
 	}
 
 	function normalize_score(score: number, referentiel: ReferentielModel): number {
-		return Math.ceil(((score - referentiel.offset) / referentiel.diff) * 100)
+		return Math.ceil(((score - referentiel.offset) / referentiel.diff) * 100);
 	}
 
 	const draw = (generations: Array<GenerationModel>) => {
@@ -50,7 +50,10 @@
 			let pixel = (local_height - 3) * local_width * 4;
 
 			last_generation.instances.forEach((instance) => {
-				const normalized_score = normalize_score(instance.score, $StatisticStore.scores.referentiel)
+				const normalized_score = normalize_score(
+					instance.score,
+					$StatisticStore.scores.referentiel
+				);
 
 				const rgb = get_color_from_percentage(normalized_score);
 
@@ -109,7 +112,7 @@
 <!-- ---------------------------------------------- STYLE -->
 <style lang="postcss">
 	.visual {
-		@apply m-auto w-fit mt-8 mb-5 overflow-hidden;
+		@apply m-auto w-fit mt-5 mb-5 overflow-hidden;
 		border: solid 1px black;
 	}
 </style>

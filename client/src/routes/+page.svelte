@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import examples from '../lib/Examples';
+	import { scale } from 'svelte/transition';
 
 	// ------------------------------ IO
 	let selectedExample = 0;
@@ -150,6 +151,7 @@
 
 			GenerationStore.reset();
 			frame++;
+			output = '';
 		}
 	}
 	// -------- Inputs
@@ -223,6 +225,7 @@
 				const input_text = atob(input_64);
 
 				input = input_text;
+				customInput = input_text;
 			}
 		}
 	});
@@ -237,7 +240,7 @@
 
 	<div class="text-container">
 		<h2>Input</h2>
-		<div>
+		<div class="text-left">
 			<select bind:value={selectedExample} name="examples" id="examples" on:input={handle_select}>
 				<option value={0}>Custom</option>
 				{#each examples as example, index}
@@ -245,45 +248,19 @@
 				{/each}
 			</select>
 		</div>
-		<textarea
-			cols={Config.io.input.cols}
-			rows={Config.io.input.row}
-			placeholder=""
-			bind:value={input}
-			autocorrect="off"
-			autocapitalize="off"
-			spellcheck="false"
-			on:input={handle_input}
-		/>
-		<img src="/mascot.png" alt="" />
-	</div>
-	<div class="state-container">
-		<button class="side-button" on:click={handle_bottom}>Bottom</button>
-		<button class="play-button" on:click={handle_run} disabled={!input.length || running}
-			>Clear</button
-		>
-	</div>
-	<Visual {frame} />
-	<div class="statistic-container shadow">
-		<p class="statistic">
-			<span class="statistic-label">generation</span>:
-			<span class="statistic-value">{generation}</span>
-		</p>
-		<p class="statistic">
-			<span class="statistic-label">best score</span>:
-			<span class="statistic-value">{$StatisticStore.scores.global.best}</span>
-		</p>
-	</div>
-	<div class="state-container">
-		<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
-		{#if !running}
-			<button class="play-button" on:click={handle_run}>Run</button>
-		{:else if !stopped}
-			<button class="play-button" on:click={handle_stop}>Stop</button>
-		{:else}
-			<button class="play-button" on:click={handle_continue} disabled={finished}>Continue</button>
-		{/if}
-		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
+		<div class="relative mt-4">
+			<textarea
+				cols={Config.io.input.cols}
+				rows={Config.io.input.row}
+				placeholder=""
+				bind:value={input}
+				autocorrect="off"
+				autocapitalize="off"
+				spellcheck="false"
+				on:input={handle_input}
+			/>
+			<img src="/mascot.png" alt="" class="absolute -translate-y-[44%]" />
+		</div>
 	</div>
 	<div class="form-container">
 		<div class="input-container">
@@ -331,16 +308,50 @@
 			<p class="input-label">ms</p>
 		</div>
 	</div>
-	<div class="text-container">
-		<h2>Output</h2>
-		<textarea
-			cols={Config.io.output.cols}
-			rows={Config.io.output.row}
-			placeholder=""
-			value={output}
-			readonly
-		/>
+	<div class="state-container">
+		{#if running}
+			<button class="side-button" on:click={handle_bottom}> Bottom </button>
+		{:else}
+			<button class="play-button" on:click={handle_run}> Run </button>
+		{/if}
+		<button class="play-button" on:click={handle_run} disabled={!input.length || running}>
+			Clear
+		</button>
 	</div>
+	{#if output}
+		<Visual {frame} />
+		<div class="statistic-container shadow">
+			<p class="statistic">
+				<span class="statistic-label">generation</span>:
+				<span class="statistic-value">{generation}</span>
+			</p>
+			<p class="statistic">
+				<span class="statistic-label">best score</span>:
+				<span class="statistic-value">{$StatisticStore.scores.global.best}</span>
+			</p>
+		</div>
+		<div class="state-container">
+			<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
+			{#if !running}
+				<button class="play-button" on:click={handle_run}>Run</button>
+			{:else if !stopped}
+				<button class="play-button" on:click={handle_stop}>Stop</button>
+			{:else}
+				<button class="play-button" on:click={handle_continue} disabled={finished}>Continue</button>
+			{/if}
+			<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
+		</div>
+		<div transition:scale|local class="text-container">
+			<h2>Output</h2>
+			<textarea
+				cols={Config.io.output.cols}
+				rows={Config.io.output.row}
+				placeholder=""
+				value={output}
+				readonly
+			/>
+		</div>
+	{/if}
 </main>
 
 <svelte:window use:wheel={{ scrollable }} />
