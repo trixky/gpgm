@@ -32,13 +32,16 @@ func NewPopulation(options core.Options) Population {
 }
 
 func NewRandomPopulation(context core.InitialContext, options core.Options) Population {
+	context.FindProcessParents()
+
 	instances := make([]instance.Instance, options.PopulationSize)
 	for i := range instances {
-		instances[i].Init(context)
+		instances[i].Init(context.Processes)
 	}
 	return Population{
 		Instances: instances,
 	}
+
 }
 
 func (p *Population) RunAllSimulations(context core.InitialContext, options core.Options) ScoredPopulation {

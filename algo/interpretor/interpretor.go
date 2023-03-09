@@ -11,17 +11,17 @@ type ProcessQuantities struct {
 }
 
 func Interpret(i instance.Instance, initial_context core.InitialContext, stock core.Stock) (process_quantities []ProcessQuantities) {
-	for _, gene := range i.Chromosome.Genes {
-		max_execution_time := initial_context.Processes[gene.ProcessId].CanBeExecutedMaxXTimes(&stock)
+	// for _, gene := range i.Chromosome.Genes {
+	// 	max_execution_time := initial_context.Processes[gene.ProcessId].CanBeExecutedMaxXTimes(&stock)
 
-		if max_execution_time > 0 {
-			initial_context.Processes[gene.ProcessId].ExecuteN(&stock, 1)
-			process_quantities = append(process_quantities, ProcessQuantities{
-				Process: &initial_context.Processes[gene.ProcessId],
-				Amount:  1,
-			})
-		}
-	}
+	// 	if max_execution_time > 0 {
+	// 		initial_context.Processes[gene.ProcessId].ExecuteN(&stock, 1)
+	// 		process_quantities = append(process_quantities, ProcessQuantities{
+	// 			Process: &initial_context.Processes[gene.ProcessId],
+	// 			Amount:  1,
+	// 		})
+	// 	}
+	// }
 
 	// for _, gene := range i.Chromosome.Genes {
 	// 	max_execution_time := initial_context.Processes[gene.ProcessId].CanBeExecutedMaxXTimes(&stock)

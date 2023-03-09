@@ -122,6 +122,15 @@ func initializeWasm() js.Func {
 		// --------- call
 		running_solver, err := initialize(arguments)
 
+		for i_index, instance := range running_solver.Population.Instances {
+			fmt.Println("***********************", i_index)
+			for g_index, genes := range instance.Chromosome.Genes {
+				fmt.Println("*****", g_index)
+				fmt.Println(genes.History)
+
+			}
+		}
+
 		if err != nil {
 			fmt.Print(err.Error())
 

@@ -1,9 +1,22 @@
 package instance
 
-import "math/rand"
+import (
+	"math/rand"
+
+	"github.com/trixky/krpsim/algo/core"
+)
 
 type Chromosome struct {
 	Genes []Gene `json:"genes"`
+}
+
+func (c *Chromosome) Init(processes []core.Process) {
+	c.Genes = make([]Gene, len(processes))
+	for index, process := range processes {
+		gene := Gene{}
+		gene.Init(&process, processes)
+		c.Genes[index] = gene
+	}
 }
 
 // Cross generates two childs by cross overing itself with another one
@@ -33,9 +46,9 @@ func (c *Chromosome) Mutate(process_max uint16, process_shift int, quantity_shif
 
 	child.Genes = make([]Gene, gene_nb)
 
-	for index, gene := range c.Genes {
+	for index := range c.Genes {
 		// Extract the mutation of all genes from the parent ones
-		child.Genes[index] = gene.Mutate(process_max, process_shift, quantity_shift, activation_chance)
+		child.Genes[index].Mutate(process_max, process_shift, quantity_shift, activation_chance)
 	}
 
 	return
