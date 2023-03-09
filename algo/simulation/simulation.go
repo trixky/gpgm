@@ -72,7 +72,7 @@ func (s *Simulation) Run(maxCycle int) {
 
 		// ? Execute actions from genes
 		if s.canExecuteAnyProcess() {
-			process_quantities := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock)
+			process_quantities := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock.DeepCopy())
 
 			// * Calculate stock
 			for _, process_quantity := range process_quantities {
@@ -89,7 +89,7 @@ func (s *Simulation) Run(maxCycle int) {
 				s.History = append(s.History, ExecutedProcess{
 					Cycle:   s.Cycle,
 					Process: *process_quantity.Process,
-					Amount:  1,
+					Amount:  process_quantity.Amount,
 				})
 			}
 		}

@@ -1,7 +1,6 @@
 package instance
 
 import (
-	"math"
 	"math/rand"
 )
 
@@ -75,9 +74,14 @@ func (g *Gene) Mutate(process_max uint16, process_shift int, quantity_shift int,
 		}
 	} else {
 		// Addition
-		if math.MaxUint16-shift < g.MaxQuantity {
+		// math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16
+		// math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16
+		// math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16
+		// math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16
+		// math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16math.MaxUint16
+		if 3-shift < g.MaxQuantity {
 			// Prevent overflow
-			child.MaxQuantity = math.MaxUint16 - shift
+			child.MaxQuantity = 3 - shift
 		} else {
 			child.MaxQuantity = g.MaxQuantity - shift
 		}

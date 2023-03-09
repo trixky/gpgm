@@ -76,9 +76,10 @@ func runSimulation(args Arguments) string {
 		return fmt.Sprintf("unexpected error: %v", err)
 	}
 	options := core.Options{
-		PopulationSize:   50,
-		MaxGeneration:    100,
-		MaxCycle:         100,
+		PopulationSize: 50,
+		MaxGeneration:  100,
+		// MaxCycle:         100,
+		MaxCycle:         1000,
 		TimeLimitSeconds: 60,
 	}
 

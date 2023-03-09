@@ -125,9 +125,9 @@ func (p *Population) Mutate(context core.InitialContext, options core.Options) {
 	for _, instance := range p.Instances {
 
 		process_max := uint16(len(context.Processes))
-		process_shift := 3
-		quantity_shift := 10
-		activation_chance := 5
+		process_shift := 1
+		quantity_shift := 1
+		activation_chance := 10
 
 		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance) // TODO pass options
 	}
