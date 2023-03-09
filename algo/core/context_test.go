@@ -248,120 +248,36 @@ func TestExecuteN(t *testing.T) {
 				Delay: 100,
 			},
 			expected: map[int]Stock{
-				1: Stock{
+				1: {
 					"wood":  2,
 					"stone": 2,
 					"gold":  1,
 				},
-				2: Stock{
+				2: {
 					"wood":  1,
 					"stone": 2,
 					"gold":  1,
 				},
-				3: Stock{
-					"wood":  1,
+				3: {
+					"wood":  0,
 					"stone": 2,
 					"gold":  1,
 				},
 			},
-			// n: 3,
-			// expected: Stock{
-			// 	"wood":  0,
-			// 	"stone": 2,
-			// 	"gold":  1,
-			// },
 		},
-		// {
-		// 	stock: Stock{
-		// 		"wood":  3,
-		// 		"stone": 2,
-		// 		"gold":  1,
-		// 	},
-		// 	process: Process{
-		// 		Name: "test_process",
-		// 		Inputs: map[string]int{
-		// 			"wood":  1,
-		// 			"stone": 2,
-		// 		},
-		// 		Outputs: map[string]int{
-		// 			"gold": 4,
-		// 		},
-		// 		Delay: 100,
-		// 	},
-		// 	n: 1,
-		// 	expected: Stock{
-		// 		"wood":  2,
-		// 		"stone": 0,
-		// 		"gold":  1,
-		// 	},
-		// },
-		// {
-		// 	stock: Stock{
-		// 		"wood":  3,
-		// 		"stone": 10,
-		// 		"gold":  1,
-		// 	},
-		// 	process: Process{
-		// 		Name: "test_process",
-		// 		Inputs: map[string]int{
-		// 			"stone": 2,
-		// 			"gold":  1,
-		// 		},
-		// 		Outputs: map[string]int{
-		// 			"gold": 2,
-		// 		},
-		// 		Delay: 100,
-		// 	},
-		// 	expected: 1,
-		// },
-		// {
-		// 	stock: Stock{
-		// 		"wood":  3,
-		// 		"stone": 1,
-		// 	},
-		// 	process: Process{
-		// 		Name: "test_process",
-		// 		Inputs: map[string]int{
-		// 			"wood":  1,
-		// 			"stone": 2,
-		// 		},
-		// 		Outputs: map[string]int{
-		// 			"gold": 2,
-		// 		},
-		// 		Delay: 100,
-		// 	},
-		// 	expected: 0,
-		// },
-		// {
-		// 	stock: Stock{
-		// 		"wood":  30,
-		// 		"stone": 10,
-		// 	},
-		// 	process: Process{
-		// 		Name: "test_process",
-		// 		Inputs: map[string]int{
-		// 			"wood":  3,
-		// 			"stone": 1,
-		// 		},
-		// 		Outputs: map[string]int{
-		// 			"wood":  60,
-		// 			"stone": 20,
-		// 		},
-		// 		Delay: 100,
-		// 	},
-		// 	expected: 10,
-		// },
 	}
 
 	for test_index, test := range tests {
 		func() {
 			for n, expected := range test.expected {
 
-				test.process.ExecuteN(&test.stock, n)
+				stock_cpy := test.stock.DeepCopy()
 
-				for key, resource := range test.stock {
-					if resource != test.expected[key] {
-						t.Fatalf(`test %d (n: %d, resource: %s): expected = %d, got = %d`, test_index, n, key, test.expected[key], resource)
+				test.process.ExecuteN(&stock_cpy, n)
+
+				for key, resource := range stock_cpy {
+					if resource != expected[key] {
+						t.Fatalf(`test %d (n: %d, resource: %s): expected = %d, got = %d`, test_index, n, key, expected[key], resource)
 					}
 				}
 			}
