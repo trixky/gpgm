@@ -1,6 +1,7 @@
 package instance
 
 import (
+	"math/rand"
 	"strconv"
 
 	"github.com/trixky/krpsim/algo/core"
@@ -13,6 +14,48 @@ type Dependences struct {
 type Gene struct {
 	History map[string]Dependences
 	Process *core.Process
+}
+
+func (d *Dependences) Init(process core.Process, processes []core.Process) {
+	d.InputsProcesses = [][]int{}
+
+	for input := range process.Inputs {
+		// For each input of the process
+		parent_processes := []int{}
+
+		for parent_process_index, parent_process := range processes {
+			// For each potential parent process
+			for output, output_quantity := range parent_process.Outputs {
+				// For each output of the potential parent process
+				if output == input {
+					// Confirm if the potential parent process have the output corresponding to the process input
+					if output_process_input_quantity, ok := parent_process.Inputs[input]; !ok || output_quantity > output_process_input_quantity {
+						// If its X output is greater than its input if it as an input
+						if rand.Intn(2) == 0 {
+							parent_processes = append(parent_processes, parent_process_index)
+						} else {
+							parent_processes = append([]int{parent_process_index}, parent_processes...)
+						}
+					}
+				}
+			}
+		}
+
+		for len(parent_processes) > 1 {
+			if rand.Intn(3) == 0 { // HARDCODED
+				parent_processes = parent_processes[1:]
+				continue
+			}
+
+			break
+		}
+
+		if rand.Intn(2) == 0 {
+			d.InputsProcesses = append(d.InputsProcesses, parent_processes)
+		} else {
+			d.InputsProcesses = append([][]int{parent_processes}, d.InputsProcesses...)
+		}
+	}
 }
 
 func (g *Gene) Init(process *core.Process, processes []core.Process) {
@@ -29,7 +72,9 @@ func (g *Gene) GetParentKeys(depth int, child_key string, process *core.Process,
 
 	for _, process_parent := range process.Parents {
 		key := child_key + "." + strconv.Itoa(process_parent)
-		g.History[key] = Dependences{}
+		dependences := Dependences{}
+		dependences.Init(*g.Process, processes)
+		g.History[key] = dependences
 
 		if depth > 0 {
 			g.GetParentKeys(depth, key, &processes[process_parent], processes)
