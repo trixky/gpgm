@@ -7,9 +7,13 @@ import (
 )
 
 type Gene struct {
-	History map[string]InputDependencies
+	History map[string]ProcessDependencies
 	Process *core.Process
 }
+
+// func (g *Gene) Choose(history string) string {
+
+// }
 
 // InitHistory initalizes recursively the history
 func (g *Gene) InitHistory(depth int, child_key string, process *core.Process, processes []core.Process) {
@@ -18,7 +22,7 @@ func (g *Gene) InitHistory(depth int, child_key string, process *core.Process, p
 	for _, process_parent := range process.Parents {
 		// For each process parents
 		key := child_key + "." + strconv.Itoa(process_parent)
-		dependences := InputDependencies{}
+		dependences := ProcessDependencies{}
 		dependences.Init(*g.Process, processes)
 		g.History[key] = dependences
 
@@ -32,7 +36,7 @@ func (g *Gene) InitHistory(depth int, child_key string, process *core.Process, p
 func (g *Gene) Init(process *core.Process, processes []core.Process) {
 	const history_max_length = 3
 
-	g.History = map[string]InputDependencies{}
+	g.History = map[string]ProcessDependencies{}
 	g.Process = process
 
 	g.InitHistory(history_max_length, "", process, processes)

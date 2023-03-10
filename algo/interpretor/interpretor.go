@@ -10,7 +10,19 @@ type ProcessQuantities struct {
 	Amount  int           `json:"amount"`
 }
 
+// func GetResources(process *core.Process, i *instance.Instance, stock core.Stock) {
+// 	for resource_index, resource := range process.Inputs {
+
+// 	}
+// }
+
 func Interpret(i instance.Instance, initial_context core.InitialContext, stock core.Stock) (process_quantities []ProcessQuantities) {
+	// history := ""
+
+	// start := i.Chromosome.Genes[0].Process
+
+	// i.Chromosome.Genes[0].Process.ExecuteN(&stock, int(max_execution_time))
+
 	// for _, gene := range i.Chromosome.Genes {
 	// 	max_execution_time := initial_context.Processes[gene.ProcessId].CanBeExecutedMaxXTimes(&stock)
 

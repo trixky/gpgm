@@ -139,7 +139,10 @@ func initializeWasm() js.Func {
 
 				for _, sorted_key := range keys {
 					fmt.Println(sorted_key)
-					fmt.Println(gene.History[sorted_key].Inputs)
+					for _, dependencie := range gene.History[sorted_key].InputDependencies {
+						fmt.Println(dependencie.Input)
+						fmt.Println(dependencie.ProcessDependencies)
+					}
 				}
 
 			}

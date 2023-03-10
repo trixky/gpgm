@@ -6,22 +6,23 @@ import (
 	"github.com/trixky/krpsim/algo/core"
 )
 
-type ProcessDependencies struct {
-	Processes []int // [inputs (in order)][processes (in order | can be skipped)]
-}
 type InputDependencies struct {
-	Inputs []ProcessDependencies // [inputs (in order)][processes (in order | can be skipped)]
+	Input               string
+	ProcessDependencies []int
+}
+type ProcessDependencies struct {
+	InputDependencies []InputDependencies
 }
 
 // Cut remove processes randomly when is possible
-func (pd *ProcessDependencies) Cut(luck int) {
-	for len(pd.Processes) > 1 && rand.Intn(luck) == 0 {
-		pd.Processes = pd.Processes[1:]
+func (pd *InputDependencies) Cut(luck int) {
+	for len(pd.ProcessDependencies) > 1 && rand.Intn(luck) == 0 {
+		pd.ProcessDependencies = pd.ProcessDependencies[1:]
 	}
 }
 
 // Init initalizes the processes dependencies for an specific input
-func (pd *ProcessDependencies) Init(input string, processes []core.Process) {
+func (pd *InputDependencies) Init(input string, processes []core.Process) {
 	for parent_process_index, parent_process := range processes {
 		// For each potential parent process
 		for output, output_quantity := range parent_process.Outputs {
@@ -34,10 +35,10 @@ func (pd *ProcessDependencies) Init(input string, processes []core.Process) {
 					// Random insertion
 					if rand.Intn(2) == 0 {
 						// Insert as first
-						pd.Processes = append([]int{parent_process_index}, pd.Processes...)
+						pd.ProcessDependencies = append([]int{parent_process_index}, pd.ProcessDependencies...)
 					} else {
 						// Insert as last
-						pd.Processes = append(pd.Processes, parent_process_index)
+						pd.ProcessDependencies = append(pd.ProcessDependencies, parent_process_index)
 					}
 				}
 			}
@@ -48,23 +49,25 @@ func (pd *ProcessDependencies) Init(input string, processes []core.Process) {
 }
 
 // Init initalizes the input dependencies for an specific process
-func (id *InputDependencies) Init(process core.Process, processes []core.Process) {
-	id.Inputs = []ProcessDependencies{}
+func (id *ProcessDependencies) Init(process core.Process, processes []core.Process) {
+	id.InputDependencies = []InputDependencies{}
 
 	for input := range process.Inputs {
 		// For each input of the process
 
 		// Initalizes its process dependencies
-		process_dependencies := ProcessDependencies{}
+		process_dependencies := InputDependencies{}
 		process_dependencies.Init(input, processes)
+
+		process_dependencies.Input = input
 
 		// Random insertion
 		if rand.Intn(2) == 0 {
 			// Insert as first
-			id.Inputs = append([]ProcessDependencies{process_dependencies}, id.Inputs...)
+			id.InputDependencies = append([]InputDependencies{process_dependencies}, id.InputDependencies...)
 		} else {
 			// Insert as last
-			id.Inputs = append(id.Inputs, process_dependencies)
+			id.InputDependencies = append(id.InputDependencies, process_dependencies)
 		}
 	}
 }
