@@ -12,25 +12,27 @@ type Dependences struct {
 
 type Gene struct {
 	History map[string]Dependences
+	Process *core.Process
 }
 
 func (g *Gene) Init(process *core.Process, processes []core.Process) {
 	const history_max_length = 3
 
 	g.History = map[string]Dependences{}
+	g.Process = process
+
+	g.GetParentKeys(history_max_length, "", process, processes)
+}
+
+func (g *Gene) GetParentKeys(depth int, child_key string, process *core.Process, processes []core.Process) {
+	depth--
 
 	for _, process_parent := range process.Parents {
-		parent_key := "." + strconv.Itoa(process_parent)
-		g.History[parent_key] = Dependences{}
+		key := child_key + "." + strconv.Itoa(process_parent)
+		g.History[key] = Dependences{}
 
-		for _, process_parent_parent := range processes[process_parent].Parents {
-			parent_parent_key := "." + strconv.Itoa(process_parent_parent)
-			g.History[parent_parent_key] = Dependences{}
-
-			for _, process_parent_parent_parent := range processes[process_parent].Parents {
-				parent_parent_parent_key := "." + strconv.Itoa(process_parent_parent_parent)
-				g.History[parent_parent_parent_key] = Dependences{}
-			}
+		if depth > 0 {
+			g.GetParentKeys(depth, key, &processes[process_parent], processes)
 		}
 	}
 }

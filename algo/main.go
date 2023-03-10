@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 	"syscall/js" // Skip the error vvv
 	"time"
 
@@ -124,9 +125,21 @@ func initializeWasm() js.Func {
 
 		for i_index, instance := range running_solver.Population.Instances {
 			fmt.Println("***********************", i_index)
-			for g_index, genes := range instance.Chromosome.Genes {
+			for g_index, gene := range instance.Chromosome.Genes {
 				fmt.Println("*****", g_index)
-				fmt.Println(genes.History)
+
+				keys := make([]string, len(gene.History))
+				i := 0
+				for key := range gene.History {
+					keys[i] = key
+					i++
+				}
+
+				sort.Strings(keys)
+
+				for _, sorted_key := range keys {
+					fmt.Println(sorted_key)
+				}
 
 			}
 		}
