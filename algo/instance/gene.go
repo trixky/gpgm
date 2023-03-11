@@ -1,49 +1,53 @@
 package instance
 
 import (
-	"strconv"
-
 	"github.com/trixky/krpsim/algo/core"
+	"github.com/trixky/krpsim/algo/history"
 )
 
 type Gene struct {
-	History map[string]ProcessDependencies
-	Process *core.Process
+	HistoryProcessDependencies map[string]ProcessDependencies
+	Process                    *core.Process
 }
 
-// func (g *Gene) Choose(history string) string {
-
-// }
-
 // InitHistory initalizes recursively the history
-func (g *Gene) InitHistory(depth int, child_key string, process *core.Process, processes []core.Process) {
+func (g *Gene) InitHistory(h *history.History, depth int, process *core.Process, processes []core.Process) {
 	depth--
 
-	for _, process_parent := range process.Parents {
-		// For each process parents
-		key := child_key + "." + strconv.Itoa(process_parent)
-		dependences := ProcessDependencies{}
-		dependences.Init(*g.Process, processes)
-		g.History[key] = dependences
+	if h == nil {
+		h = &history.History{}
+	}
 
-		if depth > 0 {
-			g.InitHistory(depth, key, &processes[process_parent], processes)
+	key := h.GetLastProcessIds(0)
+	dependences := ProcessDependencies{}
+	dependences.Init(*g.Process, processes)
+	g.HistoryProcessDependencies[key] = dependences
+
+	if depth > 0 {
+		for _, process_parent := range process.Parents {
+			// For each process parents
+			h_clone := h.Clone()
+			h_clone.PushProcessId(process_parent)
+
+			g.InitHistory(&h_clone, depth, &processes[process_parent], processes)
 		}
 	}
 }
 
 // Init initalizes the gene attributes
 func (g *Gene) Init(process *core.Process, processes []core.Process) {
-	const history_max_length = 3
+	const history_max_length = 6 // HARDCODED
 
-	g.History = map[string]ProcessDependencies{}
+	g.HistoryProcessDependencies = map[string]ProcessDependencies{}
 	g.Process = process
 
-	g.InitHistory(history_max_length, "", process, processes)
+	g.InitHistory(nil, history_max_length, process, processes)
 }
 
-func (g *Gene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int) {
-
+func (g *Gene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int, processes []core.Process) {
+	if g.Process != nil {
+		g.Init(g.Process, processes)
+	}
 }
 
 // // Mutate generates a child by mutation

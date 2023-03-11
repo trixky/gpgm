@@ -66,6 +66,20 @@ func (p *Process) TryExecute(stock *Stock) bool {
 	return true
 }
 
+// TryExecuteN try to execute n time itself and returns number of execution
+func (p *Process) TryExecuteN(stock *Stock, n int) int {
+	max := int(p.CanBeExecutedMaxXTimes(stock))
+
+	if max > 0 {
+		if max > n {
+			max = n
+		}
+		p.ExecuteN(stock, max)
+	}
+
+	return max
+}
+
 func (p *Process) IsInOutput(product string) bool {
 	for outputProduct := range p.Outputs {
 		if product == outputProduct {
@@ -118,4 +132,15 @@ func (sm *InitialContext) FindProcessParents() {
 			}
 		}
 	}
+
+	// for _, process := range sm.Processes {
+	// 	fmt.Println("*****************", process.Name)
+	// 	for _, process_parent := range process.Parents {
+	// 		fmt.Println(sm.Processes[process_parent].Name)
+	// 	}
+
+	// }
+
+	// os.Exit(1)
+	// fmt.Println(sm.Processes)
 }

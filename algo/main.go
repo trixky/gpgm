@@ -108,6 +108,33 @@ func runSimulation(args Arguments) string {
 	return string(s)
 }
 
+func printDependencies(running_solver RunningSolver) {
+	for i_index, instance := range running_solver.Population.Instances {
+		fmt.Println("***********************", i_index)
+		for g_index, gene := range instance.Chromosome.Genes {
+			fmt.Println("*****", g_index)
+
+			keys := make([]string, len(gene.HistoryProcessDependencies))
+			i := 0
+			for key := range gene.HistoryProcessDependencies {
+				keys[i] = key
+				i++
+			}
+
+			sort.Strings(keys)
+
+			for _, sorted_key := range keys {
+				fmt.Println(sorted_key)
+				for _, dependencie := range gene.HistoryProcessDependencies[sorted_key].InputDependencies {
+					fmt.Println(dependencie.Input)
+					fmt.Println(dependencie.ProcessDependencies)
+				}
+			}
+		}
+	}
+
+}
+
 // runWasm parse arguments, run the simulation and return its result
 func initializeWasm() js.Func {
 	run := js.FuncOf(func(this js.Value, args []js.Value) any {
@@ -122,31 +149,6 @@ func initializeWasm() js.Func {
 
 		// --------- call
 		running_solver, err := initialize(arguments)
-
-		for i_index, instance := range running_solver.Population.Instances {
-			fmt.Println("***********************", i_index)
-			for g_index, gene := range instance.Chromosome.Genes {
-				fmt.Println("*****", g_index)
-
-				keys := make([]string, len(gene.History))
-				i := 0
-				for key := range gene.History {
-					keys[i] = key
-					i++
-				}
-
-				sort.Strings(keys)
-
-				for _, sorted_key := range keys {
-					fmt.Println(sorted_key)
-					for _, dependencie := range gene.History[sorted_key].InputDependencies {
-						fmt.Println(dependencie.Input)
-						fmt.Println(dependencie.ProcessDependencies)
-					}
-				}
-
-			}
-		}
 
 		if err != nil {
 			fmt.Print(err.Error())

@@ -1,6 +1,7 @@
 package instance
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -87,12 +88,12 @@ func TestInstanceInit(t *testing.T) {
 	}
 
 	expected := []string{
-		".2_.2.4_.2.4.5_.3_.3.4_.3.4.5_.4_.4.5_.4.5.0_.4.5.1_.4.5.4",
-		".4_.4.5_.4.5.0_.4.5.1_.4.5.4",
-		".4_.4.5_.4.5.0_.4.5.1_.4.5.4",
-		".4_.4.5_.4.5.0_.4.5.1_.4.5.4",
-		".5_.5.0_.5.0.2_.5.0.3_.5.0.4_.5.1_.5.1.4_.5.4_.5.4.5",
-		".0_.0.2_.0.2.4_.0.3_.0.3.4_.0.4_.0.4.5_.1_.1.4_.1.4.5_.4_.4.5_.4.5.0_.4.5.1_.4.5.4",
+		"054_154_2_3_4_42_43_454_54_542_543_@",
+		"054_154_4_454_54_@",
+		"054_154_4_454_54_@",
+		"054_154_4_454_54_@",
+		"05_15_205_305_405_415_45_5_545_@",
+		"0_054_1_154_20_30_4_40_41_420_430_454_54_540_541_@",
 	}
 
 	initial_context.FindProcessParents()
@@ -102,9 +103,13 @@ func TestInstanceInit(t *testing.T) {
 	instance.Init(initial_context.Processes)
 
 	for g_index, gene := range instance.Chromosome.Genes {
-		keys := make([]string, len(gene.History))
+		fmt.Println("-----------------------", g_index)
+		keys := make([]string, len(gene.HistoryProcessDependencies))
 		i := 0
-		for key := range gene.History {
+		for key := range gene.HistoryProcessDependencies {
+			if key == "" {
+				key = "@"
+			}
 			keys[i] = key
 			i++
 		}

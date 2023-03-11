@@ -49,6 +49,8 @@ func (p *Population) RunAllSimulations(context core.InitialContext, options core
 
 	// Run a simulation on all instances
 	for _, instance := range p.Instances {
+		// fmt.Println("population ********************************************** instance", instance_index)
+
 		simulation := simulation.NewSimulation(context, instance)
 		simulation.Run(options.MaxCycle)
 		scored = append(scored, ScoredInstance{
@@ -132,6 +134,6 @@ func (p *Population) Mutate(context core.InitialContext, options core.Options) {
 		quantity_shift := 1
 		activation_chance := 10
 
-		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance) // TODO pass options
+		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance, context.Processes) // TODO pass options
 	}
 }
