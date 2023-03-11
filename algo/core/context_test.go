@@ -219,7 +219,7 @@ func TestCanBeExecutedMaxXTimes(t *testing.T) {
 	}
 
 	for test_index, test := range tests {
-		if result := test.process.CanBeExecutedMaxXTimes(&test.stock); result != uint16(test.expected) {
+		if result := test.process.CanBeExecutedMaxXTimes(&test.stock); result != test.expected {
 			t.Fatalf(`test %d: expected = %d, got = %d`, test_index, test.expected, result)
 		}
 	}

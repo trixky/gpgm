@@ -30,11 +30,11 @@ func (p *Process) CanBeExecutedXTimes(stock *Stock, amount int) bool {
 	return true
 }
 
-func (p *Process) CanBeExecutedMaxXTimes(stock *Stock) uint16 {
-	var max_global uint16 = math.MaxUint16
+func (p *Process) CanBeExecutedMaxXTimes(stock *Stock) int {
+	var max_global int = math.MaxInt
 
 	for product, quantity := range p.Inputs {
-		max_production := uint16(stock.Get(product) / quantity)
+		max_production := stock.Get(product) / quantity
 
 		if max_production < max_global {
 			max_global = max_production
@@ -68,7 +68,7 @@ func (p *Process) TryExecute(stock *Stock) bool {
 
 // TryExecuteN try to execute n time itself and returns number of execution
 func (p *Process) TryExecuteN(stock *Stock, n int) int {
-	max := int(p.CanBeExecutedMaxXTimes(stock))
+	max := p.CanBeExecutedMaxXTimes(stock)
 
 	if max > 0 {
 		if max > n {

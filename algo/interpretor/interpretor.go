@@ -62,6 +62,12 @@ func ExecuteProcess(history *history.History, process_id int, i *instance.Instan
 	process := processes[process_id]
 	// fmt.Println(indentation, "execute ################ process:", process.Name, "deep:", deep, "n:", n)
 
+	// if process.Name == "buy_lait" && n > 3000 {
+	// 	fmt.Println("------------------", deep)
+	// 	fmt.Println(n)
+	// 	fmt.Println(stock)
+	// }
+
 	deep++
 
 	// ------------------
@@ -69,6 +75,7 @@ func ExecuteProcess(history *history.History, process_id int, i *instance.Instan
 	// fmt.Println("A n_remaining", n_remaining)
 	// fmt.Println("------- stocke befoare after")
 	// fmt.Println(indentation, stock)
+
 	x := process.TryExecuteN(stock, n_remaining)
 
 	if x > 0 {
@@ -82,6 +89,12 @@ func ExecuteProcess(history *history.History, process_id int, i *instance.Instan
 		// }
 	}
 	// fmt.Println(indentation, stock)
+
+	// for _, st := range *stock {
+	// 	if st < 0 {
+	// 		os.Exit(1)
+	// 	}
+	// }
 
 	n_remaining -= x
 
@@ -139,59 +152,80 @@ func ExecuteProcess(history *history.History, process_id int, i *instance.Instan
 			// Compute the n of the process dependencies
 			input_available := stock.Get(input_name)
 			input_needed := process.Inputs[input_name] * n_remaining
-			input_wanted := input_needed - input_available
-			// fmt.Println("on veut input wanted:", input_wanted)
-			// fmt.Println("A:", 0)
-			// fmt.Println("B:", uint64(input_wanted))
-			// fmt.Println("C:", uint64(process_dependencie.Outputs[input_name]))
-			nn, nn_rest := bits.Div64(0, uint64(input_wanted), uint64(process_dependencie.Outputs[input_name]))
-			// fmt.Println("nn:", nn, "n:", n)
-			if nn_rest > 0 {
-				nn++
+
+			if input_needed > input_available {
+
+				input_wanted := input_needed - input_available
+				// fmt.Println("on veut input wanted:", input_wanted)
+				// fmt.Println("A:", 0)
+				// fmt.Println("B:", uint64(input_wanted))
+				// fmt.Println("C:", uint64(process_dependencie.Outputs[input_name]))
+				nn, nn_rest := bits.Div(0, uint(input_wanted), uint(process_dependencie.Outputs[input_name]))
+				// fmt.Println("nn:", nn, "n:", n)
+				if nn_rest > 0 {
+					nn++
+				}
+
+				// if nn > 3000 {
+				// 	fmt.Println("------------------", deep, "nn_rest:", nn_rest, "NN:", nn)
+				// 	fmt.Println("process name:", process.Name)
+				// 	fmt.Println("input name:", input_name)
+				// 	fmt.Println("process dependencie name:", process_dependencie.Name)
+				// 	fmt.Println("process.Inputs[input_name]:", process.Inputs[input_name])
+				// 	fmt.Println("n_remaining:", n_remaining)
+				// 	fmt.Println("input_needed:", input_needed)
+				// 	fmt.Println("input_wanted:", input_wanted)
+				// 	fmt.Println("input_available:", input_available)
+
+				// 	fmt.Println("A:", 0)
+				// 	fmt.Println("B:", uint(input_wanted))
+				// 	fmt.Println("C:", uint(process_dependencie.Outputs[input_name]))
+				// 	os.Exit(1)
+				// }
+
+				// Execute the process dependencies recursively
+				history_clone := history.Clone()
+				history_clone.PushProcessId(process_id)
+
+				dependencie_process_quantities_stack, nnn, _ := ExecuteProcess(&history_clone, process_dependencie_id, i, stock, processes, int(nn), deep)
+
+				if nnn != int(nn) {
+					full = false
+					// fmt.Println(indentation, "not fully")
+				} // else {
+				// 	fmt.Println(indentation, "fully")
+				// }
+
+				process_quantities_stack.Concatenate(*dependencie_process_quantities_stack)
+
+				// ------------------
+				// Try to execute n time the process
+				// fmt.Println("B n_remaining", n_remaining)
+
+				// x := process.TryExecuteN(stock, n_remaining)
+				// // fmt.Println(indentation, "on essaye", x)
+
+				// if x > 0 {
+				// 	xx++
+				// 	process_quantities_stack.Push(&ProcessQuantities{
+				// 		Process: &process,
+				// 		Amount:  x,
+				// 	})
+				// 	// fmt.Println(indentation, "B execute", x, "("+process.Name+")", "remaining:", n_remaining)
+				// }
+
+				// n_remaining -= x
+
+				// if n_remaining == 0 {
+				// 	// If the all the executions are completed
+				// 	// Finish
+				// 	full = true
+
+				// 	return
+				// }
+				// ------------------
+
 			}
-
-			// Execute the process dependencies recursively
-			history_clone := history.Clone()
-			history_clone.PushProcessId(process_id)
-
-			dependencie_process_quantities_stack, nnn, _ := ExecuteProcess(&history_clone, process_dependencie_id, i, stock, processes, int(nn), deep)
-
-			if nnn != int(nn) {
-				full = false
-				// fmt.Println(indentation, "not fully")
-			} // else {
-			// 	fmt.Println(indentation, "fully")
-			// }
-
-			process_quantities_stack.Concatenate(*dependencie_process_quantities_stack)
-
-			// ------------------
-			// Try to execute n time the process
-			// fmt.Println("B n_remaining", n_remaining)
-
-			// x := process.TryExecuteN(stock, n_remaining)
-			// // fmt.Println(indentation, "on essaye", x)
-
-			// if x > 0 {
-			// 	xx++
-			// 	process_quantities_stack.Push(&ProcessQuantities{
-			// 		Process: &process,
-			// 		Amount:  x,
-			// 	})
-			// 	// fmt.Println(indentation, "B execute", x, "("+process.Name+")", "remaining:", n_remaining)
-			// }
-
-			// n_remaining -= x
-
-			// if n_remaining == 0 {
-			// 	// If the all the executions are completed
-			// 	// Finish
-			// 	full = true
-
-			// 	return
-			// }
-			// ------------------
-
 		}
 	}
 
@@ -242,14 +276,21 @@ func Interpret(i instance.Instance, initial_context core.InitialContext, stock c
 
 	idd := 0
 
+	yoooolo := 1
+
 	for ok {
 		// fmt.Println("---------------------------- interpret loop")
 		ok = false
-		tutu, _, full := ExecuteProcess(&history.History{}, 0, &i, &stock_copy, initial_context.Processes, 1, 0) // HARDCODED x2
+		tutu, _, full := ExecuteProcess(&history.History{}, 0, &i, &stock_copy, initial_context.Processes, yoooolo, 0) // HARDCODED x2
+
+		yoooolo *= 1 // HARDCODED
+
 		process_quantities_stack.Concatenate(*tutu)
 		if full {
 			ok = true
 		}
+
+		// ok = false
 
 		idd++
 		if idd > 100 {
