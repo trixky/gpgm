@@ -11,9 +11,9 @@ import (
 )
 
 type ExecutedProcess struct {
-	Cycle   int          `json:"cycle"`
-	Process core.Process `json:"process"`
-	Amount  int          `json:"amount"`
+	Cycle    int          `json:"cycle"`
+	Process  core.Process `json:"process"`
+	Quantity int          `json:"quantity"`
 }
 
 type Simulation struct {
@@ -75,24 +75,25 @@ func (s *Simulation) Run(maxCycle int) {
 		if s.canExecuteAnyProcess() {
 			// fmt.Println("simulation =========================== stock avant")
 			// fmt.Println(s.Stock)
-			process_quantities_stack := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock.DeepCopy())
+			stock_copy := s.Stock.DeepCopy()
+			process_quantities_stack := interpretor.Interpret(s.Instance, s.InitialContext, &stock_copy)
 
 			// * Calculate stock
 			for _, process_quantity := range process_quantities_stack.Stack {
 				for name, quantity := range process_quantity.Process.Inputs {
-					s.Stock.Remove(name, quantity*process_quantity.Amount)
+					s.Stock.Remove(name, quantity*process_quantity.Quantity)
 				}
 				for name, quantity := range process_quantity.Process.Outputs {
 					s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
 						Name:            name,
-						Quantity:        quantity * process_quantity.Amount,
+						Quantity:        quantity * process_quantity.Quantity,
 						RemainingCycles: process_quantity.Process.Delay,
 					})
 				}
 				s.History = append(s.History, ExecutedProcess{
-					Cycle:   s.Cycle,
-					Process: *process_quantity.Process,
-					Amount:  process_quantity.Amount,
+					Cycle:    s.Cycle,
+					Process:  *process_quantity.Process,
+					Quantity: process_quantity.Quantity,
 				})
 			}
 			// fmt.Println("simulation =========================== stock apres")
@@ -127,7 +128,7 @@ func (s *Simulation) Run(maxCycle int) {
 func (s *Simulation) GenerateOutputFile() string {
 	lines := make([]string, 0)
 	for _, action := range s.History {
-		lines = append(lines, fmt.Sprintf("%d: %s:%d", action.Cycle, action.Process.Name, action.Amount))
+		lines = append(lines, fmt.Sprintf("%d: %s:%d", action.Cycle, action.Process.Name, action.Quantity))
 	}
 	stock := ""
 	for product, quantity := range s.Stock {

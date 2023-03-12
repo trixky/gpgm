@@ -53,10 +53,18 @@
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json.running_solver));
 			result_wasm_json = JSON.parse(result_wasm);
 
-			// @ts-expect-error
-			outputFile = WASM_generate_output(
-				JSON.stringify(result_wasm_json.scored_population.instances[0].simulation)
-			);
+			const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
+				?.map((process: any) => {
+					return `cycle:${process.cycle}\t\t${process.process.name}\t(${process.amount})`;
+				})
+				.join('\n');
+
+			//s @ts-expect-error
+			// outputFile = WASM_generate_output(
+			// 	JSON.stringify(result_wasm_json.scored_population.instances[0].simulation)
+			// );
+
+			outputFile = processes;
 
 			output = output = `Cycles: ${result_wasm_json.scored_population.instances[0].cycle}\nScore: ${
 				result_wasm_json.scored_population.instances[0].score
@@ -120,6 +128,21 @@
 				// loaded from the layout (wasm)
 				const result_wasm = WASM_run_generation(running_solver);
 				result_wasm_json = JSON.parse(result_wasm);
+
+				console.log(result_wasm_json.scored_population?.instances[0]?.simulation?.history)
+
+				const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
+					?.map((process: any) => {
+						return `cycle:${process.cycle}\t\t${process.process.name}\t(${process.quantity})`;
+					})
+					.join('\n');
+
+				//s @ts-expect-error
+				// outputFile = WASM_generate_output(
+				// 	JSON.stringify(result_wasm_json.scored_population.instances[0].simulation)
+				// );
+
+				outputFile = processes;
 
 				output = output = `Cycles: ${
 					result_wasm_json.scored_population.instances[0].cycle

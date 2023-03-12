@@ -1,8 +1,8 @@
 export default {
     io: {
         input: {
-            cols: 42,
-            row: 10,
+            cols: 84,
+            row: 30,
         },
         generations: {
             min: 10,
