@@ -36,7 +36,7 @@ func NewRandomPopulation(context core.InitialContext, options core.Options) Popu
 
 	instances := make([]instance.Instance, options.PopulationSize)
 	for i := range instances {
-		instances[i].Init(context.Processes)
+		instances[i].Init(context.Processes, context.Optimize)
 	}
 	return Population{
 		Instances: instances,
@@ -134,6 +134,6 @@ func (p *Population) Mutate(context core.InitialContext, options core.Options) {
 		quantity_shift := 1
 		activation_chance := 10
 
-		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance, context.Processes) // TODO pass options
+		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance, context.Processes, context.Optimize) // TODO pass options
 	}
 }

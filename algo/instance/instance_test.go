@@ -85,6 +85,7 @@ func TestInstanceInit(t *testing.T) {
 				Delay: 10,
 			},
 		},
+		Optimize: make(map[string]bool),
 	}
 
 	expected := []string{
@@ -100,9 +101,9 @@ func TestInstanceInit(t *testing.T) {
 
 	instance := Instance{}
 
-	instance.Init(initial_context.Processes)
+	instance.Init(initial_context.Processes, initial_context.Optimize)
 
-	for g_index, gene := range instance.Chromosome.Genes {
+	for g_index, gene := range instance.Chromosome.PriorityGenes {
 		fmt.Println("-----------------------", g_index)
 		keys := make([]string, len(gene.HistoryProcessDependencies))
 		i := 0

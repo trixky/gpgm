@@ -129,8 +129,6 @@
 				const result_wasm = WASM_run_generation(running_solver);
 				result_wasm_json = JSON.parse(result_wasm);
 
-				console.log(result_wasm_json.scored_population?.instances[0]?.simulation?.history)
-
 				const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
 					?.map((process: any) => {
 						return `cycle:${process.cycle}\t\t${process.process.name}\t(${process.quantity})`;

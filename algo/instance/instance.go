@@ -8,9 +8,9 @@ type Instance struct {
 	Chromosome Chromosome `json:"chromosome"`
 }
 
-func (i *Instance) Init(processes []core.Process) {
+func (i *Instance) Init(processes []core.Process, optimize map[string]bool) {
 	chromosome := Chromosome{}
-	chromosome.Init(processes)
+	chromosome.Init(processes, optimize)
 	i.Chromosome = chromosome
 }
 

@@ -40,7 +40,7 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 			last_history_part := history.GetLastProcessIds(3) // HARDCODED
 
 			// Get the input dependencies of the process
-			input_dependencies := i.Chromosome.Genes[process_id].HistoryProcessDependencies[last_history_part].InputDependencies
+			input_dependencies := i.Chromosome.PriorityGenes[process_id].HistoryProcessDependencies[last_history_part].InputDependencies
 
 			// Update the history for process dependencies
 			history.InvertedPushProcessId(process_id)
@@ -99,25 +99,26 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 
 // Interpret generate a process quantities stack by interpreting the chromosome of an instance
 func Interpret(i instance.Instance, initial_context core.InitialContext, stock *core.Stock) (process_quantities_stack *ProcessQuantities) {
-	const process_id = 0 // HARDCODED
-
 	// Initialize the process stack
 	process_quantities_stack = &ProcessQuantities{}
 
-	// Init the loop
-	complete := true
-	var executed_processes *ProcessQuantities
+	for _, entry_process_id := range i.Chromosome.EntryGene.Process_ids {
+		// For each entry process id
 
-	for complete {
-		// Why processes are completely executed
+		// Init the loop
+		complete := true
+		var executed_processes *ProcessQuantities
 
-		complete = false
+		for complete {
+			// While entry processes are completely executed
+			complete = false
 
-		// Execute the process
-		executed_processes, _, complete = TryExecuteMProcess(&history.History{}, process_id, &i, stock, initial_context.Processes, 1, 0) // HARDCODED
+			// Execute the entry process
+			executed_processes, _, complete = TryExecuteMProcess(&history.History{}, entry_process_id, &i, stock, initial_context.Processes, 1, 0) // HARDCODED
 
-		// Add executed processes to the process quantities stack
-		process_quantities_stack.Concatenate(*executed_processes)
+			// Add executed processes to the process quantities stack
+			process_quantities_stack.Concatenate(*executed_processes)
+		}
 	}
 
 	return

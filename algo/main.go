@@ -111,7 +111,7 @@ func runSimulation(args Arguments) string {
 func printDependencies(running_solver RunningSolver) {
 	for i_index, instance := range running_solver.Population.Instances {
 		fmt.Println("***********************", i_index)
-		for g_index, gene := range instance.Chromosome.Genes {
+		for g_index, gene := range instance.Chromosome.PriorityGenes {
 			fmt.Println("*****", g_index)
 
 			keys := make([]string, len(gene.HistoryProcessDependencies))

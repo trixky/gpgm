@@ -5,13 +5,13 @@ import (
 	"github.com/trixky/krpsim/algo/history"
 )
 
-type Gene struct {
+type PriorityGene struct {
 	HistoryProcessDependencies map[string]ProcessDependencies
 	Process                    *core.Process
 }
 
 // InitHistory initalizes recursively the history
-func (g *Gene) InitHistory(h *history.History, depth int, process *core.Process, processes []core.Process) {
+func (pg *PriorityGene) InitHistory(h *history.History, depth int, process *core.Process, processes []core.Process) {
 	depth--
 
 	if h == nil {
@@ -20,8 +20,8 @@ func (g *Gene) InitHistory(h *history.History, depth int, process *core.Process,
 
 	key := h.GetLastProcessIds(0)
 	dependences := ProcessDependencies{}
-	dependences.Init(*g.Process, processes)
-	g.HistoryProcessDependencies[key] = dependences
+	dependences.Init(*pg.Process, processes)
+	pg.HistoryProcessDependencies[key] = dependences
 
 	if depth > 0 {
 		for _, process_parent := range process.Parents {
@@ -29,29 +29,29 @@ func (g *Gene) InitHistory(h *history.History, depth int, process *core.Process,
 			h_clone := h.Clone()
 			h_clone.PushProcessId(process_parent)
 
-			g.InitHistory(&h_clone, depth, &processes[process_parent], processes)
+			pg.InitHistory(&h_clone, depth, &processes[process_parent], processes)
 		}
 	}
 }
 
 // Init initalizes the gene attributes
-func (g *Gene) Init(process *core.Process, processes []core.Process) {
+func (pg *PriorityGene) Init(process *core.Process, processes []core.Process, optimize map[string]bool) {
 	const history_max_length = 6 // HARDCODED
 
-	g.HistoryProcessDependencies = map[string]ProcessDependencies{}
-	g.Process = process
+	pg.HistoryProcessDependencies = map[string]ProcessDependencies{}
+	pg.Process = process
 
-	g.InitHistory(nil, history_max_length, process, processes)
+	pg.InitHistory(nil, history_max_length, process, processes)
 }
 
-func (g *Gene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int, processes []core.Process) {
-	if g.Process != nil {
-		g.Init(g.Process, processes)
+func (pg *PriorityGene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int, processes []core.Process, optimize map[string]bool) {
+	if pg.Process != nil {
+		pg.Init(pg.Process, processes, optimize)
 	}
 }
 
 // // Mutate generates a child by mutation
-// func (g *Gene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int) (child Gene) {
+// func (pg *PriorityGene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int) (child Gene) {
 // 	var shift uint16
 
 // 	// ---------------------- ProcessId
