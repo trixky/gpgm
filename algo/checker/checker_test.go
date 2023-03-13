@@ -42,3 +42,16 @@ func TestPomme2(t *testing.T) {
 		t.Errorf("Expected result to be true but got false")
 	}
 }
+
+func TestMergedOutput(t *testing.T) {
+	res, err := CheckOutput(
+		"#\n#  krpsim tarte aux pommes\n#\nfour:10\neuro:10000\n#\nbuy_pomme:(euro:100):(pomme:700):200\nbuy_citron:(euro:100):(citron:400):200\nbuy_oeuf:(euro:100):(oeuf:100):200\nbuy_farine:(euro:100):(farine:800):200\nbuy_beurre:(euro:100):(beurre:2000):200\nbuy_lait:(euro:100):(lait:2000):200\n#\nseparation_oeuf:(oeuf:1):(jaune_oeuf:1;blanc_oeuf:1):2\nreunion_oeuf:(jaune_oeuf:1;blanc_oeuf:1):(oeuf:1):1\ndo_pate_sablee:(oeuf:5;farine:100;beurre:4;lait:5):(pate_sablee:300;blanc_oeuf:3):300\ndo_pate_feuilletee:(oeuf:3;farine:200;beurre:10;lait:2):(pate_feuilletee:100):800\ndo_tarte_citron:(pate_feuilletee:100;citron:50;blanc_oeuf:5;four:1):(tarte_citron:5;four:1):60\ndo_tarte_pomme:(pate_sablee:100;pomme:30;four:1):(tarte_pomme:8;four:1):50\ndo_flan:(jaune_oeuf:10;lait:4;four:1):(flan:5;four:1):300\ndo_boite:(tarte_citron:3;tarte_pomme:7;flan:1;euro:30):(boite:1):1\nvente_boite:(boite:100):(euro:55000):30\nvente_tarte_pomme:(tarte_pomme:10):(euro:100):30\nvente_tarte_citron:(tarte_citron:10):(euro:200):30\nvente_flan:(flan:10):(euro:300):30\n#do_benef:(euro:1):(benefice:1):0\n#\n#\n#optimize:(benefice)\noptimize:(euro)\n#\n",
+		"0: buy_beurre:6;buy_oeuf:19;buy_farine:35;buy_lait:8;buy_pomme:5;buy_citron:9\n1: buy_pomme:5;buy_citron:2;buy_lait:2;buy_beurre:1;buy_oeuf:2;buy_farine:6\nstock: four:10;citron:4400;euro:0;farine:32800;pate_feuilletee:0;tarte_pomme:0;blanc_oeuf:0;jaune_oeuf:0;oeuf:2100;pate_sablee:0;pomme:7000;boite:0;flan:0;lait:20000;tarte_citron:0;beurre:14000",
+	)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if res != true {
+		t.Errorf("Expected result to be true but got false")
+	}
+}

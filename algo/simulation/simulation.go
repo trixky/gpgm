@@ -125,17 +125,56 @@ func (s *Simulation) Run(options *core.Options) {
 	s.ExpectedStock = []ExpectedStock{}
 }
 
+type HistoryAction struct {
+	Name   string
+	Amount int
+}
+
+type HistoryEntry struct {
+	Cycle   int
+	Actions []HistoryAction
+}
+
 func (s *Simulation) GenerateOutputFile() string {
-	lines := make([]string, 0)
 	lastCycle := -1
-	for cycle, action := range s.History {
-		if lastCycle == cycle {
-			lastLine := lines[len(lines)-1]
-			lines[len(lines)-1] = fmt.Sprintf("%s;%s:%d", lastLine, action.Process.Name, action.Amount)
+	actions := []HistoryEntry{}
+	for _, action := range s.History {
+		if lastCycle == action.Cycle {
+			lastIndex := len(actions) - 1
+			added := false
+			for i := 0; i < len(actions[lastIndex].Actions); i++ {
+				if actions[lastIndex].Actions[i].Name == action.Process.Name {
+					actions[lastIndex].Actions[i].Amount += action.Quantity
+					added = true
+					break
+				}
+			}
+			if !added {
+				actions[lastIndex].Actions = append(actions[lastIndex].Actions, HistoryAction{
+					Name:   action.Process.Name,
+					Amount: action.Quantity,
+				})
+			}
 		} else {
-			lines = append(lines, fmt.Sprintf("%d: %s:%d", action.Cycle, action.Process.Name, action.Amount))
+			actions = append(actions, HistoryEntry{
+				Cycle: action.Cycle,
+				Actions: []HistoryAction{
+					{
+						Name:   action.Process.Name,
+						Amount: action.Quantity,
+					},
+				},
+			})
 		}
-		lastCycle = cycle
+		lastCycle = action.Cycle
+	}
+	lines := make([]string, 0)
+	for _, action := range actions {
+		parts := []string{}
+		for _, action := range action.Actions {
+			parts = append(parts, fmt.Sprintf("%s:%d", action.Name, action.Amount))
+		}
+		lines = append(lines, fmt.Sprintf("%d: %s", action.Cycle, strings.Join(parts, ";")))
 	}
 	stock := ""
 	for product, quantity := range s.Stock {

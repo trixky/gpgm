@@ -5,14 +5,14 @@ export default {
             row: 30,
         },
         generations: {
-            min: 10,
+            min: 1,
             max: 10000,
-            default: 100
+            default: 1
         },
         population: {
-            min: 10,
+            min: 1,
             max: 1000,
-            default: 50
+            default: 1
         },
         deep: {
             min: 10,
