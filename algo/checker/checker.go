@@ -93,7 +93,7 @@ func CheckOutput(simulationFile string, outputFile string) (res bool, err error)
 			if cycle < 0 {
 				return false, fmt.Errorf("invalid cycle `%s`", parts[0])
 			}
-			if cycle <= lastCycle {
+			if cycle < lastCycle {
 				return false, fmt.Errorf("duplicate or unordered cycle `%s` (%d)", parts[0], lastCycle)
 			}
 			lastCycle = cycle

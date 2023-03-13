@@ -121,8 +121,15 @@ func (s *Simulation) Run(maxCycle int) {
 
 func (s *Simulation) GenerateOutputFile() string {
 	lines := make([]string, 0)
-	for _, action := range s.History {
-		lines = append(lines, fmt.Sprintf("%d: %s:%d", action.Cycle, action.Process.Name, action.Amount))
+	lastCycle := -1
+	for cycle, action := range s.History {
+		if lastCycle == cycle {
+			lastLine := lines[len(lines)-1]
+			lines[len(lines)-1] = fmt.Sprintf("%s;%s:%d", lastLine, action.Process.Name, action.Amount)
+		} else {
+			lines = append(lines, fmt.Sprintf("%d: %s:%d", action.Cycle, action.Process.Name, action.Amount))
+		}
+		lastCycle = cycle
 	}
 	stock := ""
 	for product, quantity := range s.Stock {
