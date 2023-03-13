@@ -1,6 +1,8 @@
 package core
 
-import "math"
+import (
+	"math"
+)
 
 type Product struct {
 	Name     string `json:"name"`
@@ -12,6 +14,7 @@ type Process struct {
 	Inputs  map[string]int `json:"inputs"`
 	Outputs map[string]int `json:"outputs"`
 	Delay   int            `json:"delay"`
+	Parents []int          `json:"parent"`
 }
 
 func (p *Process) CanBeExecuted(stock *Stock) bool {
@@ -27,11 +30,11 @@ func (p *Process) CanBeExecutedXTimes(stock *Stock, amount int) bool {
 	return true
 }
 
-func (p *Process) CanBeExecutedMaxXTimes(stock *Stock) uint16 {
-	var max_global uint16 = math.MaxUint16
+func (p *Process) CanBeExecutedMaxXTimes(stock *Stock) int {
+	var max_global int = math.MaxInt
 
 	for product, quantity := range p.Inputs {
-		max_production := uint16(stock.Get(product) / quantity)
+		max_production := stock.Get(product) / quantity
 
 		if max_production < max_global {
 			max_global = max_production
@@ -61,6 +64,20 @@ func (p *Process) TryExecute(stock *Stock) bool {
 	*stock = new_stock
 
 	return true
+}
+
+// TryExecuteN try to execute n time itself and returns number of execution
+func (p *Process) TryExecuteN(stock *Stock, n int) int {
+	max := p.CanBeExecutedMaxXTimes(stock)
+
+	if max > 0 {
+		if max > n {
+			max = n
+		}
+		p.ExecuteN(stock, max)
+	}
+
+	return max
 }
 
 func (p *Process) IsInOutput(product string) bool {
@@ -94,4 +111,25 @@ func (sm *InitialContext) IsInOutput(product string) bool {
 		}
 	}
 	return false
+}
+
+// FindProcessParents find process parents the initial context
+func (sm *InitialContext) FindProcessParents() {
+	for child_index, child := range sm.Processes {
+		// For each child process
+		for parent_index, parent := range sm.Processes {
+			// For each parent process
+			// Note that parent can be the child
+			for resource_name := range parent.Inputs {
+				// For each input resource of the parent
+				if output, ok := child.Outputs[resource_name]; ok {
+					// If the child has the X input resource of the parent as output
+					if input, ok := child.Inputs[resource_name]; !ok || output > input {
+						// If its X output is greater than its input if it as an input
+						sm.Processes[child_index].Parents = append(sm.Processes[child_index].Parents, parent_index)
+					}
+				}
+			}
+		}
+	}
 }

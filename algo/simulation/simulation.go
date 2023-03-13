@@ -11,9 +11,9 @@ import (
 )
 
 type ExecutedProcess struct {
-	Cycle   int          `json:"cycle"`
-	Process core.Process `json:"process"`
-	Amount  int          `json:"amount"`
+	Cycle    int          `json:"cycle"`
+	Process  core.Process `json:"process"`
+	Quantity int          `json:"quantity"`
 }
 
 type Simulation struct {
@@ -48,8 +48,9 @@ func (s *Simulation) canExecuteAnyProcess() bool {
 	return false
 }
 
-func (s *Simulation) Run(maxCycle int) {
-	for ; s.Cycle < maxCycle; s.Cycle++ {
+func (s *Simulation) Run(options *core.Options) {
+	for ; s.Cycle < options.MaxCycle; s.Cycle++ {
+		// fmt.Println("simulation ========================================== cycle", s.Cycle)
 		// ? Abort early if there is no executable processes and no expected stocks
 		if !s.canExecuteAnyProcess() && len(s.ExpectedStock) == 0 {
 			break
@@ -72,26 +73,31 @@ func (s *Simulation) Run(maxCycle int) {
 
 		// ? Execute actions from genes
 		if s.canExecuteAnyProcess() {
-			process_quantities := interpretor.Interpret(s.Instance, s.InitialContext, s.Stock.DeepCopy())
+			// fmt.Println("simulation =========================== stock avant")
+			// fmt.Println(s.Stock)
+			stock_copy := s.Stock.DeepCopy()
+			process_quantities_stack := interpretor.Interpret(s.Instance, s.InitialContext, &stock_copy, options)
 
 			// * Calculate stock
-			for _, process_quantity := range process_quantities {
+			for _, process_quantity := range process_quantities_stack.Stack {
 				for name, quantity := range process_quantity.Process.Inputs {
-					s.Stock.Remove(name, quantity*process_quantity.Amount)
+					s.Stock.Remove(name, quantity*process_quantity.Quantity)
 				}
 				for name, quantity := range process_quantity.Process.Outputs {
 					s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
 						Name:            name,
-						Quantity:        quantity * process_quantity.Amount,
+						Quantity:        quantity * process_quantity.Quantity,
 						RemainingCycles: process_quantity.Process.Delay,
 					})
 				}
 				s.History = append(s.History, ExecutedProcess{
-					Cycle:   s.Cycle,
-					Process: *process_quantity.Process,
-					Amount:  process_quantity.Amount,
+					Cycle:    s.Cycle,
+					Process:  *process_quantity.Process,
+					Quantity: process_quantity.Quantity,
 				})
 			}
+			// fmt.Println("simulation =========================== stock apres")
+			// fmt.Println(s.Stock)
 		}
 
 		// * Skip cycles until the next expected stock is ready if no process can be executed

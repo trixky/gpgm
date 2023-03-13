@@ -1,0 +1,17 @@
+# ============================= RESOURCES
+cat:1
+dog:0
+horse:0
+pig:0
+chiken:0
+
+# ============================= PROCESS
+
+pig_chiken:(pig:1):(chiken:1):1
+
+cat_dog:(cat:1):(dog:1):1
+dog_horse:(dog:1):(horse:1):1
+horse_pig:(horse:1):(pig:1):1
+
+
+optimize:(time;chiken)
