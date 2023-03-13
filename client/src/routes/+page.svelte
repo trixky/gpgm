@@ -104,35 +104,61 @@
 
 			// @ts-ignore
 			// loaded from the layout (wasm)
-			const running_solver = WASM_initialize(
+			const result = WASM_run_brute(
 				JSON.stringify({
-					text: input,
-					generations: $ArgumentStore.generations,
-					deep: $ArgumentStore.deep,
-					population: $ArgumentStore.population
+					text: input
 				})
 			);
+			result_wasm_json = JSON.parse(result);
 
-			if (running_solver == undefined || running_solver == null) {
-				output = 'error';
-			} else {
-				// @ts-ignore
-				// loaded from the layout (wasm)
-				const result_wasm = WASM_run_generation(running_solver);
-				result_wasm_json = JSON.parse(result_wasm);
+			// @ts-expect-error
+			outputFile = WASM_generate_output(JSON.stringify(result_wasm_json[0]));
+			console.log(outputFile);
 
-				output = output = `Cycles: ${
-					result_wasm_json.scored_population.instances[0].cycle
-				}\nScore: ${result_wasm_json.scored_population.instances[0].score}\n${JSON.stringify(
-					result_wasm_json.scored_population.instances[0].simulation.stock,
-					null,
-					'\t'
-				)}`;
-
-				new_generation();
-			}
+			running = false;
+			finished = true;
+			stopped = true;
+			console.log(result_wasm_json);
 		}
 	}
+
+	// function handle_run() {
+	// 	if (!running) {
+	// 		running = true;
+	// 		stop = false;
+	// 		stopped = false;
+
+	// 		// @ts-ignore
+	// 		// loaded from the layout (wasm)
+	// 		const running_solver = WASM_initialize(
+	// 			JSON.stringify({
+	// 				text: input,
+	// 				generations: $ArgumentStore.generations,
+	// 				deep: $ArgumentStore.deep,
+	// 				population: $ArgumentStore.population
+	// 			})
+	// 		);
+
+	// 		if (running_solver == undefined || running_solver == null) {
+	// 			output = 'error';
+	// 		} else {
+	// 			// @ts-ignore
+	// 			// loaded from the layout (wasm)
+	// 			const result_wasm = WASM_run_generation(running_solver);
+	// 			result_wasm_json = JSON.parse(result_wasm);
+
+	// 			output = output = `Cycles: ${
+	// 				result_wasm_json.scored_population.instances[0].cycle
+	// 			}\nScore: ${result_wasm_json.scored_population.instances[0].score}\n${JSON.stringify(
+	// 				result_wasm_json.scored_population.instances[0].simulation.stock,
+	// 				null,
+	// 				'\t'
+	// 			)}`;
+
+	// 			new_generation();
+	// 		}
+	// 	}
+	// }
 
 	function handle_stop() {
 		if (running) {

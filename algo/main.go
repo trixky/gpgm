@@ -10,6 +10,7 @@ import (
 	// architecture with js as the OS but the editor is not aware of this
 
 	"github.com/trixky/krpsim/algo/core"
+	"github.com/trixky/krpsim/algo/instance"
 	"github.com/trixky/krpsim/algo/parser"
 	"github.com/trixky/krpsim/algo/population"
 	"github.com/trixky/krpsim/algo/simulation"
@@ -196,11 +197,41 @@ func generateOutput() js.Func {
 	return run
 }
 
+// runSimulation run the main simulation
+func runBrute() js.Func {
+	run := js.FuncOf(func(this js.Value, args []js.Value) any {
+		arguments := Arguments{}
+
+		if err := json.Unmarshal([]byte(args[0].String()), &arguments); err != nil {
+			fmt.Print(err.Error())
+			return nil
+		}
+
+		options := core.Options{
+			MaxCycle: 100,
+		}
+
+		context, err := parser.ParseSimulationFile(arguments.Text)
+		if err != nil {
+			return fmt.Sprintf("unexpected error: %v", err)
+		}
+
+		simulation := simulation.NewSimulation(context, instance.Instance{})
+		result := simulation.RunBrute(options)
+
+		s, _ := json.MarshalIndent(result, "", "\t")
+		return string(s)
+	})
+
+	return run
+}
+
 func main() {
 	// Register the shared function
 	js.Global().Set("WASM_initialize", initializeWasm())
 	js.Global().Set("WASM_run_generation", runGenerationWasm())
 	js.Global().Set("WASM_generate_output", generateOutput())
+	js.Global().Set("WASM_run_brute", runBrute())
 
 	fmt.Println("Go Web Assembly Loaded")
 
