@@ -132,15 +132,4 @@ func (sm *InitialContext) FindProcessParents() {
 			}
 		}
 	}
-
-	// for _, process := range sm.Processes {
-	// 	fmt.Println("*****************", process.Name)
-	// 	for _, process_parent := range process.Parents {
-	// 		fmt.Println(sm.Processes[process_parent].Name)
-	// 	}
-
-	// }
-
-	// os.Exit(1)
-	// fmt.Println(sm.Processes)
 }

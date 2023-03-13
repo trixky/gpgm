@@ -51,40 +51,46 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 				// Get the name of the input dependencie
 				input_name := input_dependencie.Input
 
-				for _, process_dependencie_id := range input_dependencie.ProcessDependencies {
-					// For each process dependencie of the input dependencie of the process
+				process_dependencie_ids := input_dependencie.ProcessDependencies
 
-					input_available := stock.Get(input_name)
-					input_needed := process.Inputs[input_name] * n
+				if len(process_dependencie_ids) > 0 {
+					for _, process_dependencie_id := range process_dependencie_ids {
+						// For each process dependencie of the input dependencie of the process
 
-					if input_needed > input_available {
-						// If input dependencies are needed
-						// Get the process dependencie
-						process_dependencie := processes[process_dependencie_id]
+						input_available := stock.Get(input_name)
+						input_needed := process.Inputs[input_name] * n
 
-						// Compute the wanted input
-						input_wanted := input_needed - input_available
+						if input_needed > input_available {
+							// If input dependencies are needed
+							// Get the process dependencie
+							process_dependencie := processes[process_dependencie_id]
 
-						// Compute the number of process dependencie execution needed
-						nn, nn_rest := bits.Div(0, uint(input_wanted), uint(process_dependencie.Outputs[input_name]))
-						if nn_rest > 0 {
-							nn++
+							// Compute the wanted input
+							input_wanted := input_needed - input_available
+
+							// Compute the number of process dependencie execution needed
+							nn, nn_rest := bits.Div(0, uint(input_wanted), uint(process_dependencie.Outputs[input_name]))
+							if nn_rest > 0 {
+								nn++
+							}
+
+							// Clone the history for the process dependencies
+							history_clone := history.Clone()
+
+							// Execute the process dependencies recursively
+							dependencie_process_quantities_stack, xx, _ := TryExecuteMProcess(&history_clone, process_dependencie_id, i, stock, processes, int(nn), depth, options)
+
+							if xx != int(nn) {
+								// If the process dependencie executions are not complete
+								complete = false
+							}
+
+							// Add executed processes to the process quantities stack
+							process_quantities_stack.Concatenate(*dependencie_process_quantities_stack)
 						}
-
-						// Clone the history for the process dependencies
-						history_clone := history.Clone()
-
-						// Execute the process dependencies recursively
-						dependencie_process_quantities_stack, xx, _ := TryExecuteMProcess(&history_clone, process_dependencie_id, i, stock, processes, int(nn), depth, options)
-
-						if xx != int(nn) {
-							// If the process dependencie executions are not complete
-							complete = false
-						}
-
-						// Add executed processes to the process quantities stack
-						process_quantities_stack.Concatenate(*dependencie_process_quantities_stack)
 					}
+				} else {
+					complete = false
 				}
 			}
 		}
