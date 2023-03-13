@@ -1,40 +1,20 @@
 # ============================= RESOURCES
-# ---- primitive material
-wood:10
-packaging:10
-
-# ---- constante
-machine:1
-employee:2
-
-# ---- manufactured
+wood:0
+packaging:0
 toothpick:0
-
-# ---- salable
 final_product:0
 
-# ---- goal
-dollars:10
+dollars:50
 
 # ============================= RENTABILITY
-# invest 2 dollars in primitive material product bring back 3 dollars:
-# - 2 dollars =
-# - 1 dollars + 1 dollars =
-# - 1 wood + 1 packaging =
-# - 100 toothpick + 1 packaging =
-# - 1 final product =
-# - 3 dollars
 
-# ============================= PROCESS
-# ---- buy primitive material
-buy_wood:(dollars:20;employee:1):(wood:10;employee:1):5
-buy_packaging:(dollars:10;employee:1):(packaging:10;employee:1):2
 
-# ---- manufacture
-manufacture:(wood:10;employee:1;machine:1):(toothpick:1000;employee:1;machine:1):10
-# ---- sale
-final_product:(toothpick:100;packaging:1;employee:1):(final_product:1;employee:1):1
-# ---- goal
-sale:(final_product:10;employee:1):(dollars:20;employee:1):3
+sale:(final_product:1):(dollars:100):3
+final_product:(toothpick:100;packaging:1):(final_product:1):1
+manufacture:(wood:10):(toothpick:100):10
+
+buy_wood:(dollars:10):(wood:10):5
+buy_packaging:(dollars:10):(packaging:1):2
+
 
 optimize:(time;dollars)

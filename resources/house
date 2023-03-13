@@ -1,0 +1,16 @@
+# ============================= RESOURCES
+house:10
+wood:10
+stone:10
+gold:10
+
+# ============================= PROCESS
+
+house_gold:(house:3):(gold:20):3
+gold_wood:(gold:10):(wood:20):3
+gold_stone:(gold:10):(stone:20):3
+gold_wood_stone:(gold:15):(wood:20;stone:20):3
+wood_stone_house:(wood:3;stone:3):(house:1):3
+
+
+optimize:(time;gold)
