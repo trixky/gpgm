@@ -24,35 +24,32 @@ type Population struct {
 	Instances []instance.Instance `json:"instances"`
 }
 
-func NewPopulation(options core.Options) Population {
+func NewPopulation(options *core.Options) Population {
 	// TODO generate from InitialContext to have the correct amount of genes and other things ?
 	return Population{
 		Instances: make([]instance.Instance, options.PopulationSize),
 	}
 }
 
-func NewRandomPopulation(context core.InitialContext, options core.Options) Population {
+func NewRandomPopulation(context core.InitialContext, options *core.Options) Population {
 	context.FindProcessParents()
 
 	instances := make([]instance.Instance, options.PopulationSize)
 	for i := range instances {
-		instances[i].Init(context.Processes, context.Optimize)
+		instances[i].Init(context.Processes, context.Optimize, options)
 	}
 	return Population{
 		Instances: instances,
 	}
-
 }
 
-func (p *Population) RunAllSimulations(context core.InitialContext, options core.Options) ScoredPopulation {
+func (p *Population) RunAllSimulations(context core.InitialContext, options *core.Options) ScoredPopulation {
 	var scored []ScoredInstance
 
 	// Run a simulation on all instances
 	for _, instance := range p.Instances {
-		// fmt.Println("population ********************************************** instance", instance_index)
-
 		simulation := simulation.NewSimulation(context, instance)
-		simulation.Run(options.MaxCycle)
+		simulation.Run(options)
 		scored = append(scored, ScoredInstance{
 			Instance:   instance,
 			Simulation: simulation,
@@ -76,7 +73,7 @@ func (p *ScoredPopulation) Best() ScoredInstance {
 	return p.Instances[0]
 }
 
-func (s *ScoredPopulation) Crossover(options core.Options) Population {
+func (s *ScoredPopulation) Crossover(options *core.Options) Population {
 	population := NewPopulation(options)
 
 	// Calculate the total score of all instances
@@ -126,7 +123,7 @@ func (s *ScoredPopulation) Crossover(options core.Options) Population {
 	return population
 }
 
-func (p *Population) Mutate(context core.InitialContext, options core.Options) {
+func (p *Population) Mutate(context core.InitialContext, options *core.Options) {
 	for _, instance := range p.Instances {
 
 		process_max := uint16(len(context.Processes))
@@ -134,6 +131,6 @@ func (p *Population) Mutate(context core.InitialContext, options core.Options) {
 		quantity_shift := 1
 		activation_chance := 10
 
-		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance, context.Processes, context.Optimize) // TODO pass options
+		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance, context.Processes, context.Optimize, options) // TODO pass options
 	}
 }

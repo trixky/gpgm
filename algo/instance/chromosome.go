@@ -11,14 +11,11 @@ type Chromosome struct {
 	PriorityGenes []PriorityGene `json:"genes"`
 }
 
-func (c *Chromosome) Init(processes []core.Process, optimize map[string]bool) {
-	const random = true // HARDCODED
-	const max_entry = 0 // HARDCODED
-
+func (c *Chromosome) Init(processes []core.Process, optimize map[string]bool, options *core.Options) {
 	// Initializes the entry gene
 	c.EntryGene = EntryGene{}
 
-	c.EntryGene.Init(processes, optimize, max_entry, random)
+	c.EntryGene.Init(processes, optimize, options)
 
 	// Initializes the priority genes
 	c.PriorityGenes = make([]PriorityGene, len(processes))
@@ -27,7 +24,7 @@ func (c *Chromosome) Init(processes []core.Process, optimize map[string]bool) {
 		// For each process
 		// Initializes the corresponding priority gene
 		priority_gene := PriorityGene{}
-		priority_gene.Init(&process, processes, optimize)
+		priority_gene.Init(&process, processes, optimize, options)
 		c.PriorityGenes[index] = priority_gene
 	}
 }
@@ -54,14 +51,14 @@ func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromoso
 }
 
 // Mutate generates a child by mutation
-func (c *Chromosome) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int, processes []core.Process, optimize map[string]bool) (child Chromosome) {
+func (c *Chromosome) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int, processes []core.Process, optimize map[string]bool, options *core.Options) (child Chromosome) {
 	gene_nb := len(c.PriorityGenes)
 
 	child.PriorityGenes = make([]PriorityGene, gene_nb)
 
 	for index := range c.PriorityGenes {
 		// Extract the mutation of all genes from the parent ones
-		child.PriorityGenes[index].Mutate(process_max, process_shift, quantity_shift, activation_chance, processes, optimize)
+		child.PriorityGenes[index].Mutate(process_max, process_shift, quantity_shift, activation_chance, processes, optimize, options)
 	}
 
 	return

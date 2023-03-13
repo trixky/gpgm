@@ -9,7 +9,7 @@ import (
 )
 
 // TryExecuteMProcess try to execute n time a process and generate a process quantities stack including its processes dependencies
-func TryExecuteMProcess(history *history.History, process_id int, i *instance.Instance, stock *core.Stock, processes []core.Process, n int, depth int) (process_quantities_stack *ProcessQuantities, x int, complete bool) {
+func TryExecuteMProcess(history *history.History, process_id int, i *instance.Instance, stock *core.Stock, processes []core.Process, n int, depth int, options *core.Options) (process_quantities_stack *ProcessQuantities, x int, complete bool) {
 	// Update the depth
 	depth++
 
@@ -32,12 +32,12 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 
 	if n > 0 {
 		// If process executions are missing
-		if depth < 6 { // HARDCODED
+		if depth < options.MaxDepth {
 			// If the depth is not exceeded
 			complete = true
 
 			// Get the last process ids key from the history
-			last_history_part := history.GetLastProcessIds(3) // HARDCODED
+			last_history_part := history.GetLastProcessIds(options.HistoryPartMaxLength)
 
 			// Get the input dependencies of the process
 			input_dependencies := i.Chromosome.PriorityGenes[process_id].HistoryProcessDependencies[last_history_part].InputDependencies
@@ -75,7 +75,7 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 						history_clone := history.Clone()
 
 						// Execute the process dependencies recursively
-						dependencie_process_quantities_stack, xx, _ := TryExecuteMProcess(&history_clone, process_dependencie_id, i, stock, processes, int(nn), depth)
+						dependencie_process_quantities_stack, xx, _ := TryExecuteMProcess(&history_clone, process_dependencie_id, i, stock, processes, int(nn), depth, options)
 
 						if xx != int(nn) {
 							// If the process dependencie executions are not complete
@@ -98,7 +98,7 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 }
 
 // Interpret generate a process quantities stack by interpreting the chromosome of an instance
-func Interpret(i instance.Instance, initial_context core.InitialContext, stock *core.Stock) (process_quantities_stack *ProcessQuantities) {
+func Interpret(i instance.Instance, initial_context core.InitialContext, stock *core.Stock, options *core.Options) (process_quantities_stack *ProcessQuantities) {
 	// Initialize the process stack
 	process_quantities_stack = &ProcessQuantities{}
 
@@ -114,7 +114,7 @@ func Interpret(i instance.Instance, initial_context core.InitialContext, stock *
 			complete = false
 
 			// Execute the entry process
-			executed_processes, _, complete = TryExecuteMProcess(&history.History{}, entry_process_id, &i, stock, initial_context.Processes, 1, 0) // HARDCODED
+			executed_processes, _, complete = TryExecuteMProcess(&history.History{}, entry_process_id, &i, stock, initial_context.Processes, options.NEntry, 0, options)
 
 			// Add executed processes to the process quantities stack
 			process_quantities_stack.Concatenate(*executed_processes)

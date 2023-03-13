@@ -1,7 +1,6 @@
 package instance
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/trixky/krpsim/algo/core"
@@ -72,11 +71,11 @@ func (eg *EntryGene) InitProcesses(processes []core.Process, optimize map[string
 }
 
 // Init initalizes the processes
-func (eg *EntryGene) Init(processes []core.Process, optimize map[string]bool, max uint, random bool) {
+func (eg *EntryGene) Init(processes []core.Process, optimize map[string]bool, options *core.Options) {
 	// Initializes processes
 	eg.InitProcesses(processes, optimize)
 
-	if random {
+	if options.RandomCut {
 		// If random option is active
 		// Cut randomly processes
 		eg.CutRandomN()
@@ -84,7 +83,5 @@ func (eg *EntryGene) Init(processes []core.Process, optimize map[string]bool, ma
 
 	// Cut processes regarding max
 	// Remember is ignored if equal 0
-	eg.CutN(max)
-
-	fmt.Println(eg.Process_ids)
+	eg.CutN(uint(options.MaxCut))
 }

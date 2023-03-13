@@ -44,8 +44,6 @@ func (pd *InputDependencies) Init(input string, processes []core.Process) {
 			}
 		}
 	}
-
-	// pd.Cut(3) // HARDCODED
 }
 
 // Init initalizes the input dependencies for an specific process

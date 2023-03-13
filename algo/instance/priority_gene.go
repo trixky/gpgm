@@ -35,18 +35,16 @@ func (pg *PriorityGene) InitHistory(h *history.History, depth int, process *core
 }
 
 // Init initalizes the gene attributes
-func (pg *PriorityGene) Init(process *core.Process, processes []core.Process, optimize map[string]bool) {
-	const history_max_length = 6 // HARDCODED
-
+func (pg *PriorityGene) Init(process *core.Process, processes []core.Process, optimize map[string]bool, options *core.Options) {
 	pg.HistoryProcessDependencies = map[string]ProcessDependencies{}
 	pg.Process = process
 
-	pg.InitHistory(nil, history_max_length, process, processes)
+	pg.InitHistory(nil, options.HistoryKeyMaxLength, process, processes)
 }
 
-func (pg *PriorityGene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int, processes []core.Process, optimize map[string]bool) {
+func (pg *PriorityGene) Mutate(process_max uint16, process_shift int, quantity_shift int, activation_chance int, processes []core.Process, optimize map[string]bool, options *core.Options) {
 	if pg.Process != nil {
-		pg.Init(pg.Process, processes, optimize)
+		pg.Init(pg.Process, processes, optimize, options)
 	}
 }
 

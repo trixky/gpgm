@@ -1,7 +1,6 @@
 package instance
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -101,10 +100,16 @@ func TestInstanceInit(t *testing.T) {
 
 	instance := Instance{}
 
-	instance.Init(initial_context.Processes, initial_context.Optimize)
+	options := core.Options{
+		RandomCut:            true,
+		MaxCut:               0,
+		HistoryPartMaxLength: 3,
+		HistoryKeyMaxLength:  4,
+	}
+
+	instance.Init(initial_context.Processes, initial_context.Optimize, &options)
 
 	for g_index, gene := range instance.Chromosome.PriorityGenes {
-		fmt.Println("-----------------------", g_index)
 		keys := make([]string, len(gene.HistoryProcessDependencies))
 		i := 0
 		for key := range gene.HistoryProcessDependencies {

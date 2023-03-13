@@ -338,7 +338,7 @@ func TestEntryGeneInit(t *testing.T) {
 					"gold": true,
 				},
 			},
-			expected: []int{3, 4},
+			expected: []int{3},
 		},
 		{
 			processes: []core.Process{
@@ -390,8 +390,13 @@ func TestEntryGeneInit(t *testing.T) {
 					"cat": false,
 				},
 			},
-			expected: []int{1, 0},
+			expected: []int{0},
 		},
+	}
+
+	options := core.Options{
+		RandomCut: true,
+		MaxCut:    0,
 	}
 
 	rand.Seed(42)
@@ -400,7 +405,7 @@ func TestEntryGeneInit(t *testing.T) {
 		// For each test
 		entry_gene := EntryGene{}
 
-		entry_gene.Init(test.processes, test.context.Optimize, test.max, test.random)
+		entry_gene.Init(test.processes, test.context.Optimize, &options)
 
 		if expected_length, got_length := len(test.expected), len(entry_gene.Process_ids); expected_length != got_length {
 			// If the process ids length is corrupted

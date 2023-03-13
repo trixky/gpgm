@@ -38,9 +38,9 @@ type WASMGenerationReturn struct {
 
 // * Run a single generation for the given RunningSolver
 func runGeneration(solver RunningSolver) (population.ScoredPopulation, RunningSolver) {
-	scored := solver.Population.RunAllSimulations(solver.Context, solver.Options)
-	solver.Population = scored.Crossover(solver.Options)
-	solver.Population.Mutate(solver.Context, solver.Options)
+	scored := solver.Population.RunAllSimulations(solver.Context, &solver.Options)
+	solver.Population = scored.Crossover(&solver.Options)
+	solver.Population.Mutate(solver.Context, &solver.Options)
 	solver.Generation += 1
 
 	return scored, solver
@@ -53,16 +53,22 @@ func initialize(args Arguments) (RunningSolver, error) {
 		return RunningSolver{}, err
 	}
 	options := core.Options{ // TODO Collect Options
-		PopulationSize:   args.PopulationSize,
-		MaxGeneration:    args.MaxGeneration,
-		MaxCycle:         args.MaxCycle,
-		TimeLimitSeconds: 60,
-		UseElitism:       true,
-		ElitismAmount:    1,
+		PopulationSize:       args.PopulationSize,
+		MaxGeneration:        args.MaxGeneration,
+		MaxCycle:             args.MaxCycle,
+		MaxDepth:             6,
+		NEntry:               1,
+		HistoryPartMaxLength: 3,
+		HistoryKeyMaxLength:  6,
+		TimeLimitSeconds:     60,
+		UseElitism:           true,
+		ElitismAmount:        1,
+		RandomCut:            true,
+		MaxCut:               0,
 	}
 
 	return RunningSolver{
-		Population: population.NewRandomPopulation(context, options),
+		Population: population.NewRandomPopulation(context, &options),
 		Context:    context,
 		Options:    options,
 		Generation: 1,
@@ -85,20 +91,19 @@ func runSimulation(args Arguments) string {
 	}
 
 	var scored population.ScoredPopulation
-	population := population.NewRandomPopulation(context, options)
+	population := population.NewRandomPopulation(context, &options)
 	// s, _ := json.MarshalIndent(population, "", "\t")
 	// fmt.Printf("%s\n", string(s))
 	generation := 1
 	start := time.Now()
 	for ; ; generation += 1 {
 		fmt.Printf("generation %d since %fs\n", generation, time.Since(start).Seconds())
-		scored = population.RunAllSimulations(context, options)
+		scored = population.RunAllSimulations(context, &options)
 		if generation >= options.MaxGeneration || time.Since(start).Seconds() > float64(options.TimeLimitSeconds) {
 			break
 		}
-		// fmt.Printf("%v\n", population)
-		population := scored.Crossover(options)
-		population.Mutate(context, options)
+		population := scored.Crossover(&options)
+		population.Mutate(context, &options)
 		// fmt.Printf("%v\n", population)
 	}
 	best := scored.Best()
