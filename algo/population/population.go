@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/rand"
 	"sort"
-	"time"
 
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/instance"
@@ -85,7 +84,6 @@ func (s *ScoredPopulation) TournamentSelection(forIndex int, options *core.Optio
 	for i := 0; i < k; i++ {
 		instanceIndexes[i] = i
 	}
-	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(k, func(i, j int) { instanceIndexes[i], instanceIndexes[j] = instanceIndexes[j], instanceIndexes[i] })
 
 	// Select individual from the population

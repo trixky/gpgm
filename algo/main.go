@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"sort"
 	"syscall/js"
 	"time"
@@ -131,6 +132,7 @@ func initializeWasm() js.Func {
 // runWasm parse arguments, run the simulation and return its result
 func runGenerationWasm() js.Func {
 	run := js.FuncOf(func(this js.Value, args []js.Value) any {
+		rand.Seed(time.Now().UnixNano())
 		solver := solver.RunningSolver{}
 
 		// --------- extract the response

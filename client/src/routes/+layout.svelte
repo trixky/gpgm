@@ -3,6 +3,8 @@
 	import { onMount } from 'svelte';
 	import '../app.css';
 
+	let ready = false;
+
 	onMount(() => {
 		// @ts-ignore
 		// Go is loaded from the app.html (wasm)
@@ -11,6 +13,7 @@
 		WebAssembly.instantiateStreaming(fetch('wasm/src/main.wasm'), goWasm.importObject).then(
 			(result) => {
 				goWasm.run(result.instance);
+				ready = true;
 			}
 		);
 	});
@@ -22,7 +25,7 @@
 </svelte:head>
 
 <main>
-	<slot />
+	<slot {ready} />
 </main>
 
 <!-- ---------------------------------------------- STYLE -->

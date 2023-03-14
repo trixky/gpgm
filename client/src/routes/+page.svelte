@@ -13,6 +13,8 @@
 	import { scale } from 'svelte/transition';
 	import { parse_as } from '$lib/utils/parse';
 
+	export let ready: boolean;
+
 	// ------------------------------ IO
 	let selectedExample = 0;
 	let customInput = '';
@@ -26,7 +28,6 @@
 	let stop = false;
 	let stopped = false;
 	let finished = false;
-	let allTimeBest: ScoredInstance | null = null;
 
 	$: disabled_reset = !running || !stopped;
 
@@ -55,6 +56,9 @@
 
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
 			result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
+			console.log(
+				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
+			);
 
 			console.log(
 				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
@@ -67,13 +71,9 @@
 			// 	.join('\n');
 
 			const best = result_wasm_json.scored_population.instances[0];
-			if (!allTimeBest || allTimeBest.score < best.score) {
-				allTimeBest = best;
-			}
-
-			outputFile = WASM_generate_output(JSON.stringify(allTimeBest.simulation));
-			output = `Cycles: ${allTimeBest.cycle}\nScore: ${allTimeBest.score}\n${JSON.stringify(
-				allTimeBest.simulation.stock,
+			outputFile = WASM_generate_output(JSON.stringify(best.simulation));
+			output = `Cycles: ${best.cycle}\nScore: ${best.score}\n${JSON.stringify(
+				best.simulation.stock,
 				null,
 				'\t'
 			)}`;
@@ -112,7 +112,9 @@
 
 	// -------- State
 	function handle_run() {
-		if (!running) {
+		lastError = WASM_parse_input(input);
+
+		if (!lastError && !running) {
 			running = true;
 			stop = false;
 			stopped = false;
@@ -158,7 +160,6 @@
 			stopped = false;
 			generation = 0;
 			finished = false;
-			allTimeBest = null;
 
 			GenerationStore.reset();
 			frame++;
@@ -257,10 +258,11 @@
 				}
 			}
 
-			// huh
-			setTimeout(() => {
+			// setTimeout(() => {
+			if (ready) {
 				lastError = WASM_parse_input(input);
-			}, 50);
+			}
+			// }, 50);
 		}
 	});
 </script>
