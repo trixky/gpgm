@@ -10,6 +10,12 @@ type EntryGene struct {
 	Process_ids []int
 }
 
+func (eg *EntryGene) DeepCopy() *EntryGene {
+	return &EntryGene{
+		Process_ids: append(make([]int, 0, len(eg.Process_ids)), eg.Process_ids...),
+	}
+}
+
 // RandomCut cut processes randomly when is possible
 func (eg *EntryGene) RandomCut(luck int) {
 	// WARNING: luck at one cut all processes except the last one

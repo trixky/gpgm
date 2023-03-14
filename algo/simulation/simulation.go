@@ -50,7 +50,6 @@ func (s *Simulation) canExecuteAnyProcess() bool {
 
 func (s *Simulation) Run(options *core.Options) {
 	for ; s.Cycle < options.MaxCycle; s.Cycle++ {
-		// fmt.Println("simulation ========================================== cycle", s.Cycle)
 		// ? Abort early if there is no executable processes and no expected stocks
 		if !s.canExecuteAnyProcess() && len(s.ExpectedStock) == 0 {
 			break
@@ -73,11 +72,9 @@ func (s *Simulation) Run(options *core.Options) {
 
 		// ? Execute actions from genes
 		if s.canExecuteAnyProcess() {
-			// fmt.Println("simulation =========================== stock avant")
-			// fmt.Println(s.Stock)
 			stock_copy := s.Stock.DeepCopy()
-			process_quantities_stack := interpretor.Interpret(s.Instance, s.InitialContext, &stock_copy, options)
 
+			process_quantities_stack := interpretor.Interpret(s.Instance, s.InitialContext, &stock_copy, options)
 			// * Calculate stock
 			for _, process_quantity := range process_quantities_stack.Stack {
 				for name, quantity := range process_quantity.Process.Inputs {
@@ -96,8 +93,6 @@ func (s *Simulation) Run(options *core.Options) {
 					Quantity: process_quantity.Quantity,
 				})
 			}
-			// fmt.Println("simulation =========================== stock apres")
-			// fmt.Println(s.Stock)
 		}
 
 		// * Skip cycles until the next expected stock is ready if no process can be executed
