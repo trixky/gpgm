@@ -101,6 +101,7 @@
 		} else if (index > 0 && index <= examples.length) {
 			input = examples[index - 1].text;
 		}
+		save_input_state(input, index);
 	}
 
 	// -------- State
@@ -227,23 +228,28 @@
 	// https://developer.mozilla.org/en-US/docs/Glossary/Base64
 
 	const COOKIE_KEY_INPUT = 'input';
+	const COOKIE_KEY_SELECT = 'select';
+
+	function save_input_state(input: string, select: number) {
+		if (browser) {
+			// encode
+			const input_64 = btoa(input);
+
+			// save in cookies
+			document.cookie = `${COOKIE_KEY_INPUT}=${input_64}; path=/`;
+			document.cookie = `${COOKIE_KEY_SELECT}=${select}; path=/`;
+		}
+	}
 
 	function handle_input(e: any) {
-		// encode
-		const input_64 = btoa(e.target.value);
-
-		if (browser) {
-			// save in cookies
-			document.cookie = COOKIE_KEY_INPUT + '=' + input_64 + '; path=/';
-		}
-
 		selectedExample = 0;
-		customInput = input;
+		customInput = e.target.value;
+		save_input_state(e.target.value, 0);
 	}
 
 	onMount(() => {
 		if (browser) {
-			// extract from cookies
+			// extract input from cookies
 			const input_64 = document.cookie
 				.match('(^|;)\\s*' + COOKIE_KEY_INPUT + '\\s*=\\s*([^;]+)')
 				?.pop();
@@ -254,6 +260,18 @@
 
 				input = input_text;
 				customInput = input_text;
+			}
+
+			// extract select value
+			const rawSelect = document.cookie
+				.match('(^|;)\\s*' + COOKIE_KEY_SELECT + '\\s*=\\s*([^;]+)')
+				?.pop();
+
+			if (rawSelect != undefined) {
+				const select = Number(rawSelect);
+				if (!isNaN(select) && select >= 0 && select < examples.length) {
+					selectedExample = select;
+				}
 			}
 		}
 	});
