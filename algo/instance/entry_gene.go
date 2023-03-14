@@ -151,7 +151,7 @@ func (eg *EntryGene) Mutate(egeg *EntryGene, options *core.Options) *EntryGene {
 	mutated_entry_gene := EntryGene{}
 
 	// Use the pourcentage of chance
-	if rand.Intn(1000) < int(options.MutationChance*10) {
+	if rand.Intn(1000) < int(options.MutationChance*1000) {
 		// Mutation
 
 		random := rand.Intn(9)

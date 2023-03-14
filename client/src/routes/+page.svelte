@@ -60,6 +60,10 @@
 				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
 			);
 
+			console.log(
+				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
+			);
+
 			// const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
 			// 	?.map((process: any) => {
 			// 		return `cycle:${process.cycle}\t\t${process.process.name}\t(${process.amount})`;

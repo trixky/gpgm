@@ -69,7 +69,11 @@ func (c *Chromosome) Mutate(processes []core.Process, optimize map[string]bool, 
 	mutated_chromosome.EntryGene = *mutated_chromosome.EntryGene.Mutate(&new_chromosome.EntryGene, options)
 
 	// ----------- priority gene
-	mutated_chromosome.PriorityGenes = new_chromosome.PriorityGenes
+	if options.MutationChance > 0.5 {
+		mutated_chromosome.PriorityGenes = new_chromosome.PriorityGenes
+	} else {
+		mutated_chromosome.PriorityGenes = c.PriorityGenes
+	}
 
 	return &mutated_chromosome
 }
