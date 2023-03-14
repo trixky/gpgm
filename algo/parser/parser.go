@@ -35,12 +35,8 @@ func peekToken(line string, offset int) (string, int) {
 	return token, j
 }
 
-// TODO return Product, err ?
-func parseStock(line string) *core.Product {
-	product := core.Product{
-		Name:     "",
-		Quantity: -1,
-	}
+func parseStock(line string) (product core.Product, err error) {
+	product.Quantity = -1
 
 	for i := 0; i < len(line); i++ {
 		// Peek next token
@@ -48,12 +44,12 @@ func parseStock(line string) *core.Product {
 		i = newOffset
 
 		if product.Name != "" && product.Quantity >= 0 {
-			return nil
+			return product, fmt.Errorf("too many product informations")
 		}
 
 		// Use token
 		if token == ":" && product.Name == "" {
-			return nil
+			return product, fmt.Errorf("missing product name")
 		}
 		if token == ":" {
 			continue
@@ -62,30 +58,29 @@ func parseStock(line string) *core.Product {
 			product.Name = token
 		} else if product.Quantity < 0 {
 			quantity, err := strconv.Atoi(token)
-			if err != nil || quantity < 0 {
-				return nil
+			if err != nil {
+				return product, err
+			}
+			if quantity < 0 {
+				return product, fmt.Errorf("invalid stock quantity `%d`", quantity)
 			}
 			product.Quantity = quantity
 		} else {
-			return nil
+			return product, fmt.Errorf("too many product informations")
 		}
 	}
 
 	if product.Name == "" || product.Quantity < 0 {
-		return nil
+		return product, fmt.Errorf("missing product name or quantity")
 	}
 
-	return &product
+	return product, nil
 }
 
-// TODO return Process, err ?
-func parseProcess(line string) *core.Process {
-	process := core.Process{
-		Name:    "",
-		Inputs:  make(map[string]int),
-		Outputs: make(map[string]int),
-		Delay:   0,
-	}
+func parseProcess(line string) (process core.Process, err error) {
+	process.Inputs = make(map[string]int)
+	process.Outputs = make(map[string]int)
+
 	currentIdentifier := ""
 	closed := false
 	step := 0
@@ -98,7 +93,7 @@ func parseProcess(line string) *core.Process {
 
 		// Too much tokens
 		if step == 5 {
-			return nil
+			return process, fmt.Errorf("too many process informations")
 		}
 
 		// Process name
@@ -114,7 +109,7 @@ func parseProcess(line string) *core.Process {
 			continue
 		}
 		if step < 2 {
-			return nil
+			return process, fmt.Errorf("expected separator `:` but got `%s`", token)
 		}
 
 		// Inputs
@@ -123,7 +118,7 @@ func parseProcess(line string) *core.Process {
 				step = 3
 				continue
 			} else if currentIdentifier == "" {
-				return nil
+				return process, fmt.Errorf("missing input product name")
 			} else {
 				continue // expect quantity next
 			}
@@ -131,14 +126,14 @@ func parseProcess(line string) *core.Process {
 		if step == 2 {
 			if token == "(" {
 				if insideParenthesis {
-					return nil
+					return process, fmt.Errorf("unexpected `(` inside of parenthesis")
 				}
 				insideParenthesis = true
 				continue
 			}
 			if token == ")" {
 				if !insideParenthesis || closed || currentIdentifier != "" {
-					return nil
+					return process, fmt.Errorf("unexpected `)` token outside of parenthesis")
 				}
 				insideParenthesis = false
 				continue
@@ -153,8 +148,11 @@ func parseProcess(line string) *core.Process {
 				continue
 			} else {
 				quantity, err := strconv.Atoi(token)
-				if err != nil || quantity < 0 {
-					return nil
+				if err != nil {
+					return process, err
+				}
+				if quantity < 0 {
+					return process, fmt.Errorf("invalid input product quantity `%d`", quantity)
 				}
 				process.Inputs[currentIdentifier] = quantity
 				currentIdentifier = ""
@@ -168,7 +166,7 @@ func parseProcess(line string) *core.Process {
 				step = 4
 				continue
 			} else if currentIdentifier == "" {
-				return nil
+				return process, fmt.Errorf("missing output product name")
 			} else {
 				continue // expect quantity next
 			}
@@ -176,14 +174,14 @@ func parseProcess(line string) *core.Process {
 		if step == 3 {
 			if token == "(" {
 				if insideParenthesis {
-					return nil
+					return process, fmt.Errorf("unexpected `(` inside of parenthesis")
 				}
 				insideParenthesis = true
 				continue
 			}
 			if token == ")" {
 				if !insideParenthesis || closed || currentIdentifier != "" {
-					return nil
+					return process, fmt.Errorf("unexpected `)` token outside of parenthesis")
 				}
 				insideParenthesis = false
 				continue
@@ -198,8 +196,11 @@ func parseProcess(line string) *core.Process {
 				continue
 			} else {
 				quantity, err := strconv.Atoi(token)
-				if err != nil || quantity < 0 {
-					return nil
+				if err != nil {
+					return process, err
+				}
+				if quantity < 0 {
+					return process, fmt.Errorf("invalid output product quantity `%d`", quantity)
 				}
 				process.Outputs[currentIdentifier] = quantity
 				currentIdentifier = ""
@@ -210,8 +211,11 @@ func parseProcess(line string) *core.Process {
 		// Delay
 		if step == 4 {
 			delay, err := strconv.Atoi(token)
-			if err != nil || delay < 0 {
-				return nil
+			if err != nil {
+				return process, err
+			}
+			if delay < 0 {
+				return process, fmt.Errorf("invalid process delay `%d`", delay)
 			}
 			process.Delay = delay
 			step = 5
@@ -220,20 +224,20 @@ func parseProcess(line string) *core.Process {
 	}
 
 	if step < 5 {
-		return nil
+		return process, fmt.Errorf("missing process informations")
 	}
 
-	return &process
+	return process, nil
 }
 
-// TODO return []string, err ?
-func parseOptimize(line string) *map[string]bool {
+func parseOptimize(line string) (optimizeFor map[string]bool, err error) {
+	optimizeFor = make(map[string]bool)
+
 	step := 0
 	shouldEnd := false
 	leftToken := ""
 	expectTwo := -1
 	rightToken := ""
-	optimizeFor := make(map[string]bool)
 
 	for i := 0; i < len(line); i++ {
 		// Peek next token
@@ -241,7 +245,7 @@ func parseOptimize(line string) *map[string]bool {
 		i = newOffset
 
 		if shouldEnd {
-			return nil
+			return optimizeFor, fmt.Errorf("too many informations in optimize line")
 		}
 
 		// First part
@@ -250,7 +254,7 @@ func parseOptimize(line string) *map[string]bool {
 			continue
 		}
 		if step < 1 {
-			return nil
+			return optimizeFor, fmt.Errorf("expected `optimize` token but got `%s`", token)
 		}
 
 		// Separator
@@ -259,7 +263,7 @@ func parseOptimize(line string) *map[string]bool {
 			continue
 		}
 		if step < 2 {
-			return nil
+			return optimizeFor, fmt.Errorf("expected `:` token but got `%s`", token)
 		}
 
 		// Separator
@@ -268,14 +272,14 @@ func parseOptimize(line string) *map[string]bool {
 			continue
 		}
 		if step < 3 {
-			return nil
+			return optimizeFor, fmt.Errorf("expected `(` token but got `%s`", token)
 		}
 
 		// Optimize for
 		if token == ")" {
 			if leftToken != "" && rightToken != "" {
 				if rightToken == "time" {
-					return nil
+					return optimizeFor, fmt.Errorf("unexpected `time` optimize in right side of optimization")
 				}
 				optimizeFor[rightToken] = true
 			} else {
@@ -286,10 +290,10 @@ func parseOptimize(line string) *map[string]bool {
 		}
 		if token == ";" {
 			if leftToken == "" {
-				return nil
+				return optimizeFor, fmt.Errorf("missing left side of optimization")
 			}
 			if expectTwo > 0 && rightToken == "" {
-				return nil
+				return optimizeFor, fmt.Errorf("missing right side of optimization")
 			}
 			if leftToken != "" && rightToken != "" {
 				optimizeFor[rightToken] = true
@@ -302,25 +306,25 @@ func parseOptimize(line string) *map[string]bool {
 			continue
 		} else if token == "|" {
 			if expectTwo > 0 {
-				return nil
+				return optimizeFor, fmt.Errorf("unexpected `|` token in already separated optimization")
 			}
 			if leftToken == "" {
-				return nil
+				return optimizeFor, fmt.Errorf("missing left side of optimization")
 			}
 			expectTwo = 1
 			continue
 		} else {
 			if rightToken != "" {
-				return nil
+				return optimizeFor, fmt.Errorf("too many informations in optimization")
 			}
 			if leftToken == "" {
 				leftToken = token
 			} else {
 				if token == "time" {
-					return nil
+					return optimizeFor, fmt.Errorf("unexpected `time` optimize in right side of optimization")
 				}
 				if leftToken != "time" {
-					return nil
+					return optimizeFor, fmt.Errorf("unexpected `%s` optimize in left side of optimization but expected `time`", leftToken)
 				}
 				rightToken = token
 			}
@@ -328,13 +332,13 @@ func parseOptimize(line string) *map[string]bool {
 	}
 
 	if step < 3 || !shouldEnd {
-		return nil
+		return optimizeFor, fmt.Errorf("missing informations in optimize line")
 	}
 	if len(optimizeFor) == 0 {
-		return nil
+		return optimizeFor, fmt.Errorf("nothing to optimize for")
 	}
 
-	return &optimizeFor
+	return optimizeFor, nil
 }
 
 func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
@@ -369,14 +373,14 @@ func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
 			continue
 		}
 
-		asStock := parseStock(line)
-		if asStock != nil {
+		asStock, err := parseStock(line)
+		if err == nil {
 			sm.Stock[asStock.Name] = asStock.Quantity
 			continue
 		}
 
-		asProcess := parseProcess(line)
-		if asProcess != nil {
+		asProcess, err := parseProcess(line)
+		if err == nil {
 			for key := range asProcess.Inputs {
 				if !sm.Stock.Exists(key) {
 					sm.Stock[key] = 0
@@ -387,20 +391,20 @@ func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
 					sm.Stock[key] = 0
 				}
 			}
-			sm.Processes = append(sm.Processes, *asProcess)
+			sm.Processes = append(sm.Processes, asProcess)
 			continue
 		}
 
-		asOptimize := parseOptimize(line)
-		if asOptimize != nil && len(*asOptimize) > 0 {
-			for product := range *asOptimize {
+		asOptimize, err := parseOptimize(line)
+		if err == nil && len(asOptimize) > 0 {
+			for product := range asOptimize {
 				if product == "time" {
 					continue
 				} else if !sm.IsInOutput(product) && !sm.Stock.Exists(product) {
 					return sm, fmt.Errorf("parser: Unexpected optimize for %s, not in any process output", product)
 				}
 			}
-			sm.Optimize = *asOptimize
+			sm.Optimize = asOptimize
 			continue
 		}
 
