@@ -1,5 +1,5 @@
-import type GenerationModel from '../models/generation';
-import type InstanceModel from '../models/instance';
+import type GenerationModel from '$lib/models/generation';
+import type InstanceModel from '$lib/models/instance';
 
 const min_instances = 30
 const max_instances = 500
@@ -33,7 +33,7 @@ export function generate_empty_generations(): Array<GenerationModel> {
 
 export function generate_random_generations(): Array<GenerationModel> {
 
-    
+
     const nb_instance = random_instance_number()
     const nb_generation = 200
 

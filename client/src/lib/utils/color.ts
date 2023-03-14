@@ -1,4 +1,4 @@
-import type RGBModel from '../models/rgb'
+import type RGBModel from '$lib/models/rgb'
 
 export function get_color_from_percentage(percentage: number): RGBModel {
     // https://www.w3schools.com/colors/colors_picker.asp
@@ -74,7 +74,7 @@ export function get_color_from_percentage(percentage: number): RGBModel {
             blue: 153
         };
     }
-    
+
     // ------------------- exceed the referentiel
     return <RGBModel>{
         // rgb(255, 255, 255)

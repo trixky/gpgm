@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-import Config from '../config'
-import type ArgumentsModel from '../models/arguments';
+import Config from '$lib/config'
+import type ArgumentsModel from '$lib/models/arguments';
 
 function generate_default_arguments(): ArgumentsModel {
     return <ArgumentsModel>{
@@ -12,14 +12,14 @@ function generate_default_arguments(): ArgumentsModel {
 }
 
 function create_argument_store() {
-	const { subscribe, update, set } = writable(generate_default_arguments());
+    const { subscribe, update, set } = writable(generate_default_arguments());
 
-	return {
-		subscribe,
+    return {
+        subscribe,
         default: () => {
             set(generate_default_arguments())
         },
-		update_generations: (generations: number) => {
+        update_generations: (generations: number) => {
             update(args => {
                 args.generations = generations
                 return args
@@ -43,7 +43,7 @@ function create_argument_store() {
                 return args
             })
         },
-	};
+    };
 }
 
 const argument_store = create_argument_store();

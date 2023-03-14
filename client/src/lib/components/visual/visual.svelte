@@ -1,12 +1,12 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import GenerationStore from '../../stores/generation';
-	import StatisticStore from '../../stores/statistic';
-	import { get_color_from_percentage } from '../../utils/color';
-	import type GenerationModel from '../../models/generation';
-	import Config from '../../config';
-	import type { Referentiel as ReferentielModel } from '../../models/statistic';
+	import GenerationStore from '$lib/stores/generation';
+	import StatisticStore from '$lib/stores/statistic';
+	import { get_color_from_percentage } from '$lib/utils/color';
+	import type GenerationModel from '$lib/models/generation';
+	import Config from '$lib/config';
+	import type { Referentiel as ReferentielModel } from '$lib/models/statistic';
 
 	const PIXEL_SIZE = 4;
 	const COLOR_R = 0;

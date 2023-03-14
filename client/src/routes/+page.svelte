@@ -1,13 +1,13 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
-	import Config from '../config';
-	import Visual from '../components/visual/visual.svelte';
-	import GenerationStore from '../stores/generation';
-	import ArgumentStore from '../stores/arguments';
-	import StatisticStore from '../stores/statistic';
+	import Config from '$lib/config';
+	import Visual from '$lib/components/visual/visual.svelte';
+	import GenerationStore from '$lib/stores/generation';
+	import ArgumentStore from '$lib/stores/arguments';
+	import StatisticStore from '$lib/stores/statistic';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import examples from '../lib/Examples';
+	import examples from '$lib/Examples';
 	import { scale } from 'svelte/transition';
 
 	// ------------------------------ IO

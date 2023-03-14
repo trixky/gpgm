@@ -1,13 +1,13 @@
 import { writable } from 'svelte/store';
 import { generate_empty_generations, generate_random_generation, random_instance_number } from './temp_generations';
-import type GenerationModel from '../models/generation';
-import { get_last_generation_scores } from '../models/generation';
-import type {Scores as ScoresModel} from '../models/statistic'
+import type GenerationModel from '$lib/models/generation';
+import { get_last_generation_scores } from '$lib/models/generation';
 
 import StatisticStore from './statistic';
 
 function sort_generation(generation: GenerationModel): GenerationModel {
 	return <GenerationModel>{
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		instances: generation.instances.filter(_ => true).sort((a, b) => b.score - a.score)
 	}
 }

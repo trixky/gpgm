@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-import type StatisticModel from '../models/statistic';
-import type { Scores } from '../models/statistic';
+import type StatisticModel from '$lib/models/statistic';
+import type { Scores } from '$lib/models/statistic';
 
 function generate_default_statistic(): StatisticModel {
     return <StatisticModel>{
