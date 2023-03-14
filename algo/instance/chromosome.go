@@ -1,6 +1,7 @@
 package instance
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/trixky/krpsim/algo/core"
@@ -59,6 +60,9 @@ func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromoso
 
 // Mutate generates a child by mutation
 func (c *Chromosome) Mutate(processes []core.Process, optimize map[string]bool, options *core.Options) *Chromosome {
+
+	// return c
+
 	mutated_chromosome := Chromosome{}
 
 	new_chromosome := Chromosome{}
@@ -70,9 +74,15 @@ func (c *Chromosome) Mutate(processes []core.Process, optimize map[string]bool, 
 
 	// ----------- priority gene
 	if options.MutationChance > 0.5 {
+		fmt.Println("A 1")
 		mutated_chromosome.PriorityGenes = new_chromosome.PriorityGenes
 	} else {
-		mutated_chromosome.PriorityGenes = c.PriorityGenes
+		fmt.Println("A 2")
+		mutated_chromosome.PriorityGenes = make([]PriorityGene, len(c.PriorityGenes))
+
+		for priority_gene_index, priority_gene := range c.PriorityGenes {
+			mutated_chromosome.PriorityGenes[priority_gene_index] = *priority_gene.DeepCopy() // Is deep copy useful ?
+		}
 	}
 
 	return &mutated_chromosome

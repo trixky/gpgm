@@ -10,6 +10,20 @@ type PriorityGene struct {
 	Process                    *core.Process
 }
 
+// DeepCopy
+func (pg *PriorityGene) DeepCopy() *PriorityGene {
+	new_priority_gene := PriorityGene{
+		Process:                    pg.Process,
+		HistoryProcessDependencies: make(map[string]ProcessDependencies),
+	}
+
+	for history_process_dependencie_index, history_process_dependencie := range pg.HistoryProcessDependencies {
+		new_priority_gene.HistoryProcessDependencies[history_process_dependencie_index] = *history_process_dependencie.DeepCopy()
+	}
+
+	return &new_priority_gene
+}
+
 // InitHistory initalizes recursively the history
 func (pg *PriorityGene) InitHistory(h *history.History, depth int, process *core.Process, processes []core.Process) {
 	depth--

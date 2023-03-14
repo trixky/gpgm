@@ -194,6 +194,7 @@ func (p *Population) Mutate(context core.InitialContext, options *core.Options) 
 
 	for instance_index, instance := range p.Instances {
 		mutated_population.Instances[instance_index] = *instance.Mutate(context.Processes, context.Optimize, options)
+		// mutated_population.Instances[instance_index] = instance
 	}
 
 	return &mutated_population
