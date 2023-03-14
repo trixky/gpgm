@@ -35,8 +35,8 @@ func NewSimulation(info core.InitialContext, instance instance.Instance) Simulat
 	}
 }
 
-func (s *Simulation) CalulateFitness() int {
-	return Fitness(*s)
+func (s *Simulation) CalulateFitness(options *core.Options) int {
+	return Fitness(*s, options)
 }
 
 func (s *Simulation) canExecuteAnyProcess() bool {

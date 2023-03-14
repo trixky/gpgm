@@ -21,17 +21,38 @@ export interface InitialContext {
 //////////
 // source: options.go
 
+export type SelectionMethod = number /* int64 */;
+export const RandomSelection: SelectionMethod = 0;
+export const TournamentSelection: SelectionMethod = 1;
+export type MutationMethod = number /* int64 */;
+export const LinearMutation: MutationMethod = 0;
+export const LogarithmicMutation: MutationMethod = 1;
+
 export interface Options {
   max_generation: number /* int */;
   time_limit_seconds: number /* int */;
   max_cycle: number /* int */;
   max_depth: number /* int */;
+  /**
+   * Population
+   */
+  population_size: number /* int */;
+  elitism_amount: number /* int */;
+  selection_method: SelectionMethod;
+  tournament_size: number /* int */;
+  tournament_probability: number /* float64 */;
+  crossover_new_instances: number /* int */;
+  /**
+   * Mutation
+   */
+  mutation_chance: number /* float64 */;
+  mutation_method: MutationMethod;
+  /**
+   * Genetic
+   */
   n_entry: number /* int */;
   history_part_max_length: number /* int */;
   history_key_max_length: number /* int */;
-  population_size: number /* int */;
-  use_elitism: boolean;
-  elitism_amount: number /* int */;
   random_cut: boolean;
   max_cut: number /* int */;
 }

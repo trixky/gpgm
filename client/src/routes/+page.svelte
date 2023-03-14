@@ -1,6 +1,6 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
-	import type { WASMGenerationReturn } from '../types';
+	import type { RunningSolver, WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import Config from '$lib/config';
 	import Visual from '$lib/components/visual/visual.svelte';
@@ -73,6 +73,7 @@
 				null,
 				'\t'
 			)}`;
+
 			new_generation();
 		}, 1);
 	}
@@ -112,7 +113,7 @@
 			stop = false;
 			stopped = false;
 
-			const running_solver = WASM_initialize(
+			const raw_running_solver = WASM_initialize(
 				JSON.stringify({
 					text: input,
 					generations: $ArgumentStore.generations,
@@ -121,30 +122,12 @@
 				})
 			);
 
-			if (running_solver == undefined || running_solver == null) {
+			if (raw_running_solver == undefined || raw_running_solver == null) {
 				output = 'error';
 			} else {
-				const result_wasm = WASM_run_generation(running_solver);
-				result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
-
-				// const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
-				// 	?.map((process: any) => {
-				// 		return `cycle:${process.cycle}\t\t${process.process.name}\t(${process.quantity})`;
-				// 	})
-				// 	.join('\n');
-
-				const best = result_wasm_json.scored_population.instances[0];
-				if (!allTimeBest || allTimeBest.score < best.score) {
-					allTimeBest = best;
-				}
-
-				outputFile = WASM_generate_output(JSON.stringify(allTimeBest.simulation));
-				output = `Cycles: ${allTimeBest.cycle}\nScore: ${allTimeBest.score}\n${JSON.stringify(
-					allTimeBest.simulation.stock,
-					null,
-					'\t'
-				)}`;
-
+				generation = -1;
+				const running_solver = parse_as<RunningSolver>(raw_running_solver);
+				result_wasm_json = { running_solver, scored_population: { instances: [] } };
 				new_generation();
 			}
 		}

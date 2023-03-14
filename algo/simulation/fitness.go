@@ -1,6 +1,8 @@
 package simulation
 
-func Fitness(simulation Simulation) int {
+import "github.com/trixky/krpsim/algo/core"
+
+func OptimizeOnlyFitness(simulation Simulation) int {
 	score := 0
 	factor := 1
 
@@ -19,4 +21,8 @@ func Fitness(simulation Simulation) int {
 	}
 
 	return score
+}
+
+func Fitness(simulation Simulation, options *core.Options) int {
+	return OptimizeOnlyFitness(simulation)
 }

@@ -57,7 +57,7 @@ func (p *Population) RunAllSimulations(context core.InitialContext, options *cor
 		scored = append(scored, ScoredInstance{
 			Instance:   instance,
 			Simulation: simulation,
-			Score:      simulation.CalulateFitness(),
+			Score:      simulation.CalulateFitness(options),
 			Cycle:      simulation.Cycle,
 		})
 	}
