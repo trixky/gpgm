@@ -16,7 +16,7 @@ import (
 	"github.com/trixky/krpsim/algo/simulation"
 )
 
-const MUTATION_PERCENTAGE = 100 // HARDCODED
+const MUTATION_PERCENTAGE = 50 // HARDCODED
 
 type Arguments struct {
 	Text           string `json:"text"`
