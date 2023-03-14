@@ -60,7 +60,16 @@ func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromoso
 // Mutate generates a child by mutation
 func (c *Chromosome) Mutate(processes []core.Process, optimize map[string]bool, options *core.Options) *Chromosome {
 	mutated_chromosome := Chromosome{}
-	mutated_chromosome.Init(processes, optimize, options)
+
+	new_chromosome := Chromosome{}
+	new_chromosome.Init(processes, optimize, options)
+
+	// ----------- entry gene
+	mutated_chromosome.EntryGene = *c.EntryGene.DeepCopy()
+	mutated_chromosome.EntryGene = *mutated_chromosome.EntryGene.Mutate(&new_chromosome.EntryGene, percentage)
+
+	// ----------- priority gene
+	mutated_chromosome.PriorityGenes = new_chromosome.PriorityGenes
 
 	return &mutated_chromosome
 }
