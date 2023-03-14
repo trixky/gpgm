@@ -16,6 +16,8 @@ import (
 	"github.com/trixky/krpsim/algo/simulation"
 )
 
+const MUTATION_PERCENTAGE = 100 // HARDCODED
+
 type Arguments struct {
 	Text           string `json:"text"`
 	MaxGeneration  int    `json:"generations"`
@@ -38,9 +40,13 @@ type WASMGenerationReturn struct {
 
 // * Run a single generation for the given RunningSolver
 func runGeneration(solver RunningSolver) (population.ScoredPopulation, RunningSolver) {
+
 	scored := solver.Population.RunAllSimulations(solver.Context, &solver.Options)
-	solver.Population = scored.Crossover(&solver.Options)
-	solver.Population.Mutate(solver.Context, &solver.Options)
+
+	// TODO Cross population
+	mutated_population := solver.Population.Mutate(solver.Context, &solver.Options, MUTATION_PERCENTAGE)
+	solver.Population = population.Population{}
+	solver.Population = *mutated_population
 	solver.Generation += 1
 
 	return scored, solver
@@ -103,7 +109,7 @@ func runSimulation(args Arguments) string {
 			break
 		}
 		population := scored.Crossover(&options)
-		population.Mutate(context, &options)
+		population.Mutate(context, &options, MUTATION_PERCENTAGE)
 		// fmt.Printf("%v\n", population)
 	}
 	best := scored.Best()
@@ -160,6 +166,7 @@ func initializeWasm() js.Func {
 
 			return nil
 		}
+		running_solver.Context.FindProcessParents()
 
 		// --------- insert the response
 		running_solver_json, err := json.Marshal(running_solver)

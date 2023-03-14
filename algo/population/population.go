@@ -1,6 +1,7 @@
 package population
 
 import (
+	"fmt"
 	"math/rand"
 	"sort"
 
@@ -47,7 +48,8 @@ func (p *Population) RunAllSimulations(context core.InitialContext, options *cor
 	var scored []ScoredInstance
 
 	// Run a simulation on all instances
-	for _, instance := range p.Instances {
+	for instance_index, instance := range p.Instances {
+		fmt.Println("--------- instance", instance_index, "(", instance.Chromosome.EntryGene.Process_ids, ")")
 		simulation := simulation.NewSimulation(context, instance)
 		simulation.Run(options)
 		scored = append(scored, ScoredInstance{
@@ -123,14 +125,14 @@ func (s *ScoredPopulation) Crossover(options *core.Options) Population {
 	return population
 }
 
-func (p *Population) Mutate(context core.InitialContext, options *core.Options) {
-	for _, instance := range p.Instances {
+func (p *Population) Mutate(context core.InitialContext, options *core.Options, percentage float64) *Population {
+	mutated_population := Population{}
 
-		process_max := uint16(len(context.Processes))
-		process_shift := 1
-		quantity_shift := 1
-		activation_chance := 10
+	mutated_population.Instances = make([]instance.Instance, len(p.Instances))
 
-		instance.Chromosome.Mutate(process_max, process_shift, quantity_shift, activation_chance, context.Processes, context.Optimize, options) // TODO pass options
+	for instance_index, instance := range p.Instances {
+		mutated_population.Instances[instance_index] = *instance.Mutate(context.Processes, context.Optimize, options, percentage)
 	}
+
+	return &mutated_population
 }
