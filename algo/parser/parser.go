@@ -373,14 +373,14 @@ func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
 			continue
 		}
 
-		asStock, err := parseStock(line)
-		if err == nil {
+		asStock, stockErr := parseStock(line)
+		if stockErr == nil {
 			sm.Stock[asStock.Name] = asStock.Quantity
 			continue
 		}
 
-		asProcess, err := parseProcess(line)
-		if err == nil {
+		asProcess, processErr := parseProcess(line)
+		if processErr == nil {
 			for key := range asProcess.Inputs {
 				if !sm.Stock.Exists(key) {
 					sm.Stock[key] = 0
@@ -395,34 +395,40 @@ func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
 			continue
 		}
 
-		asOptimize, err := parseOptimize(line)
-		if err == nil && len(asOptimize) > 0 {
+		asOptimize, optimizeErr := parseOptimize(line)
+		if optimizeErr == nil && len(asOptimize) > 0 {
 			for product := range asOptimize {
 				if product == "time" {
 					continue
 				} else if !sm.IsInOutput(product) && !sm.Stock.Exists(product) {
-					return sm, fmt.Errorf("parser: Unexpected optimize for %s, not in any process output", product)
+					return sm, fmt.Errorf("unexpected optimize for `%s`, not in any process output", product)
 				}
 			}
 			sm.Optimize = asOptimize
 			continue
 		}
 
-		return sm, fmt.Errorf("parser: Invalid line %d: %s", line_number+1, line)
+		errString := processErr.Error()
+		if strings.HasPrefix(strings.TrimSpace(line), "optimize") {
+			errString = optimizeErr.Error()
+		} else if len(strings.Split(line, ":")) == 2 {
+			errString = stockErr.Error()
+		}
+		return sm, fmt.Errorf("invalid line %d: %s: %s", line_number+1, line, errString)
 	}
 
 	if sm.Stock == nil {
-		return sm, fmt.Errorf("parser: Invalid Stock")
+		return sm, fmt.Errorf("invalid Stock")
 	}
 	if sm.Processes == nil {
-		return sm, fmt.Errorf("parser: Invalid Processes")
+		return sm, fmt.Errorf("invalid Processes")
 	} else if len(sm.Processes) == 0 {
-		return sm, fmt.Errorf("parser: No Processes")
+		return sm, fmt.Errorf("no Processes")
 	}
 	if sm.Optimize == nil {
-		return sm, fmt.Errorf("parser: Invalid Optimize")
+		return sm, fmt.Errorf("invalid Optimize")
 	} else if len(sm.Optimize) == 0 {
-		return sm, fmt.Errorf("parser: Nothing to optimize for")
+		return sm, fmt.Errorf("nothing to optimize for")
 	}
 
 	return sm, nil

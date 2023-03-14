@@ -87,3 +87,7 @@ input,
 .transition {
 	@apply transition-all duration-150;
 }
+
+.error {
+	@apply p-2 border-red-500 border rounded-md bg-orange-200 text-red-600 text-center;
+}

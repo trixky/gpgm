@@ -16,6 +16,7 @@
 	let input = '';
 	let output = '';
 	let outputFile = '';
+	let lastError: string | null = null;
 
 	// ------------------------------ State
 	let running = false;
@@ -48,8 +49,6 @@
 		setTimeout(() => {
 			// Recursive loop
 
-			// @ts-ignore
-			// loaded from the layout (wasm)
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json.running_solver));
 			result_wasm_json = JSON.parse(result_wasm);
 
@@ -59,7 +58,6 @@
 			// 	})
 			// 	.join('\n');
 
-			// @ts-expect-error
 			outputFile = WASM_generate_output(
 				JSON.stringify(result_wasm_json.scored_population.instances[0].simulation)
 			);
@@ -102,6 +100,7 @@
 			input = examples[index - 1].text;
 		}
 		save_input_state(input, index);
+		lastError = WASM_parse_input(input);
 	}
 
 	// -------- State
@@ -111,8 +110,6 @@
 			stop = false;
 			stopped = false;
 
-			// @ts-ignore
-			// loaded from the layout (wasm)
 			const running_solver = WASM_initialize(
 				JSON.stringify({
 					text: input,
@@ -125,8 +122,6 @@
 			if (running_solver == undefined || running_solver == null) {
 				output = 'error';
 			} else {
-				// @ts-ignore
-				// loaded from the layout (wasm)
 				const result_wasm = WASM_run_generation(running_solver);
 				result_wasm_json = JSON.parse(result_wasm);
 
@@ -136,7 +131,6 @@
 				// 	})
 				// 	.join('\n');
 
-				// @ts-expect-error
 				outputFile = WASM_generate_output(
 					JSON.stringify(result_wasm_json.scored_population.instances[0].simulation)
 				);
@@ -245,9 +239,10 @@
 		selectedExample = 0;
 		customInput = e.target.value;
 		save_input_state(e.target.value, 0);
+		lastError = WASM_parse_input(e.target.value);
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		if (browser) {
 			// extract input from cookies
 			const input_64 = document.cookie
@@ -273,6 +268,11 @@
 					selectedExample = select;
 				}
 			}
+
+			// huh
+			setTimeout(() => {
+				lastError = WASM_parse_input(input);
+			}, 50);
 		}
 	});
 </script>
@@ -307,6 +307,11 @@
 			/>
 			<img src="/mascot.png" alt="" class="absolute -translate-y-[44%]" />
 		</div>
+		{#if lastError}
+			<div class="error mt-4">
+				{lastError}
+			</div>
+		{/if}
 	</div>
 	<div class="form-container">
 		<div class="input-container">

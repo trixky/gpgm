@@ -229,11 +229,28 @@ func generateOutput() js.Func {
 	return run
 }
 
+// Parse the given input file to check if there is any errors
+func parseInput() js.Func {
+	run := js.FuncOf(func(this js.Value, args []js.Value) any {
+		input := args[0].String()
+
+		_, err := parser.ParseSimulationFile(input)
+		if err != nil {
+			return err.Error()
+		}
+
+		return nil
+	})
+
+	return run
+}
+
 func main() {
 	// Register the shared function
 	js.Global().Set("WASM_initialize", initializeWasm())
 	js.Global().Set("WASM_run_generation", runGenerationWasm())
 	js.Global().Set("WASM_generate_output", generateOutput())
+	js.Global().Set("WASM_parse_input", parseInput())
 
 	fmt.Println("Go Web Assembly Loaded")
 
