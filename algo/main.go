@@ -43,8 +43,8 @@ func runGeneration(solver RunningSolver) (population.ScoredPopulation, RunningSo
 
 	scored := solver.Population.RunAllSimulations(solver.Context, &solver.Options)
 
-	// TODO Cross population
-	mutated_population := solver.Population.Mutate(solver.Context, &solver.Options, MUTATION_PERCENTAGE)
+	crossover_opulation := scored.Crossover(&solver.Context, &solver.Options)
+	mutated_population := crossover_opulation.Mutate(solver.Context, &solver.Options, MUTATION_PERCENTAGE)
 	solver.Population = population.Population{}
 	solver.Population = *mutated_population
 	solver.Generation += 1
@@ -59,18 +59,20 @@ func initialize(args Arguments) (RunningSolver, error) {
 		return RunningSolver{}, err
 	}
 	options := core.Options{ // TODO Collect Options
-		PopulationSize:       args.PopulationSize,
-		MaxGeneration:        args.MaxGeneration,
-		MaxCycle:             args.MaxCycle,
-		MaxDepth:             6,
-		NEntry:               1,
-		HistoryPartMaxLength: 3,
-		HistoryKeyMaxLength:  6,
-		TimeLimitSeconds:     60,
-		UseElitism:           true,
-		ElitismAmount:        1,
-		RandomCut:            true,
-		MaxCut:               0,
+		PopulationSize:        args.PopulationSize,
+		MaxGeneration:         args.MaxGeneration,
+		MaxCycle:              args.MaxCycle,
+		MaxDepth:              6,
+		NEntry:                1,
+		HistoryPartMaxLength:  3,
+		HistoryKeyMaxLength:   6,
+		TimeLimitSeconds:      60,
+		ElitismAmount:         5,
+		SelectionMethod:       core.TournamentSelection,
+		TournamentSize:        25,
+		TournamentProbability: 0.77,
+		RandomCut:             true,
+		MaxCut:                0,
 	}
 
 	return RunningSolver{
@@ -108,7 +110,7 @@ func runSimulation(args Arguments) string {
 		if generation >= options.MaxGeneration || time.Since(start).Seconds() > float64(options.TimeLimitSeconds) {
 			break
 		}
-		population := scored.Crossover(&options)
+		population := scored.Crossover(&context, &options)
 		population.Mutate(context, &options, MUTATION_PERCENTAGE)
 		// fmt.Printf("%v\n", population)
 	}

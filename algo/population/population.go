@@ -2,8 +2,10 @@ package population
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"sort"
+	"time"
 
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/instance"
@@ -75,17 +77,70 @@ func (p *ScoredPopulation) Best() ScoredInstance {
 	return p.Instances[0]
 }
 
-func (s *ScoredPopulation) Crossover(options *core.Options) Population {
-	population := NewPopulation(options)
+// https://en.wikipedia.org/wiki/Tournament_selection
+func (s *ScoredPopulation) TournamentSelection(forIndex int, options *core.Options) ScoredInstance {
+	// Select k instances from all Instances (tournament population size)
+	k := len(s.Instances)
+	instanceIndexes := make([]int, k)
+	for i := 0; i < k; i++ {
+		instanceIndexes[i] = i
+	}
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(k, func(i, j int) { instanceIndexes[i], instanceIndexes[j] = instanceIndexes[j], instanceIndexes[i] })
 
+	// Select individual from the population
+	fmt.Printf("%v\n", instanceIndexes)
+	stopAt := int(math.Min(float64(k), float64(options.TournamentSize)))
+	for i := 0; i < stopAt; i++ {
+		globalIndex := instanceIndexes[i]
+		if globalIndex == forIndex {
+			continue
+		}
+		chance := options.TournamentProbability
+		if i >= 1 {
+			chance = chance * math.Pow(1-options.TournamentProbability, float64(i))
+		}
+		if rand.Float64() <= chance {
+			return s.Instances[globalIndex]
+		}
+	}
+
+	if instanceIndexes[0] == forIndex {
+		return s.Instances[instanceIndexes[1]]
+	}
+	return s.Instances[instanceIndexes[0]]
+}
+
+// Set the chance of an instance it's score percentage from the global score of the population
+// Add both chances of the instances and roll a dice to use the current instance
+func (s *ScoredPopulation) RandomSelection(forIndex int, options *core.Options) ScoredInstance {
 	// Calculate the total score of all instances
 	total := 1.
 	for _, scoredInstance := range s.Instances {
 		total += float64(scoredInstance.Score)
 	}
 
+	// Add the chance of both instances and roll a dice
+	scoredInstance := s.Instances[forIndex]
+	for _, otherScoredInstance := range s.Instances[forIndex+1:] {
+		chance := float64(scoredInstance.Score)/total + float64(otherScoredInstance.Score)/total
+		if rand.Float64() <= chance {
+			return otherScoredInstance
+		}
+	}
+	return s.Instances[0]
+}
+
+func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, options *core.Options) Population {
+	population := NewPopulation(options)
+	if len(population.Instances) == 1 {
+		population.Instances[0] = s.Instances[0].Instance
+		return population
+	}
+
+	// * Elitism
 	i := 0
-	if options.UseElitism {
+	if options.ElitismAmount > 0 {
 		max := options.ElitismAmount
 		if options.ElitismAmount >= options.PopulationSize {
 			max = int(float64(options.PopulationSize) * 0.9)
@@ -96,26 +151,34 @@ func (s *ScoredPopulation) Crossover(options *core.Options) Population {
 		i = max
 	}
 
-	// TODO New Instances: Keep a few open slots for totally new Instances ?
+	// * New instances
+	if options.CrossoverNewInstances > 0 {
+		max := i + options.CrossoverNewInstances
+		if max >= options.PopulationSize {
+			max = int(float64(options.PopulationSize-i) * 0.9)
+		}
+		for j := 0; j < max; j++ {
+			population.Instances[j].Init(initialContext.Processes, initialContext.Optimize, options)
+		}
+		i = max
+	}
+
+	// * Crossover between Instances
 	for ; i < options.PopulationSize; i += 2 {
 		scoredInstance := s.Instances[i]
 
-		// Select the other instance to cross with
-		// Add the chance of both instances and roll a dice
-		var with *ScoredInstance
-		for j, otherScoredInstance := range s.Instances {
-			if i != j {
-				chance := float64(scoredInstance.Score)/total + float64(otherScoredInstance.Score)/total
-				if rand.Float64() <= chance {
-					with = &otherScoredInstance
-					break
-				}
-			}
+		// * Selection
+		crossWith := ScoredInstance{}
+		switch options.SelectionMethod {
+		default:
+		case core.RandomSelection:
+			crossWith = s.RandomSelection(i, options)
+		case core.TournamentSelection:
+			crossWith = s.TournamentSelection(i, options)
 		}
-		if with == nil {
-			with = &s.Instances[0]
-		}
-		child1, child2 := scoredInstance.Instance.Cross(&with.Instance)
+
+		// * Genetic operator
+		child1, child2 := scoredInstance.Instance.Cross(&crossWith.Instance)
 		population.Instances[i] = child1
 		if i+1 < options.PopulationSize {
 			population.Instances[i+1] = child2
@@ -127,7 +190,6 @@ func (s *ScoredPopulation) Crossover(options *core.Options) Population {
 
 func (p *Population) Mutate(context core.InitialContext, options *core.Options, percentage float64) *Population {
 	mutated_population := Population{}
-
 	mutated_population.Instances = make([]instance.Instance, len(p.Instances))
 
 	for instance_index, instance := range p.Instances {
