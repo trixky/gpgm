@@ -9,6 +9,8 @@
 	import { browser } from '$app/environment';
 	import examples from '$lib/Examples';
 	import { scale } from 'svelte/transition';
+	import { parse_as } from '$lib/utils/parse';
+	import type { RunningSolver, WASMGenerationReturn } from '../types';
 
 	// ------------------------------ IO
 	let selectedExample = 0;
@@ -29,7 +31,7 @@
 	// ------------------------------ Loop
 	let frame = 0; // Used to refresh the visualizator
 	let generation = 0;
-	let result_wasm_json: any = undefined;
+	let result_wasm_json: WASMGenerationReturn | undefined = undefined;
 
 	function new_generation() {
 		generation++;
@@ -49,8 +51,8 @@
 		setTimeout(() => {
 			// Recursive loop
 
-			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json.running_solver));
-			result_wasm_json = JSON.parse(result_wasm);
+			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
+			result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
 
 			// const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
 			// 	?.map((process: any) => {
@@ -123,7 +125,7 @@
 				output = 'error';
 			} else {
 				const result_wasm = WASM_run_generation(running_solver);
-				result_wasm_json = JSON.parse(result_wasm);
+				result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
 
 				// const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
 				// 	?.map((process: any) => {

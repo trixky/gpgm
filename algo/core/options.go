@@ -25,7 +25,7 @@ type Options struct {
 	UseElitism           bool `json:"use_elitism"`
 	ElitismAmount        int  `json:"elitism_amount"`
 	RandomCut            bool `json:"random_cut"`
-	MaxCut               int  `json:"elitism_amount"`
+	MaxCut               int  `json:"max_cut"`
 	// MutationMethod   MutationMethod
 	// SelectionMethod  SelectionMethod
 }
