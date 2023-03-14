@@ -188,12 +188,12 @@ func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, option
 	return population
 }
 
-func (p *Population) Mutate(context core.InitialContext, options *core.Options, percentage float64) *Population {
+func (p *Population) Mutate(context core.InitialContext, options *core.Options) *Population {
 	mutated_population := Population{}
 	mutated_population.Instances = make([]instance.Instance, len(p.Instances))
 
 	for instance_index, instance := range p.Instances {
-		mutated_population.Instances[instance_index] = *instance.Mutate(context.Processes, context.Optimize, options, percentage)
+		mutated_population.Instances[instance_index] = *instance.Mutate(context.Processes, context.Optimize, options)
 	}
 
 	return &mutated_population

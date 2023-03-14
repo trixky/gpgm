@@ -45,8 +45,8 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 		TournamentProbability: 0.77,
 		CrossoverNewInstances: 1,
 		// Mutation
-		MutationChance: 0.99,
-		MutationMethod: core.LinearMutation,
+		MutationChance: 0,
+		MutationMethod: core.LogarithmicMutation,
 		// Genetic
 		NEntry:               1,
 		HistoryPartMaxLength: 3,

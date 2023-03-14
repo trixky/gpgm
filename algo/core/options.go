@@ -12,6 +12,7 @@ type MutationMethod int64
 const (
 	LinearMutation MutationMethod = iota
 	LogarithmicMutation
+	// ExponentialMutation
 )
 
 type Options struct {

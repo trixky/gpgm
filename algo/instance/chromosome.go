@@ -58,7 +58,7 @@ func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromoso
 }
 
 // Mutate generates a child by mutation
-func (c *Chromosome) Mutate(processes []core.Process, optimize map[string]bool, options *core.Options, percentage float64) *Chromosome {
+func (c *Chromosome) Mutate(processes []core.Process, optimize map[string]bool, options *core.Options) *Chromosome {
 	mutated_chromosome := Chromosome{}
 	mutated_chromosome.Init(processes, optimize, options)
 

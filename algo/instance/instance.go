@@ -56,9 +56,9 @@ func (i *Instance) Cross(ii *Instance) (child_1 Instance, child_2 Instance) {
 	return
 }
 
-func (i *Instance) Mutate(processes []core.Process, optimize map[string]bool, options *core.Options, percentage float64) *Instance {
+func (i *Instance) Mutate(processes []core.Process, optimize map[string]bool, options *core.Options) *Instance {
 	mutated_instance := Instance{}
-	mutated_instance.Chromosome = *i.Chromosome.Mutate(processes, optimize, options, percentage)
+	mutated_instance.Chromosome = *i.Chromosome.Mutate(processes, optimize, options)
 
 	return &mutated_instance
 }
