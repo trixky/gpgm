@@ -56,6 +56,10 @@
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
 			result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
 
+			console.log(
+				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
+			);
+
 			// const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
 			// 	?.map((process: any) => {
 			// 		return `cycle:${process.cycle}\t\t${process.process.name}\t(${process.amount})`;
