@@ -66,7 +66,7 @@ func (c *Chromosome) Mutate(processes []core.Process, optimize map[string]bool, 
 
 	// ----------- entry gene
 	mutated_chromosome.EntryGene = *c.EntryGene.DeepCopy()
-	mutated_chromosome.EntryGene = *mutated_chromosome.EntryGene.Mutate(&new_chromosome.EntryGene, percentage)
+	mutated_chromosome.EntryGene = *mutated_chromosome.EntryGene.Mutate(&new_chromosome.EntryGene, options)
 
 	// ----------- priority gene
 	mutated_chromosome.PriorityGenes = new_chromosome.PriorityGenes

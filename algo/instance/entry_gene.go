@@ -147,11 +147,11 @@ func (eg *EntryGene) RemoveProcessIdRandomPosition() {
 }
 
 // Mutate mutates according to a pourcentage
-func (eg *EntryGene) Mutate(egeg *EntryGene, pourcentage float64) *EntryGene {
+func (eg *EntryGene) Mutate(egeg *EntryGene, options *core.Options) *EntryGene {
 	mutated_entry_gene := EntryGene{}
 
 	// Use the pourcentage of chance
-	if rand.Intn(1000) < int(pourcentage*10) {
+	if rand.Intn(1000) < int(options.MutationChance*10) {
 		// Mutation
 
 		random := rand.Intn(9)
