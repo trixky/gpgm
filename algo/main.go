@@ -59,20 +59,26 @@ func initialize(args Arguments) (RunningSolver, error) {
 		return RunningSolver{}, err
 	}
 	options := core.Options{ // TODO Collect Options
+		MaxGeneration:    args.MaxGeneration,
+		TimeLimitSeconds: 60,
+		MaxCycle:         args.MaxCycle,
+		MaxDepth:         6,
+		// Population
 		PopulationSize:        args.PopulationSize,
-		MaxGeneration:         args.MaxGeneration,
-		MaxCycle:              args.MaxCycle,
-		MaxDepth:              6,
-		NEntry:                1,
-		HistoryPartMaxLength:  3,
-		HistoryKeyMaxLength:   6,
-		TimeLimitSeconds:      60,
-		ElitismAmount:         5,
+		ElitismAmount:         1,
 		SelectionMethod:       core.TournamentSelection,
 		TournamentSize:        25,
 		TournamentProbability: 0.77,
-		RandomCut:             true,
-		MaxCut:                0,
+		CrossoverNewInstances: 1,
+		// Mutation
+		// MutationChance: 0.01,
+		// MutationMethod: core.LinearMutation,
+		// Genetic
+		NEntry:               1,
+		HistoryPartMaxLength: 3,
+		HistoryKeyMaxLength:  6,
+		RandomCut:            true,
+		MaxCut:               0,
 	}
 
 	return RunningSolver{

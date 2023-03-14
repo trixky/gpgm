@@ -1,5 +1,7 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
+	import type { WASMGenerationReturn } from '../types';
+	import type { ScoredInstance } from '../types/population';
 	import Config from '$lib/config';
 	import Visual from '$lib/components/visual/visual.svelte';
 	import GenerationStore from '$lib/stores/generation';
@@ -10,7 +12,6 @@
 	import examples from '$lib/Examples';
 	import { scale } from 'svelte/transition';
 	import { parse_as } from '$lib/utils/parse';
-	import type { RunningSolver, WASMGenerationReturn } from '../types';
 
 	// ------------------------------ IO
 	let selectedExample = 0;
@@ -25,6 +26,7 @@
 	let stop = false;
 	let stopped = false;
 	let finished = false;
+	let allTimeBest: ScoredInstance | null = null;
 
 	$: disabled_reset = !running || !stopped;
 
@@ -60,16 +62,14 @@
 			// 	})
 			// 	.join('\n');
 
-			outputFile = WASM_generate_output(
-				JSON.stringify(result_wasm_json.scored_population.instances[0].simulation)
-			);
+			const best = result_wasm_json.scored_population.instances[0];
+			if (!allTimeBest || allTimeBest.score < best.score) {
+				allTimeBest = best;
+			}
 
-			// outputFile = processes;
-
-			output = output = `Cycles: ${result_wasm_json.scored_population.instances[0].cycle}\nScore: ${
-				result_wasm_json.scored_population.instances[0].score
-			}\n${JSON.stringify(
-				result_wasm_json.scored_population.instances[0].simulation.stock,
+			outputFile = WASM_generate_output(JSON.stringify(allTimeBest.simulation));
+			output = `Cycles: ${allTimeBest.cycle}\nScore: ${allTimeBest.score}\n${JSON.stringify(
+				allTimeBest.simulation.stock,
 				null,
 				'\t'
 			)}`;
@@ -133,16 +133,14 @@
 				// 	})
 				// 	.join('\n');
 
-				outputFile = WASM_generate_output(
-					JSON.stringify(result_wasm_json.scored_population.instances[0].simulation)
-				);
+				const best = result_wasm_json.scored_population.instances[0];
+				if (!allTimeBest || allTimeBest.score < best.score) {
+					allTimeBest = best;
+				}
 
-				// outputFile = processes;
-
-				output = output = `Cycles: ${
-					result_wasm_json.scored_population.instances[0].cycle
-				}\nScore: ${result_wasm_json.scored_population.instances[0].score}\n${JSON.stringify(
-					result_wasm_json.scored_population.instances[0].simulation.stock,
+				outputFile = WASM_generate_output(JSON.stringify(allTimeBest.simulation));
+				output = `Cycles: ${allTimeBest.cycle}\nScore: ${allTimeBest.score}\n${JSON.stringify(
+					allTimeBest.simulation.stock,
 					null,
 					'\t'
 				)}`;
@@ -173,6 +171,7 @@
 			stopped = false;
 			generation = 0;
 			finished = false;
+			allTimeBest = null;
 
 			GenerationStore.reset();
 			frame++;
