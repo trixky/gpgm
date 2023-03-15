@@ -138,28 +138,28 @@ func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, option
 
 	// * Elitism
 	i := 0
-	if options.ElitismAmount > 0 {
-		max := options.ElitismAmount
-		if options.ElitismAmount >= options.PopulationSize {
-			max = int(float64(options.PopulationSize) * 0.9)
-		}
-		for j := 0; j < max; j++ {
-			population.Instances[j] = s.Instances[j].Instance
-		}
-		i = max
-	}
+	// if options.ElitismAmount > 0 {
+	// 	max := options.ElitismAmount
+	// 	if options.ElitismAmount >= options.PopulationSize {
+	// 		max = int(float64(options.PopulationSize) * 0.9)
+	// 	}
+	// 	for j := 0; j < max; j++ {
+	// 		population.Instances[j] = s.Instances[j].Instance
+	// 	}
+	// 	i = max
+	// }
 
-	// * New instances
-	if options.CrossoverNewInstances > 0 {
-		max := i + options.CrossoverNewInstances
-		if max >= options.PopulationSize {
-			max = int(float64(options.PopulationSize-i) * 0.9)
-		}
-		for j := 0; j < max; j++ {
-			population.Instances[j].Init(initialContext.Processes, initialContext.Optimize, options)
-		}
-		i = max
-	}
+	// // * New instances
+	// if options.CrossoverNewInstances > 0 {
+	// 	max := i + options.CrossoverNewInstances
+	// 	if max >= options.PopulationSize {
+	// 		max = int(float64(options.PopulationSize-i) * 0.9)
+	// 	}
+	// 	for j := i; j < max; j++ {
+	// 		population.Instances[j].Init(initialContext.Processes, initialContext.Optimize, options)
+	// 	}
+	// 	i = max
+	// }
 
 	// * Crossover between Instances
 	for ; i < options.PopulationSize; i += 2 {

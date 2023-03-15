@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import '../app.css';
 
-	let ready = false;
+	// let ready = false;
 
 	onMount(() => {
 		// @ts-ignore
@@ -13,7 +13,7 @@
 		WebAssembly.instantiateStreaming(fetch('wasm/src/main.wasm'), goWasm.importObject).then(
 			(result) => {
 				goWasm.run(result.instance);
-				ready = true;
+				// ready = true;
 			}
 		);
 	});
@@ -25,7 +25,7 @@
 </svelte:head>
 
 <main>
-	<slot {ready} />
+	<slot  />
 </main>
 
 <!-- ---------------------------------------------- STYLE -->

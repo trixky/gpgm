@@ -7,17 +7,17 @@ export default {
         generations: {
             min: 1,
             max: 10000,
-            default: 1
+            default: 6
         },
         population: {
             min: 1,
             max: 1000,
-            default: 1
+            default: 6
         },
         deep: {
             min: 10,
             max: 1000,
-            default: 100
+            default: 1000
         },
         delay: {
             min: 500,
