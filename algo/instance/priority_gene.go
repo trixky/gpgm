@@ -1,6 +1,8 @@
 package instance
 
 import (
+	"math/rand"
+
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/history"
 )
@@ -54,4 +56,25 @@ func (pg *PriorityGene) Init(process *core.Process, processes []core.Process, op
 	pg.Process = process
 
 	pg.InitHistory(nil, options.HistoryKeyMaxLength, process, processes)
+}
+
+// Mutate mutates according to a pourcentage
+func (pg *PriorityGene) Mutate(pgpg *PriorityGene, options *core.Options) *PriorityGene {
+	new_priority_gene := PriorityGene{
+		Process:                    pg.Process,
+		HistoryProcessDependencies: make(map[string]ProcessDependencies),
+	}
+
+	for pgpg_history_process_dependencie_key, pgpg_history_process_dependencie := range pgpg.HistoryProcessDependencies {
+		// For each history process dependencie
+		if rand.Intn(1000) < int(options.MutationChance*1000) {
+			// Take the value of the new priority gene
+			new_priority_gene.HistoryProcessDependencies[pgpg_history_process_dependencie_key] = pgpg_history_process_dependencie
+		} else {
+			// Keep the value of the initial priority gene
+			new_priority_gene.HistoryProcessDependencies[pgpg_history_process_dependencie_key] = pg.HistoryProcessDependencies[pgpg_history_process_dependencie_key]
+		}
+	}
+
+	return &new_priority_gene
 }

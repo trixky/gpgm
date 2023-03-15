@@ -1,7 +1,6 @@
 package instance
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/trixky/krpsim/algo/core"
@@ -60,30 +59,40 @@ func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromoso
 
 // Mutate generates a child by mutation
 func (c *Chromosome) Mutate(processes []core.Process, optimize map[string]bool, options *core.Options) *Chromosome {
-
-	// return c
-
 	mutated_chromosome := Chromosome{}
 
 	new_chromosome := Chromosome{}
 	new_chromosome.Init(processes, optimize, options)
 
+	c_copy := c.DeepCopy()
+
 	// ----------- entry gene
-	mutated_chromosome.EntryGene = *c.EntryGene.DeepCopy()
+	mutated_chromosome.EntryGene = c_copy.EntryGene
 	mutated_chromosome.EntryGene = *mutated_chromosome.EntryGene.Mutate(&new_chromosome.EntryGene, options)
 
 	// ----------- priority gene
-	if options.MutationChance > 0.5 {
-		fmt.Println("A 1")
-		mutated_chromosome.PriorityGenes = new_chromosome.PriorityGenes
-	} else {
-		fmt.Println("A 2")
-		mutated_chromosome.PriorityGenes = make([]PriorityGene, len(c.PriorityGenes))
+	mutated_chromosome.PriorityGenes = make([]PriorityGene, len(c_copy.PriorityGenes))
 
-		for priority_gene_index, priority_gene := range c.PriorityGenes {
-			mutated_chromosome.PriorityGenes[priority_gene_index] = *priority_gene.DeepCopy() // Is deep copy useful ?
-		}
+	for priority_gene_index, priority_gene := range c_copy.PriorityGenes {
+		mutated_chromosome.PriorityGenes[priority_gene_index] = *priority_gene.Mutate(&new_chromosome.PriorityGenes[priority_gene_index], options)
 	}
 
 	return &mutated_chromosome
+}
+
+// DeepCopy
+func (c *Chromosome) DeepCopy() *Chromosome {
+	deep_copy := Chromosome{}
+
+	// ---------- entry gene
+	deep_copy.EntryGene = *c.EntryGene.DeepCopy()
+
+	// ---------- priority genes
+	deep_copy.PriorityGenes = make([]PriorityGene, len(c.PriorityGenes))
+
+	for priority_gene_index, priority_gene := range c.PriorityGenes {
+		deep_copy.PriorityGenes[priority_gene_index] = *priority_gene.DeepCopy()
+	}
+
+	return &deep_copy
 }
