@@ -39,7 +39,7 @@ func (pg *PriorityGene) InitHistory(h *history.History, depth int, process *core
 	dependences.Init(*pg.Process, processes)
 	pg.HistoryProcessDependencies[key] = dependences
 
-	if depth > 0 {
+	if depth >= 0 {
 		for _, process_parent := range process.Parents {
 			// For each process parents
 			h_clone := h.Clone()
