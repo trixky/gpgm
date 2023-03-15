@@ -155,7 +155,7 @@ func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, option
 		if max >= options.PopulationSize {
 			max = int(float64(options.PopulationSize-i) * 0.9)
 		}
-		for j := 0; j < max; j++ {
+		for j := i; j < max; j++ {
 			population.Instances[j].Init(initialContext.Processes, initialContext.Optimize, options)
 		}
 		i = max

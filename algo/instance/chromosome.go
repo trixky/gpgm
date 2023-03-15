@@ -2,6 +2,7 @@ package instance
 
 import (
 	"math/rand"
+	"os"
 
 	"github.com/trixky/krpsim/algo/core"
 )
@@ -20,17 +21,16 @@ func (c *Chromosome) Init(processes []core.Process, optimize map[string]bool, op
 	// Initializes the priority genes
 	c.PriorityGenes = make([]PriorityGene, len(processes))
 
-	for index, process := range processes {
-		// For each process
-		// Initializes the corresponding priority gene
+	for index := range processes {
 		priority_gene := PriorityGene{}
-		priority_gene.Init(&process, processes, optimize, options)
+		priority_gene.Init(&processes[index], processes, optimize, options)
 		c.PriorityGenes[index] = priority_gene
 	}
 }
 
 // Cross generates two childs by cross overing itself with another one
 func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromosome) {
+
 	// ------------- entry gene
 	// child 1
 	child_1.EntryGene = *c.EntryGene.DeepCopy()
@@ -38,21 +38,49 @@ func (c *Chromosome) Cross(cc *Chromosome) (child_1 Chromosome, child_2 Chromoso
 	child_2.EntryGene = *cc.EntryGene.DeepCopy()
 
 	// ------------- priority genes
+
+	// // ccc := c.DeepCopy()
+	// child_1.PriorityGenes = c.DeepCopy().PriorityGenes
+	// // extract the first genes of the last parent
+	// child_2.PriorityGenes = cc.DeepCopy().PriorityGenes
+
+	// return
+
+	// for _, asdf := range c.PriorityGenes {
+	// 	fmt.Println(asdf.Process.Name)
+	// }
+
 	priority_gene_nb := len(c.PriorityGenes)
 
 	priority_cross := rand.Intn(priority_gene_nb)
 
+	c_copy_1 := c.DeepCopy()
+	c_copy_2 := c.DeepCopy()
+	cc_copy_1 := cc.DeepCopy()
+	cc_copy_2 := cc.DeepCopy()
+
+	if len(c_copy_1.PriorityGenes) != len(cc_copy_1.PriorityGenes) {
+		// fmt.Println("asdfasdfasdff")
+		// fmt.Println("asdfasdfasdff")
+		// fmt.Println("asdfasdfasdff")
+		// fmt.Println("asdfasdfasdff")
+		// fmt.Println(len(c_copy_1.PriorityGenes))
+		// fmt.Println(len(cc_copy_1.PriorityGenes))
+
+		os.Exit(4)
+	}
+
 	// child 1
 	// extract the first genes of the first parent
-	child_1.PriorityGenes = c.PriorityGenes[:priority_cross]
+	child_1.PriorityGenes = c_copy_1.PriorityGenes[:priority_cross]
 	// extract the last genes of the last parent
-	child_1.PriorityGenes = append(child_1.PriorityGenes, cc.PriorityGenes[priority_cross:]...)
+	child_1.PriorityGenes = append(child_1.DeepCopy().PriorityGenes, cc_copy_1.PriorityGenes[priority_cross:]...)
 
 	// child 2
 	// extract the last genes of the first parent
-	child_2.PriorityGenes = c.PriorityGenes[priority_cross:]
+	child_2.PriorityGenes = cc_copy_2.PriorityGenes[:priority_cross]
 	// extract the first genes of the last parent
-	child_2.PriorityGenes = append(child_2.PriorityGenes, cc.PriorityGenes[:priority_cross]...)
+	child_2.PriorityGenes = append(child_2.DeepCopy().PriorityGenes, c_copy_2.PriorityGenes[priority_cross:]...)
 
 	return
 }

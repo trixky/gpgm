@@ -1,7 +1,6 @@
 package solver
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -41,23 +40,35 @@ func (solver *RunningSolver) ComputeMutationRate() {
 
 // * Run a single generation
 func (solver *RunningSolver) RunGeneration() population.ScoredPopulation {
+	// fmt.Println("---------------------------- SOLVER")
 	scored := solver.Population.RunAllSimulations(solver.Context, &solver.Options)
-	// crossover_population := scored.Crossover(&solver.Context, &solver.Options)
-	// crossover_population := scored.Crossover(&solver.Context, &solver.Options)
-	solver.ComputeMutationRate() // Compute the mutation rate for the current generation
-	// solver.Population = population.Population{}
-	// solver.Population = crossover_population
-	// solver.Population = *mutated_population
 
-	mutated_population := solver.Population.Mutate(solver.Context, &solver.Options)
-	solver.Population = *mutated_population
+	if solver.Options.MaxGeneration > 1 {
+		// // ---------------- crossover
+		// fmt.Println("--------------- AVANT ~~~~~~~~~~~~~~~~~~ avant")
+		// fmt.Println("pop len:", len(solver.Population.Instances))
+		// fmt.Println("pop 0 len entry:", len(solver.Population.Instances[0].Chromosome.EntryGene.Process_ids))
+		// fmt.Println("pop 0 len len:", len(solver.Population.Instances[0].Chromosome.PriorityGenes))
+
+		crossover_population := scored.Crossover(&solver.Context, &solver.Options)
+		solver.Population = crossover_population
+
+		// fmt.Println("--------------- APRES ~~~~~~~~~~~~~~~~~~ avant")
+		// fmt.Println("pop len:", len(solver.Population.Instances))
+		// fmt.Println("pop 0 len entry:", len(solver.Population.Instances[1].Chromosome.EntryGene.Process_ids))
+		// fmt.Println("pop 0 len priority:", len(solver.Population.Instances[1].Chromosome.PriorityGenes))
+		// fmt.Println("pop 0 len priority 0 name:", solver.Population.Instances[1].Chromosome.PriorityGenes[0].Process.Name)
+		// fmt.Println("pop 0 len priority 0 dep:", len(solver.Population.Instances[1].Chromosome.PriorityGenes[0].HistoryProcessDependencies))
+		// fmt.Println("pop 0 len priority 00 dep:", len(solver.Population.Instances[1].Chromosome.PriorityGenes[0].HistoryProcessDependencies[""].InputDependencies))
+		// fmt.Println("pop 0 len priority 000 dep:", solver.Population.Instances[1].Chromosome.PriorityGenes[0].HistoryProcessDependencies[""].InputDependencies[0])
+
+		// ---------------- mutate
+		solver.ComputeMutationRate() // Compute the mutation rate for the current generation
+		mutated_population := solver.Population.Mutate(solver.Context, &solver.Options)
+		solver.Population = *mutated_population
+	}
 
 	solver.Generation += 1
-
-	fmt.Println("++++++++++++++++++++++++++")
-	fmt.Println("1((()))", len(solver.Population.Instances[0].Chromosome.EntryGene.Process_ids))
-	fmt.Println("2((()))", len(solver.Population.Instances[0].Chromosome.PriorityGenes))
-	fmt.Println("3((()))", len(solver.Population.Instances[0].Chromosome.PriorityGenes[0].HistoryProcessDependencies))
 
 	return scored
 }

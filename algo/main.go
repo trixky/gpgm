@@ -53,7 +53,7 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 		HistoryPartMaxLength: 3,
 		HistoryKeyMaxLength:  3,
 		RandomCut:            true,
-		MaxCut:               0,
+		MaxCut:               1,
 	}
 
 	return solver.RunningSolver{
