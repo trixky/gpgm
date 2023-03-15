@@ -50,7 +50,7 @@ func (p *Population) RunAllSimulations(context core.InitialContext, options *cor
 
 	// Run a simulation on all instances
 	for instance_index, instance := range p.Instances {
-		fmt.Println("--------- instance", instance_index, "(", instance.Chromosome.EntryGene.Process_ids, ")")
+		fmt.Println("--------- instance", instance_index)
 		simulation := simulation.NewSimulation(context, instance)
 		simulation.Run(options)
 		scored = append(scored, ScoredInstance{

@@ -1,6 +1,7 @@
 package instance
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/trixky/krpsim/algo/core"
@@ -14,6 +15,22 @@ func (eg *EntryGene) DeepCopy() *EntryGene {
 	return &EntryGene{
 		Process_ids: append(make([]int, 0, len(eg.Process_ids)), eg.Process_ids...),
 	}
+}
+
+// Shuffle shuffles its process ids
+func (eg *EntryGene) Shuffle() {
+	// Initializes the new process ids array
+	dest := make([]int, len(eg.Process_ids))
+	// Generate a random array of index
+	perm := rand.Perm(len(eg.Process_ids))
+
+	for i, v := range perm {
+		// For each random index
+		// Use it to extract a random process id
+		dest[v] = eg.Process_ids[i]
+	}
+
+	eg.Process_ids = dest
 }
 
 // RandomCut cut processes randomly when is possible
@@ -80,6 +97,8 @@ func (eg *EntryGene) InitProcesses(processes []core.Process, optimize map[string
 func (eg *EntryGene) Init(processes []core.Process, optimize map[string]bool, options *core.Options) {
 	// Initializes processes
 	eg.InitProcesses(processes, optimize)
+	eg.Shuffle()
+	fmt.Println(eg.Process_ids)
 
 	if options.RandomCut {
 		// If random option is active
