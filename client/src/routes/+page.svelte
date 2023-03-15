@@ -1,7 +1,6 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
-	import type { ScoredInstance } from '../types/population';
 	import Config from '$lib/config';
 	import Visual from '$lib/components/visual/visual.svelte';
 	import GenerationStore from '$lib/stores/generation';
@@ -12,6 +11,7 @@
 	import examples from '$lib/Examples';
 	import { scale } from 'svelte/transition';
 	import { parse_as } from '$lib/utils/parse';
+	import { wasmReady } from '$lib/stores/ready';
 
 	// ------------------------------ IO
 	let selectedExample = 0;
@@ -252,11 +252,15 @@
 				}
 			}
 
-			// setTimeout(() => {
-			if (false) {
+			if ($wasmReady) {
 				lastError = WASM_parse_input(input);
 			}
-			// }, 50);
+		}
+	});
+
+	wasmReady.subscribe((ready) => {
+		if (ready) {
+			lastError = WASM_parse_input(input);
 		}
 	});
 </script>

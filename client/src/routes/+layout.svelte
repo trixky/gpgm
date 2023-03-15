@@ -1,9 +1,8 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { wasmReady } from '$lib/stores/ready';
 	import '../app.css';
-
-	// let ready = false;
 
 	onMount(() => {
 		// @ts-ignore
@@ -13,7 +12,7 @@
 		WebAssembly.instantiateStreaming(fetch('wasm/src/main.wasm'), goWasm.importObject).then(
 			(result) => {
 				goWasm.run(result.instance);
-				// ready = true;
+				$wasmReady = true;
 			}
 		);
 	});
