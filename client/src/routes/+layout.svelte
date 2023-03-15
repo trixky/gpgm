@@ -4,17 +4,17 @@
 	import { wasmReady } from '$lib/stores/ready';
 	import '../app.css';
 
+	export let data: { bytes: BufferSource };
+
 	onMount(() => {
-		// @ts-ignore
+		// @ts-expect-error
 		// Go is loaded from the app.html (wasm)
 		const goWasm = new Go();
 
-		WebAssembly.instantiateStreaming(fetch('wasm/src/main.wasm'), goWasm.importObject).then(
-			(result) => {
-				goWasm.run(result.instance);
-				$wasmReady = true;
-			}
-		);
+		WebAssembly.instantiate(data.bytes, goWasm.importObject).then((result) => {
+			goWasm.run(result.instance);
+			$wasmReady = true;
+		});
 	});
 </script>
 

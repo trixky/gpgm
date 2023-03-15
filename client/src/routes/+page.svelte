@@ -2,21 +2,14 @@
 <script lang="ts">
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
 	import Config from '$lib/config';
-	import Visual from '$lib/components/visual/visual.svelte';
-	import GenerationStore from '$lib/stores/generation';
-	import ArgumentStore from '$lib/stores/arguments';
-	import StatisticStore from '$lib/stores/statistic';
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import args from '$lib/stores/arguments';
 	import examples from '$lib/Examples';
 	import { scale } from 'svelte/transition';
 	import { parse_as } from '$lib/utils/parse';
 	import { wasmReady } from '$lib/stores/ready';
+	import { inputs } from '$lib/stores/inputs';
 
 	// ------------------------------ IO
-	let selectedExample = 0;
-	let customInput = '';
-	let input = '';
 	let output = '';
 	let outputFile = '';
 	let lastError: string | null = null;
@@ -36,7 +29,7 @@
 
 	function new_generation() {
 		generation++;
-		if (generation >= $ArgumentStore.generations) {
+		if (generation >= $args.max_generations) {
 			finished = true;
 			stopped = true;
 		}
@@ -47,7 +40,6 @@
 			return;
 		}
 
-		GenerationStore.push_random($ArgumentStore.population);
 		frame++;
 		setTimeout(() => {
 			// Recursive loop
@@ -73,6 +65,7 @@
 			)}`;
 
 			new_generation();
+			handle_bottom();
 		}, 1);
 	}
 
@@ -96,29 +89,28 @@
 	function handle_select(e: any) {
 		const index = e.target.value as number;
 		if (index == 0) {
-			input = customInput;
+			$inputs.current = $inputs.custom;
 		} else if (index > 0 && index <= examples.length) {
-			input = examples[index - 1].text;
+			$inputs.current = examples[index - 1].text;
 		}
-		save_input_state(input, index);
-		lastError = WASM_parse_input(input);
+		lastError = WASM_parse_input($inputs.current);
+		handle_reset();
 	}
 
 	// -------- State
 	function handle_run() {
-		lastError = WASM_parse_input(input);
+		lastError = WASM_parse_input($inputs.current);
 
 		if (!lastError && !running) {
 			running = true;
 			stop = false;
 			stopped = false;
+			handle_bottom();
 
 			const raw_running_solver = WASM_initialize(
 				JSON.stringify({
-					text: input,
-					generations: $ArgumentStore.generations,
-					deep: $ArgumentStore.deep,
-					population: $ArgumentStore.population
+					...$args,
+					text: $inputs.current
 				})
 			);
 
@@ -155,31 +147,14 @@
 			generation = 0;
 			finished = false;
 
-			GenerationStore.reset();
 			frame++;
 			output = '';
 		}
 	}
-	// -------- Inputs
-	function handle_generations(e: any) {
-		ArgumentStore.update_generations(+e.target.value);
-	}
-
-	function handle_population(e: any) {
-		ArgumentStore.update_population(+e.target.value);
-	}
-
-	function handle_deep(e: any) {
-		ArgumentStore.update_deep(+e.target.value);
-	}
-
-	function handle_delay(e: any) {
-		ArgumentStore.update_deep(+e.target.value);
-	}
 
 	// ------------------------------ Scrolling blocker
 	// https://svelte.dev/repl/2bdbf66371a3418e9e3eda076df6e32d?version=3.18.1
-	$: scrollable = !running || stopped;
+	/* $: scrollable = !running || stopped;
 
 	const wheel = (node: any, options: any) => {
 		let { scrollable } = options;
@@ -198,69 +173,21 @@
 				node.removeEventListener('wheel', handler, { passive: false });
 			}
 		};
-	};
+	}; */
 
 	// ------------------------------ cookie
 	// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies
 	// https://developer.mozilla.org/en-US/docs/Glossary/Base64
 
-	const COOKIE_KEY_INPUT = 'input';
-	const COOKIE_KEY_SELECT = 'select';
-
-	function save_input_state(input: string, select: number) {
-		if (browser) {
-			// encode
-			const input_64 = btoa(input);
-
-			// save in cookies
-			document.cookie = `${COOKIE_KEY_INPUT}=${input_64}; path=/`;
-			document.cookie = `${COOKIE_KEY_SELECT}=${select}; path=/`;
-		}
-	}
-
 	function handle_input(e: any) {
-		selectedExample = 0;
-		customInput = e.target.value;
-		save_input_state(e.target.value, 0);
+		$inputs.selectedExample = 0;
+		$inputs.custom = e.target.value;
 		lastError = WASM_parse_input(e.target.value);
 	}
 
-	onMount(async () => {
-		if (browser) {
-			// extract input from cookies
-			const input_64 = document.cookie
-				.match('(^|;)\\s*' + COOKIE_KEY_INPUT + '\\s*=\\s*([^;]+)')
-				?.pop();
-
-			if (input_64 != undefined) {
-				// decode
-				const input_text = atob(input_64);
-
-				input = input_text;
-				customInput = input_text;
-			}
-
-			// extract select value
-			const rawSelect = document.cookie
-				.match('(^|;)\\s*' + COOKIE_KEY_SELECT + '\\s*=\\s*([^;]+)')
-				?.pop();
-
-			if (rawSelect != undefined) {
-				const select = Number(rawSelect);
-				if (!isNaN(select) && select >= 0 && select < examples.length) {
-					selectedExample = select;
-				}
-			}
-
-			if ($wasmReady) {
-				lastError = WASM_parse_input(input);
-			}
-		}
-	});
-
 	wasmReady.subscribe((ready) => {
 		if (ready) {
-			lastError = WASM_parse_input(input);
+			lastError = WASM_parse_input($inputs.current);
 		}
 	});
 </script>
@@ -275,7 +202,12 @@
 	<div class="text-container">
 		<h2>Input</h2>
 		<div class="text-left">
-			<select bind:value={selectedExample} name="examples" id="examples" on:input={handle_select}>
+			<select
+				bind:value={$inputs.selectedExample}
+				name="examples"
+				id="examples"
+				on:input={handle_select}
+			>
 				<option value={0}>Custom</option>
 				{#each examples as example, index}
 					<option value={index + 1}>{example.name}</option>
@@ -284,10 +216,10 @@
 		</div>
 		<div class="relative mt-4">
 			<textarea
-				cols={Config.io.input.cols}
-				rows={Config.io.input.row}
+				cols={Config.ui.input.cols}
+				rows={Config.ui.input.row}
 				placeholder=""
-				bind:value={input}
+				bind:value={$inputs.current}
 				autocorrect="off"
 				autocapitalize="off"
 				spellcheck="false"
@@ -305,44 +237,40 @@
 		<div class="input-container">
 			<input
 				type="number"
-				min={Config.io.generations.min}
-				max={Config.io.generations.max}
-				value={$ArgumentStore.generations}
+				min={Config.io.max_generations.min}
+				max={Config.io.max_generations.max}
+				value={$args.max_generations}
 				disabled={running}
-				on:input={handle_generations}
 			/>
 			<p class="input-label">gen</p>
 		</div>
 		<div class="input-container">
 			<input
 				type="number"
-				min={Config.io.population.min}
-				max={Config.io.population.max}
-				value={$ArgumentStore.population}
+				min={Config.io.population_size.min}
+				max={Config.io.population_size.max}
+				value={$args.population_size}
 				disabled={running}
-				on:input={handle_population}
 			/>
 			<p class="input-label">pop</p>
 		</div>
 		<div class="input-container">
 			<input
 				type="number"
-				min={Config.io.deep.min}
-				max={Config.io.deep.max}
-				value={$ArgumentStore.deep}
+				min={Config.io.max_cycle.min}
+				max={Config.io.max_cycle.max}
+				value={$args.max_cycle}
 				disabled={running}
-				on:input={handle_deep}
 			/>
-			<p class="input-label">dp</p>
+			<p class="input-label">cyc</p>
 		</div>
 		<div class="input-container">
 			<input
 				type="number"
-				min={Config.io.delay.min}
-				max={Config.io.delay.max}
-				value={$ArgumentStore.delay}
+				min={Config.io.time_limit.min}
+				max={Config.io.time_limit.max}
+				value={$args.time_limit}
 				disabled={running}
-				on:input={handle_delay}
 			/>
 			<p class="input-label">ms</p>
 		</div>
@@ -351,23 +279,23 @@
 		{#if running}
 			<button class="side-button" on:click={handle_bottom}> Bottom </button>
 		{:else}
-			<button class="play-button" on:click={handle_run}> Run </button>
+			<button class="play-button" disabled={lastError !== null} on:click={handle_run}> Run </button>
 		{/if}
-		<button class="play-button" on:click={handle_run} disabled={!input.length || running}>
+		<button class="play-button" on:click={handle_run} disabled={!$inputs.current.length || running}>
 			Clear
 		</button>
 	</div>
 	{#if output}
-		<Visual {frame} />
+		<!-- <Visual {frame} /> -->
 		<div class="statistic-container shadow">
 			<p class="statistic">
 				<span class="statistic-label">generation</span>:
-				<span class="statistic-value">{generation}</span>
+				<span class="statistic-value">{generation}/{$args.max_generations}</span>
 			</p>
-			<p class="statistic">
+			<!-- <p class="statistic">
 				<span class="statistic-label">best score</span>:
 				<span class="statistic-value">{$StatisticStore.scores.global.best}</span>
-			</p>
+			</p> -->
 		</div>
 		<div class="state-container">
 			<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
@@ -383,15 +311,15 @@
 		<div transition:scale|local class="text-container">
 			<h2>Output</h2>
 			<textarea
-				cols={Config.io.output.cols}
-				rows={Config.io.output.row}
+				cols={Config.ui.output.cols}
+				rows={Config.ui.output.row}
 				placeholder=""
 				value={output}
 				readonly
 			/>
 			<textarea
-				cols={Config.io.output.cols}
-				rows={Config.io.output.row}
+				cols={Config.ui.output.cols}
+				rows={Config.ui.output.row}
 				placeholder=""
 				value={outputFile}
 				readonly
@@ -400,7 +328,7 @@
 	{/if}
 </main>
 
-<svelte:window use:wheel={{ scrollable }} />
+<!-- <svelte:window use:wheel={{ scrollable }} /> -->
 
 <!-- ---------------------------------------------- STYLE -->
 <style lang="postcss">
@@ -474,7 +402,7 @@
 
 	/* ----------------------- Textarea */
 	.statistic-container {
-		@apply flex m-auto w-fit py-2;
+		@apply flex m-auto w-fit py-2 mt-4;
 	}
 
 	.statistic > span {

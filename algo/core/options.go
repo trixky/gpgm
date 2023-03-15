@@ -16,10 +16,10 @@ const (
 )
 
 type Options struct {
-	MaxGeneration    int `json:"max_generation"`
-	TimeLimitSeconds int `json:"time_limit_seconds"`
-	MaxCycle         int `json:"max_cycle"`
-	MaxDepth         int `json:"max_depth"`
+	MaxGeneration int `json:"max_generation"`
+	TimeLimitMS   int `json:"time_limit_ms"`
+	MaxCycle      int `json:"max_cycle"`
+	MaxDepth      int `json:"max_depth"`
 	// Population
 	PopulationSize        int             `json:"population_size"`
 	ElitismAmount         int             `json:"elitism_amount"`

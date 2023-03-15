@@ -1,51 +1,26 @@
 import { writable } from 'svelte/store';
-import Config from '$lib/config'
+import config from '$lib/config'
 import type ArgumentsModel from '$lib/models/arguments';
 
-function generate_default_arguments(): ArgumentsModel {
+function defaultValue(): ArgumentsModel {
     return <ArgumentsModel>{
-        generations: Config.io.generations.default,
-        population: Config.io.population.default,
-        deep: Config.io.deep.default,
-        delay: Config.io.delay.default,
+        max_generations: config.io.max_generations.default,
+        population_size: config.io.population_size.default,
+        max_cycle: config.io.max_cycle.default,
+        max_depth: config.io.max_depth.default,
+        time_limit: config.io.time_limit.default,
+        max_cut: config.io.max_cut.default,
+        crossover_new_instances: config.io.crossover_new_instances.default,
+        elitism_amount: config.io.elitism_amount.default,
+        tournament_size: config.io.tournament_size.default,
+        tournament_probability: config.io.tournament_probability.default,
+        selection_method: config.io.selection_method.default,
+        mutation_method: config.io.mutation_method.default,
     }
 }
 
-function create_argument_store() {
-    const { subscribe, update, set } = writable(generate_default_arguments());
+// TODO Save to localStorage
 
-    return {
-        subscribe,
-        default: () => {
-            set(generate_default_arguments())
-        },
-        update_generations: (generations: number) => {
-            update(args => {
-                args.generations = generations
-                return args
-            })
-        },
-        update_population: (population: number) => {
-            update(args => {
-                args.population = population
-                return args
-            })
-        },
-        update_deep: (deep: number) => {
-            update(args => {
-                args.deep = deep
-                return args
-            })
-        },
-        update_delay: (delay: number) => {
-            update(args => {
-                args.delay = delay
-                return args
-            })
-        },
-    };
-}
+export const store = writable(defaultValue());
 
-const argument_store = create_argument_store();
-
-export default argument_store;
+export default store;

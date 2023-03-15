@@ -1,13 +1,22 @@
-import type { InitialContext, Options } from "./core";
+import type { InitialContext, MutationMethod, Options, SelectionMethod } from "./core";
 import type { ScoredPopulation } from "./population";
 
 // source: main.go
 
 export interface Arguments {
-  text: string;
-  generations: number /* int */;
-  deep: number /* int */;
-  population: number /* int */;
+  text: string
+  max_generations: number /* int */
+  max_cycle: number /* int */
+  max_depth: number /* int */
+  max_cut: number /* int */
+  time_limit: number /* int */
+  population_size: number /* int */
+  elitism_amount: number /* int */
+  tournament_size: number /* int */
+  tournament_probability: number /* float64 */
+  crossover_new_instances: number
+  selection_method: SelectionMethod
+  mutation_method: MutationMethod
 }
 export interface RunningSolver {
   population: Population /* population.Population */;

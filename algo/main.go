@@ -16,10 +16,19 @@ import (
 )
 
 type Arguments struct {
-	Text           string `json:"text"`
-	MaxGeneration  int    `json:"generations"`
-	MaxCycle       int    `json:"deep"`
-	PopulationSize int    `json:"population"`
+	Text                  string               `json:"text"`
+	MaxGeneration         int                  `json:"max_generations"`
+	MaxCycle              int                  `json:"max_cycle"`
+	MaxDepth              int                  `json:"max_depth"`
+	MaxCut                int                  `json:"max_cut"`
+	TimeLimitMilliseconds int                  `json:"time_limit"`
+	PopulationSize        int                  `json:"population_size"`
+	ElitismAmount         int                  `json:"elitism_amount"`
+	TournamentSize        int                  `json:"tournament_size"`
+	TournamentProbability float64              `json:"tournament_probability"`
+	CrossoverNewInstances int                  `json:"crossover_new_instances"`
+	SelectionMethod       core.SelectionMethod `json:"selection_method"`
+	MutationMethod        core.MutationMethod  `json:"mutation_method"`
 }
 
 type WASMGenerationReturn struct {
@@ -33,27 +42,27 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 	if err != nil {
 		return solver.RunningSolver{}, err
 	}
-	options := core.Options{ // TODO Collect Options
-		MaxGeneration:    args.MaxGeneration,
-		TimeLimitSeconds: 60,
-		MaxCycle:         args.MaxCycle,
-		MaxDepth:         6,
+	options := core.Options{
+		MaxGeneration: args.MaxGeneration,
+		TimeLimitMS:   args.TimeLimitMilliseconds,
+		MaxCycle:      args.MaxCycle,
+		MaxDepth:      args.MaxDepth,
 		// Population
 		PopulationSize:        args.PopulationSize,
-		ElitismAmount:         1,
-		SelectionMethod:       core.TournamentSelection,
-		TournamentSize:        25,
-		TournamentProbability: 0.77,
-		CrossoverNewInstances: 1,
+		ElitismAmount:         args.ElitismAmount,
+		SelectionMethod:       args.SelectionMethod,
+		TournamentSize:        args.TournamentSize,
+		TournamentProbability: args.TournamentProbability,
+		CrossoverNewInstances: args.CrossoverNewInstances,
 		// Mutation
 		MutationChance: 0,
-		MutationMethod: core.LogarithmicMutation,
+		MutationMethod: args.MutationMethod,
 		// Genetic
 		NEntry:               1,
 		HistoryPartMaxLength: 3,
 		HistoryKeyMaxLength:  3,
 		RandomCut:            true,
-		MaxCut:               1,
+		MaxCut:               args.MaxCut,
 	}
 
 	return solver.RunningSolver{
