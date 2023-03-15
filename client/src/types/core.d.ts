@@ -30,7 +30,7 @@ export const LogarithmicMutation: MutationMethod = 1;
 
 export interface Options {
   max_generation: number /* int */;
-  time_limit_seconds: number /* int */;
+  time_limit_ms: number /* int */;
   max_cycle: number /* int */;
   max_depth: number /* int */;
   /**

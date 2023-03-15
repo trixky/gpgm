@@ -13,6 +13,8 @@
 	import { scale } from 'svelte/transition';
 	import { parse_as } from '$lib/utils/parse';
 
+	let start: number = -1
+
 	// ------------------------------ IO
 	let selectedExample = 0;
 	let customInput = '';
@@ -58,6 +60,7 @@
 				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
 			);
 
+
 			// const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
 			// 	?.map((process: any) => {
 			// 		return `cycle:${process.cycle}\t\t${process.process.name}\t(${process.amount})`;
@@ -71,8 +74,14 @@
 				null,
 				'\t'
 			)}`;
-
-			new_generation();
+			if (result_wasm_json != undefined) {
+				const remaining = start + $ArgumentStore.delay - new Date().getTime()
+				result_wasm_json.running_solver.time_limit_ms = remaining
+				
+				if (remaining > 0) {
+					new_generation();
+				}
+			}
 		}, 1);
 	}
 
@@ -113,12 +122,15 @@
 			stop = false;
 			stopped = false;
 
+			start = new Date().getTime()
+
 			const raw_running_solver = WASM_initialize(
 				JSON.stringify({
 					text: input,
 					generations: $ArgumentStore.generations,
 					deep: $ArgumentStore.deep,
-					population: $ArgumentStore.population
+					population: $ArgumentStore.population,
+					time_limit_ms: $ArgumentStore.delay,
 				})
 			);
 
@@ -174,7 +186,7 @@
 	}
 
 	function handle_delay(e: any) {
-		ArgumentStore.update_deep(+e.target.value);
+		ArgumentStore.update_delay(+e.target.value);
 	}
 
 	// ------------------------------ Scrolling blocker

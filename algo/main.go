@@ -20,6 +20,7 @@ type Arguments struct {
 	MaxGeneration  int    `json:"generations"`
 	MaxCycle       int    `json:"deep"`
 	PopulationSize int    `json:"population"`
+	TimeLimitMS    int    `json:"time_limit_ms"`
 }
 
 type WASMGenerationReturn struct {
@@ -34,10 +35,10 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 		return solver.RunningSolver{}, err
 	}
 	options := core.Options{ // TODO Collect Options
-		MaxGeneration:    args.MaxGeneration,
-		TimeLimitSeconds: 60,
-		MaxCycle:         args.MaxCycle,
-		MaxDepth:         6,
+		MaxGeneration: args.MaxGeneration,
+		TimeLimitMS:   args.TimeLimitMS,
+		MaxCycle:      args.MaxCycle,
+		MaxDepth:      6,
 		// Population
 		PopulationSize:        args.PopulationSize,
 		ElitismAmount:         1,
@@ -61,7 +62,6 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 		Context:    context,
 		Options:    options,
 		Generation: 1,
-		Start:      time.Now(),
 	}, nil
 }
 
@@ -141,6 +141,10 @@ func runGenerationWasm() js.Func {
 
 			return nil
 		}
+
+		// --------- init the timer
+		// fmt.Println(solver)
+		solver.InitTimer()
 
 		// --------- call
 		population := solver.RunGeneration()

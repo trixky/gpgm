@@ -2,10 +2,10 @@ package solver
 
 import (
 	"math"
-	"time"
 
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/population"
+	"github.com/trixky/krpsim/algo/timer"
 )
 
 type RunningSolver struct {
@@ -13,7 +13,12 @@ type RunningSolver struct {
 	Context    core.InitialContext   `json:"context"`
 	Options    core.Options          `json:"options"`
 	Generation int                   `json:"generation"`
-	Start      time.Time             `json:"start"`
+	Timer      timer.Timer           `json:"timer"`
+}
+
+// InitTimer initializes its timer
+func (solver *RunningSolver) InitTimer() {
+	solver.Timer.Init(int64(solver.Options.TimeLimitMS))
 }
 
 func (solver *RunningSolver) ComputeMutationRate() {
@@ -41,7 +46,7 @@ func (solver *RunningSolver) ComputeMutationRate() {
 // * Run a single generation
 func (solver *RunningSolver) RunGeneration() population.ScoredPopulation {
 	// fmt.Println("---------------------------- SOLVER")
-	scored := solver.Population.RunAllSimulations(solver.Context, &solver.Options)
+	scored := solver.Population.RunAllSimulations(solver.Context, &solver.Options, &solver.Timer)
 
 	if solver.Options.MaxGeneration > 1 {
 		// // ---------------- crossover
