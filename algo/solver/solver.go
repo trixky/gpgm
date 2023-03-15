@@ -1,6 +1,7 @@
 package solver
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -41,12 +42,22 @@ func (solver *RunningSolver) ComputeMutationRate() {
 // * Run a single generation
 func (solver *RunningSolver) RunGeneration() population.ScoredPopulation {
 	scored := solver.Population.RunAllSimulations(solver.Context, &solver.Options)
-	crossover_population := scored.Crossover(&solver.Context, &solver.Options)
+	// crossover_population := scored.Crossover(&solver.Context, &solver.Options)
+	// crossover_population := scored.Crossover(&solver.Context, &solver.Options)
 	solver.ComputeMutationRate() // Compute the mutation rate for the current generation
-	mutated_population := crossover_population.Mutate(solver.Context, &solver.Options)
-	solver.Population = population.Population{}
+	// solver.Population = population.Population{}
+	// solver.Population = crossover_population
+	// solver.Population = *mutated_population
+
+	mutated_population := solver.Population.Mutate(solver.Context, &solver.Options)
 	solver.Population = *mutated_population
+
 	solver.Generation += 1
+
+	fmt.Println("++++++++++++++++++++++++++")
+	fmt.Println("1((()))", len(solver.Population.Instances[0].Chromosome.EntryGene.Process_ids))
+	fmt.Println("2((()))", len(solver.Population.Instances[0].Chromosome.PriorityGenes))
+	fmt.Println("3((()))", len(solver.Population.Instances[0].Chromosome.PriorityGenes[0].HistoryProcessDependencies))
 
 	return scored
 }

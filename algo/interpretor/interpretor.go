@@ -18,8 +18,11 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 	// Get the current process
 	process := processes[process_id]
 
+	// fmt.Println("^^^ 1")
+
 	// Try to execute n time the process
 	if xx := process.TryExecuteN(stock, n); xx > 0 {
+		// fmt.Println("^^^ 2")
 		n -= xx // Decrement n
 		x += xx // Increment x
 
@@ -29,12 +32,15 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 			Quantity: xx,
 		})
 	}
+	// fmt.Println("^^^ 3")
 
 	if n > 0 {
+		// fmt.Println("^^^ 4")
 		// If process executions are missing
 		if depth < options.MaxDepth {
 			// If the depth is not exceeded
 			complete = true
+			// fmt.Println("^^^ 5")
 
 			// Get the last process ids key from the history
 			last_history_part := history.GetLastProcessIds(options.HistoryPartMaxLength)
@@ -50,20 +56,24 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 
 				// Get the name of the input dependencie
 				input_name := input_dependencie.Input
+				// fmt.Println("^^^ 6", input_name)
 
 				process_dependencie_ids := input_dependencie.ProcessDependencies
 
 				if len(process_dependencie_ids) > 0 {
+					// fmt.Println("^^^ 7")
 					for _, process_dependencie_id := range process_dependencie_ids {
 						// For each process dependencie of the input dependencie of the process
 
 						input_available := stock.Get(input_name)
 						input_needed := process.Inputs[input_name] * n
+						// fmt.Println("^^^ 8", input_needed, input_available)
 
 						if input_needed > input_available {
 							// If input dependencies are needed
 							// Get the process dependencie
 							process_dependencie := processes[process_dependencie_id]
+							// fmt.Println("^^^ 9", process_dependencie.Name)
 							// Compute the wanted input
 							input_wanted := input_needed - input_available
 
@@ -89,6 +99,7 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 						}
 					}
 				} else {
+					// fmt.Println("^^^ 10")
 					complete = false
 				}
 			}
@@ -96,18 +107,22 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 	} else {
 		// Else
 		// All the executions are completed
+		// fmt.Println("^^^ 11")
 		complete = true
 	}
+	// fmt.Println("^^^ 12")
 
 	return
 }
 
 // Interpret generate a process quantities stack by interpreting the chromosome of an instance
 func Interpret(i instance.Instance, initial_context core.InitialContext, stock *core.Stock, options *core.Options) (process_quantities_stack *ProcessQuantities) {
+	// fmt.Println("^^^^^^^^^^^^^^^ DEBUT")
 	// Initialize the process stack
 	process_quantities_stack = &ProcessQuantities{}
 
 	for _, entry_process_id := range i.Chromosome.EntryGene.Process_ids {
+		// fmt.Println("^^^^^^^^ X1")
 		// For each entry process id
 
 		// Init the loop
@@ -115,6 +130,7 @@ func Interpret(i instance.Instance, initial_context core.InitialContext, stock *
 		var executed_processes *ProcessQuantities
 
 		for complete {
+			// fmt.Println("^^^^^^^^ X2")
 			// While entry processes are completely executed
 			complete = false
 
@@ -125,6 +141,7 @@ func Interpret(i instance.Instance, initial_context core.InitialContext, stock *
 			process_quantities_stack.Concatenate(*executed_processes)
 		}
 	}
+	// fmt.Println("^^^^^^^^^^^^^^^ FIN")
 
 	return
 }

@@ -14,15 +14,26 @@ type ProcessDependencies struct {
 	InputDependencies []InputDependencies
 }
 
+func (id *InputDependencies) DeepCopy() *InputDependencies {
+	new_input_dependencies := InputDependencies{
+		Input:               id.Input,
+		ProcessDependencies: make([]int, len(id.ProcessDependencies)),
+	}
+
+	copy(new_input_dependencies.ProcessDependencies, id.ProcessDependencies)
+
+	return &new_input_dependencies
+}
+
 // Cut remove processes randomly when is possible
-func (pd *InputDependencies) Cut(luck int) {
-	for len(pd.ProcessDependencies) > 1 && rand.Intn(luck) == 0 {
-		pd.ProcessDependencies = pd.ProcessDependencies[1:]
+func (id *InputDependencies) Cut(luck int) {
+	for len(id.ProcessDependencies) > 1 && rand.Intn(luck) == 0 {
+		id.ProcessDependencies = id.ProcessDependencies[1:]
 	}
 }
 
 // Init initalizes the processes dependencies for an specific input
-func (pd *InputDependencies) Init(input string, processes []core.Process) {
+func (id *InputDependencies) Init(input string, processes []core.Process) {
 	for parent_process_index, parent_process := range processes {
 		// For each potential parent process
 		for output, output_quantity := range parent_process.Outputs {
@@ -35,10 +46,10 @@ func (pd *InputDependencies) Init(input string, processes []core.Process) {
 					// Random insertion
 					if rand.Intn(2) == 0 {
 						// Insert as first
-						pd.ProcessDependencies = append([]int{parent_process_index}, pd.ProcessDependencies...)
+						id.ProcessDependencies = append([]int{parent_process_index}, id.ProcessDependencies...)
 					} else {
 						// Insert as last
-						pd.ProcessDependencies = append(pd.ProcessDependencies, parent_process_index)
+						id.ProcessDependencies = append(id.ProcessDependencies, parent_process_index)
 					}
 				}
 			}
@@ -46,9 +57,21 @@ func (pd *InputDependencies) Init(input string, processes []core.Process) {
 	}
 }
 
+func (pd *ProcessDependencies) DeepCopy() *ProcessDependencies {
+	new_processd_ependencies := ProcessDependencies{
+		InputDependencies: make([]InputDependencies, len(pd.InputDependencies)),
+	}
+
+	for index_input_dependencie, input_dependencie := range pd.InputDependencies {
+		new_processd_ependencies.InputDependencies[index_input_dependencie] = *input_dependencie.DeepCopy()
+	}
+
+	return &new_processd_ependencies
+}
+
 // Init initalizes the input dependencies for an specific process
-func (id *ProcessDependencies) Init(process core.Process, processes []core.Process) {
-	id.InputDependencies = []InputDependencies{}
+func (pd *ProcessDependencies) Init(process core.Process, processes []core.Process) {
+	pd.InputDependencies = []InputDependencies{}
 
 	for input := range process.Inputs {
 		// For each input of the process
@@ -62,10 +85,10 @@ func (id *ProcessDependencies) Init(process core.Process, processes []core.Proce
 		// Random insertion
 		if rand.Intn(2) == 0 {
 			// Insert as first
-			id.InputDependencies = append([]InputDependencies{process_dependencies}, id.InputDependencies...)
+			pd.InputDependencies = append([]InputDependencies{process_dependencies}, pd.InputDependencies...)
 		} else {
 			// Insert as last
-			id.InputDependencies = append(id.InputDependencies, process_dependencies)
+			pd.InputDependencies = append(pd.InputDependencies, process_dependencies)
 		}
 	}
 }
