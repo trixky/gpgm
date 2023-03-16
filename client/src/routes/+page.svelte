@@ -170,20 +170,6 @@
 		}
 	}
 
-	function handle_stop() {
-		if (running) {
-			stop = true;
-			stopped = true;
-		}
-	}
-
-	function handle_continue() {
-		stop = false;
-		stopped = false;
-
-		new_generation();
-	}
-
 	function handle_reset() {
 		if (running && stopped) {
 			running = false;
@@ -406,13 +392,11 @@
 	</div>
 	<div class="state-container">
 		{#if running}
-			<button class="side-button" on:click={handle_bottom}> Bottom </button>
+		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
+
 		{:else}
 			<button class="play-button" disabled={lastError !== null} on:click={handle_run}> Run </button>
 		{/if}
-		<button class="play-button" on:click={handle_run} disabled={!$inputs.current.length || running}>
-			Clear
-		</button>
 	</div>
 	{#if output}
 		<!-- <Visual {frame} /> -->
@@ -424,17 +408,6 @@
 			<p class="statistic">
 				<span class="statistic-value chrono">{chrono} ms</span>
 			</p>
-		</div>
-		<div class="state-container">
-			<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
-			{#if !running}
-				<button class="play-button" on:click={handle_run}>Run</button>
-			{:else if !stopped}
-				<button class="play-button" on:click={handle_stop}>Stop</button>
-			{:else}
-				<button class="play-button" on:click={handle_continue} disabled={finished}>Continue</button>
-			{/if}
-			<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
 		</div>
 		<div transition:scale|local class="text-container">
 			<h2>Output</h2>
