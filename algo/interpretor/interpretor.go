@@ -92,12 +92,9 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 			}
 		}
 	} else {
-		// Else
-		// All the executions are completed
-		// fmt.Println("^^^ 11")
+		// Else all the executions are completed
 		complete = true
 	}
-	// fmt.Println("^^^ 12")
 
 	return
 }
