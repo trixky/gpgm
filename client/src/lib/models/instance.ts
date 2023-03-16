@@ -1,3 +1,3 @@
 export default interface Instance {
-	score: number;
+	scores: Array<number>;
 }

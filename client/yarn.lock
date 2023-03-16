@@ -257,6 +257,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -851,6 +858,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chart.js@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "chart.js@npm:4.2.1"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 7319fdfd1e29812e87bbc07737e8c9072ff659bbc09ade8dd262f83424cd7e48f89afe5220e11e002c9f236883fae3f3adb8adc16acb4682b0ddcc0b661c3af9
+  languageName: node
+  linkType: hard
+
 "chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.4.1, chokidar@npm:^3.5.3":
   version: 3.5.3
   resolution: "chokidar@npm:3.5.3"
@@ -894,6 +910,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.55.0
     "@typescript-eslint/parser": ^5.55.0
     autoprefixer: ^10.4.14
+    chart.js: ^4.2.1
     eslint: ^8.36.0
     eslint-config-prettier: ^8.7.0
     eslint-plugin-svelte3: ^4.0.0
@@ -901,6 +918,7 @@ __metadata:
     prettier: ^2.8.4
     prettier-plugin-svelte: ^2.9.0
     svelte: ^3.56.0
+    svelte-chartjs: ^3.1.2
     svelte-check: ^3.1.4
     tailwindcss: ^3.2.7
     tslib: ^2.5.0
@@ -2875,6 +2893,16 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 53b1e247e68e05db7b3808b99b892bd36fb096e6fba213a06da7fab22045e97597db425c724f2bbd6c99a3c295e1e73f3e4de78592289f38431049e1277ca0ae
+  languageName: node
+  linkType: hard
+
+"svelte-chartjs@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "svelte-chartjs@npm:3.1.2"
+  peerDependencies:
+    chart.js: ^3.5.0 || ^4.0.0
+    svelte: ^3.45.0
+  checksum: a6cdec3c70d42db6ca37cddc40f61f07478a15ea22aee340b3d8696cf2dc84483021b98af6f392a5f63972aaa3af5fc9f09aafd22c846015f6ee1f578080256e
   languageName: node
   linkType: hard
 

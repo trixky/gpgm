@@ -1,7 +1,11 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
+	import InstanceStore from '$lib/stores/instance';
+	import Chart from '$lib/components/chart.svelte';
+	import type GenerationModel from '$lib/models/generation';
 	import { config } from '$lib/config';
 	import args from '$lib/stores/arguments';
 	import examples from '$lib/Examples';
@@ -9,7 +13,6 @@
 	import { parse_as } from '$lib/utils/parse';
 	import { wasmReady } from '$lib/stores/ready';
 	import { inputs } from '$lib/stores/inputs';
-	import { onMount } from 'svelte';
 
 	export let data: { bytes: BufferSource };
 
@@ -87,7 +90,9 @@
 			if (result_wasm_json != undefined) {
 				const remaining = remaining_chrono();
 				result_wasm_json.running_solver.time_limit_ms = remaining;
-
+				InstanceStore.insert_population(<GenerationModel>{
+					scores: result_wasm_json.scored_population.instances.map((instance) => instance.score)
+				});
 				if (remaining > 0) {
 					new_generation();
 				} else {
@@ -141,6 +146,7 @@
 			stop = false;
 			stopped = false;
 			handle_bottom();
+			InstanceStore.reset();
 
 			start = new Date().getTime();
 
@@ -158,6 +164,9 @@
 				const running_solver = parse_as<RunningSolver>(raw_running_solver);
 				result_wasm_json = { running_solver, scored_population: { instances: [] } };
 				start_chrono();
+				InstanceStore.insert_population(<GenerationModel>{
+					scores: result_wasm_json.scored_population.instances.map((instance) => instance.score)
+				});
 				new_generation();
 			}
 		}
@@ -165,6 +174,7 @@
 
 	function handle_reset() {
 		if (running && stopped) {
+			InstanceStore.reset();
 			running = false;
 			stop = false;
 			stopped = false;
@@ -486,6 +496,7 @@
 			</div>
 		</div>
 	{/if}
+	<Chart />
 </main>
 
 <!-- <svelte:window use:wheel={{ scrollable }} /> -->
