@@ -13,7 +13,7 @@
 		ArcElement,
 		CategoryScale,
 		LinearScale,
-		PointElement
+		PointElement,
 	} from 'chart.js';
 
 	ChartJS.register(
@@ -24,7 +24,7 @@
 		ArcElement,
 		CategoryScale,
 		LinearScale,
-		PointElement
+		PointElement,
 	);
 
 

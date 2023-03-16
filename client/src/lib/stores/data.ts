@@ -7,7 +7,6 @@ export default derived(
         const color = index === 0 ? 'rgb(50, 255, 255, 0.7)' : 'rgb(255, 255, 255, 0.7)'
         return{
             // label: '',
-            fill: true,
             lineWidth: 40,
             width: 40,
             weight: 40,
