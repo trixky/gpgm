@@ -104,7 +104,7 @@ func TestInstanceInit(t *testing.T) {
 		RandomCut:            true,
 		MaxCut:               0,
 		HistoryPartMaxLength: 3,
-		HistoryKeyMaxLength:  4,
+		HistoryKeyMaxLength:  3,
 	}
 
 	instance.Init(initial_context.Processes, initial_context.Optimize, &options)
