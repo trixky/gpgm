@@ -170,6 +170,29 @@
 		lastError = WASM_parse_input(e.target.value);
 	}
 
+	function download_output(e: Event) {
+		e.preventDefault();
+		if (outputFile) {
+			const file = new Blob([outputFile], { type: 'plain/text' });
+
+			// Create a new link
+			const url = URL.createObjectURL(file);
+			const anchor = document.createElement('a');
+			anchor.href = url;
+			anchor.download = `${examples[$inputs.selectedExample].name.toLocaleLowerCase()}.out`;
+
+			// Append to the DOM
+			document.body.appendChild(anchor);
+
+			// Trigger `click` event
+			anchor.click();
+
+			// Remove element from DOM
+			document.body.removeChild(anchor);
+			URL.revokeObjectURL(url);
+		}
+	}
+
 	// ------------------------------ Scrolling blocker
 	// https://svelte.dev/repl/2bdbf66371a3418e9e3eda076df6e32d?version=3.18.1
 	/* $: scrollable = !running || stopped;
@@ -437,13 +460,16 @@
 					</div>
 				{/if}
 			</div>
-			<textarea
-				cols={config.ui.output.cols}
-				rows={config.ui.output.row}
-				placeholder=""
-				value={outputFile}
-				readonly
-			/>
+			<div class="flex flex-col">
+				<button class="ml-auto mr-0 mt-1 mb-1" on:click={download_output}>Download</button>
+				<textarea
+					cols={config.ui.output.cols}
+					rows={config.ui.output.row}
+					placeholder=""
+					value={outputFile}
+					readonly
+				/>
+			</div>
 		</div>
 	{/if}
 </main>
