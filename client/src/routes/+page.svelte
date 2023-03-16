@@ -392,8 +392,7 @@
 	</div>
 	<div class="state-container">
 		{#if running}
-		<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
-
+			<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
 		{:else}
 			<button class="play-button" disabled={lastError !== null} on:click={handle_run}> Run </button>
 		{/if}

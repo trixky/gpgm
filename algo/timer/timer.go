@@ -1,7 +1,6 @@
 package timer
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -19,11 +18,6 @@ func (t *Timer) Init(MS_timestamp int64) {
 func (t *Timer) TimeOut() bool {
 	if !t.out && time.Now().UnixMilli() > t.ms_time_out {
 		t.out = true
-	}
-
-	if t.out {
-	} else {
-		fmt.Println("NOP", time.Now().UnixMilli(), t.ms_time_out)
 	}
 
 	return t.out

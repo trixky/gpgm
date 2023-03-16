@@ -34,6 +34,7 @@ func NewPopulation(options *core.Options) Population {
 	}
 }
 
+// NewRandomPopulation generates a new random population
 func NewRandomPopulation(context core.InitialContext, options *core.Options) Population {
 	context.FindProcessParents()
 
@@ -46,17 +47,24 @@ func NewRandomPopulation(context core.InitialContext, options *core.Options) Pop
 	}
 }
 
+// RunAllSimulations runs the simulation of all the instances of its population
 func (p *Population) RunAllSimulations(context core.InitialContext, options *core.Options, timer *timer.Timer) ScoredPopulation {
 	var scored []ScoredInstance
 
-	// Run a simulation on all instances
-	for instance_index, instance := range p.Instances {
+	for _, instance := range p.Instances {
+		// For each instance of its population
+
 		if timer.TimeOut() {
+			// If time out
 			break
 		}
-		fmt.Println("--------- instance", instance_index)
+
+		// Initializes a the simulation of the instance
 		simulation := simulation.NewSimulation(context, instance)
+		// Run its simulation
 		simulation.Run(options)
+
+		// Save its score
 		scored = append(scored, ScoredInstance{
 			Instance:   instance,
 			Simulation: simulation,
@@ -65,8 +73,7 @@ func (p *Population) RunAllSimulations(context core.InitialContext, options *cor
 		})
 	}
 
-	// Sort by Score
-	// TODO Improve and sort by fitness on each optimize fields instead ?
+	// Sort instances by Score
 	sort.Slice(scored, func(i, j int) bool {
 		return scored[i].Score > scored[j].Score
 	})
@@ -76,12 +83,15 @@ func (p *Population) RunAllSimulations(context core.InitialContext, options *cor
 	}
 }
 
+// Best return the best instance of its population
 func (p *ScoredPopulation) Best() ScoredInstance {
 	return p.Instances[0]
 }
 
-// https://en.wikipedia.org/wiki/Tournament_selection
+// TournamentSelection implements the tournament selection paradigm
 func (s *ScoredPopulation) TournamentSelection(forIndex int, options *core.Options) ScoredInstance {
+	// https://en.wikipedia.org/wiki/Tournament_selection
+
 	// Select k instances from all Instances (tournament population size)
 	k := len(s.Instances)
 	instanceIndexes := make([]int, k)
@@ -113,17 +123,19 @@ func (s *ScoredPopulation) TournamentSelection(forIndex int, options *core.Optio
 	return s.Instances[instanceIndexes[0]]
 }
 
-// Set the chance of an instance it's score percentage from the global score of the population
+// RandomSelection set the chance of an instance it's score percentage from the global score of the population
 // Add both chances of the instances and roll a dice to use the current instance
 func (s *ScoredPopulation) RandomSelection(forIndex int, options *core.Options) ScoredInstance {
 	// Calculate the total score of all instances
 	total := 1.
 	for _, scoredInstance := range s.Instances {
+		// For each socred instance
 		total += float64(scoredInstance.Score)
 	}
 
 	// Add the chance of both instances and roll a dice
 	scoredInstance := s.Instances[forIndex]
+
 	for _, otherScoredInstance := range s.Instances[forIndex+1:] {
 		chance := float64(scoredInstance.Score)/total + float64(otherScoredInstance.Score)/total
 		if rand.Float64() <= chance {
@@ -142,7 +154,7 @@ func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, option
 		return population
 	}
 
-	// * Elitism
+	// -------------- Elitism
 	i := 0
 	if options.ElitismAmount > 0 {
 		max := options.ElitismAmount
@@ -155,7 +167,7 @@ func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, option
 		i = max
 	}
 
-	// * New instances
+	// -------------- New instances
 	if options.CrossoverNewInstances > 0 {
 		max := i + options.CrossoverNewInstances
 		if max >= options.PopulationSize {
@@ -167,11 +179,11 @@ func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, option
 		i = max
 	}
 
-	// * Crossover between Instances
+	// -------------- Crossover between Instances
 	for ; i < options.PopulationSize; i += 2 {
 		scoredInstance := s.Instances[i]
 
-		// * Selection
+		// -------------- Selection
 		crossWith := ScoredInstance{}
 		switch options.SelectionMethod {
 		default:
@@ -181,7 +193,7 @@ func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, option
 			crossWith = s.TournamentSelection(i, options)
 		}
 
-		// * Genetic operator
+		// -------------- Genetic operator
 		child1, child2 := scoredInstance.Instance.Cross(&crossWith.Instance)
 		population.Instances[i] = child1
 		if i+1 < options.PopulationSize {
@@ -197,8 +209,9 @@ func (p *Population) Mutate(context core.InitialContext, options *core.Options) 
 	mutated_population.Instances = make([]instance.Instance, len(p.Instances))
 
 	for instance_index, instance := range p.Instances {
+		// For each instance of the population
+		// Mutate the instance
 		mutated_population.Instances[instance_index] = *instance.Mutate(context.Processes, context.Optimize, options)
-		// mutated_population.Instances[instance_index] = instance
 	}
 
 	return &mutated_population
