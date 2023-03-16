@@ -24,6 +24,33 @@
 
 	$: disabled_reset = !running || !stopped;
 
+	// ------------------------------ chrono
+	let chrono = 0
+	let stop_chrono = false
+
+	function remaining_chrono(): number {
+		return start + $args.time_limit - new Date().getTime();
+	}
+	
+	function recursive_chrono() {
+		if (!stop_chrono) {
+			setTimeout(() => {
+				chrono = remaining_chrono()
+				recursive_chrono()
+			}, 1);
+		} else {
+			stop_chrono = false
+		}
+	}
+
+	function start_chrono() {
+		recursive_chrono()
+	}
+
+	function finish_chrono() {
+		stop_chrono = true
+	}
+
 	// ------------------------------ Loop
 	let frame = 0; // Used to refresh the visualizator
 	let generation = 0;
@@ -65,7 +92,7 @@
 				'\t'
 			)}`;
 			if (result_wasm_json != undefined) {
-				const remaining = start + $args.time_limit - new Date().getTime();
+				const remaining = remaining_chrono();
 				result_wasm_json.running_solver.time_limit_ms = remaining;
 
 				if (remaining > 0) {
@@ -73,7 +100,6 @@
 				} else {
 					handle_finish();
 				}
-				handle_bottom();
 			}
 		}, 1);
 	}
@@ -110,6 +136,8 @@
 	function handle_finish() {
 		finished = true;
 		stopped = true;
+		finish_chrono();
+		handle_bottom();
 	}
 
 	function handle_run() {
@@ -136,6 +164,7 @@
 				generation = -1;
 				const running_solver = parse_as<RunningSolver>(raw_running_solver);
 				result_wasm_json = { running_solver, scored_population: { instances: [] } };
+				start_chrono()
 				new_generation();
 			}
 		}
@@ -392,10 +421,9 @@
 				<span class="statistic-label">generation</span>:
 				<span class="statistic-value">{generation}/{$args.max_generations}</span>
 			</p>
-			<!-- <p class="statistic">
-				<span class="statistic-label">best score</span>:
-				<span class="statistic-value">{$StatisticStore.scores.global.best}</span>
-			</p> -->
+			<p class="statistic">
+				<span class="statistic-value chrono">{chrono} ms</span>
+			</p>
 		</div>
 		<div class="state-container">
 			<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
@@ -523,5 +551,9 @@
 
 	.statistic-value {
 		@apply text-left w-16;
+	}
+
+	.statistic-value.chrono {
+		@apply w-24 mr-4 text-right;
 	}
 </style>
