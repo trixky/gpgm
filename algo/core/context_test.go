@@ -9,7 +9,7 @@ func TestFindProcessParents(t *testing.T) {
 		initial_context InitialContext
 		expected        []Process
 	}{
-		{
+		{ // ----------------------- 0
 			initial_context: InitialContext{
 				Processes: []Process{
 					{
@@ -43,7 +43,7 @@ func TestFindProcessParents(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // ----------------------- 1
 			initial_context: InitialContext{
 				Processes: []Process{
 					{
@@ -120,8 +120,14 @@ func TestFindProcessParents(t *testing.T) {
 	}
 
 	for test_index, test := range tests {
+		// For each test
+
+		// Find process parents
 		test.initial_context.FindProcessParents()
+
 		for process_index, process := range test.initial_context.Processes {
+			// For each process
+
 			if len(process.Parents) != len(test.expected[process_index].Parents) {
 				t.Fatalf(`test %d (process: %d): expected = %d, got = %d`, test_index, process_index, len(test.expected[process_index].Parents), len(process.Parents))
 			}

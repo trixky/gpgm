@@ -8,7 +8,7 @@ func TestProcessCanBeExecutedXTimes(t *testing.T) {
 		process Process
 		amounts map[int]bool
 	}{
-		{
+		{ // ----------------------- 0
 			stock: Stock{
 				"wood":  3,
 				"stone": 2,
@@ -33,7 +33,7 @@ func TestProcessCanBeExecutedXTimes(t *testing.T) {
 				6: false,
 			},
 		},
-		{
+		{ // ----------------------- 1
 			stock: Stock{
 				"wood":  3,
 				"stone": 2,
@@ -57,7 +57,7 @@ func TestProcessCanBeExecutedXTimes(t *testing.T) {
 				4: false,
 			},
 		},
-		{
+		{ // ----------------------- 2
 			stock: Stock{
 				"wood":  3,
 				"stone": 10,
@@ -81,7 +81,7 @@ func TestProcessCanBeExecutedXTimes(t *testing.T) {
 				4: false,
 			},
 		},
-		{
+		{ // ----------------------- 3
 			stock: Stock{
 				"wood":  3,
 				"stone": 1,
@@ -121,7 +121,7 @@ func TestProcessCanBeExecutedMaxXTimes(t *testing.T) {
 		process  Process
 		expected int
 	}{
-		{
+		{ // ----------------------- 0
 			stock: Stock{
 				"wood":  3,
 				"stone": 2,
@@ -139,7 +139,7 @@ func TestProcessCanBeExecutedMaxXTimes(t *testing.T) {
 			},
 			expected: 3,
 		},
-		{
+		{ // ----------------------- 1
 			stock: Stock{
 				"wood":  3,
 				"stone": 2,
@@ -158,7 +158,7 @@ func TestProcessCanBeExecutedMaxXTimes(t *testing.T) {
 			},
 			expected: 1,
 		},
-		{
+		{ // ----------------------- 2
 			stock: Stock{
 				"wood":  3,
 				"stone": 10,
@@ -177,7 +177,7 @@ func TestProcessCanBeExecutedMaxXTimes(t *testing.T) {
 			},
 			expected: 1,
 		},
-		{
+		{ // ----------------------- 3
 			stock: Stock{
 				"wood":  3,
 				"stone": 1,
@@ -195,7 +195,7 @@ func TestProcessCanBeExecutedMaxXTimes(t *testing.T) {
 			},
 			expected: 0,
 		},
-		{
+		{ // ----------------------- 4
 			stock: Stock{
 				"wood":  30,
 				"stone": 10,
@@ -217,6 +217,8 @@ func TestProcessCanBeExecutedMaxXTimes(t *testing.T) {
 	}
 
 	for test_index, test := range tests {
+		// For each test
+
 		if result := test.process.CanBeExecutedMaxXTimes(&test.stock); result != test.expected {
 			t.Fatalf(`test %d: expected = %d, got = %d`, test_index, test.expected, result)
 		}
@@ -229,7 +231,7 @@ func TestProcessExecuteN(t *testing.T) {
 		process  Process
 		expected map[int]Stock
 	}{
-		{
+		{ // ----------------------- 0
 			stock: Stock{
 				"wood":  3,
 				"stone": 2,
@@ -266,14 +268,21 @@ func TestProcessExecuteN(t *testing.T) {
 	}
 
 	for test_index, test := range tests {
+		// For each test
+
 		func() {
 			for n, expected := range test.expected {
+				// For each expected result corresponding to n
 
+				// Make a deep copy of the initial stock
 				stock_cpy := test.stock.DeepCopy()
 
+				// Execute the process n time
 				test.process.ExecuteN(&stock_cpy, n)
 
 				for key, resource := range stock_cpy {
+					// For each resource of the copied stock
+
 					if resource != expected[key] {
 						t.Fatalf(`test %d (n: %d, resource: %s): expected = %d, got = %d`, test_index, n, key, expected[key], resource)
 					}
@@ -289,7 +298,7 @@ func TestProcessHaveInput(t *testing.T) {
 		resource string
 		expected bool
 	}{
-		{
+		{ // ----------------------- 0
 			process: Process{
 				Inputs: map[string]int{
 					"cat":   3,
@@ -300,7 +309,7 @@ func TestProcessHaveInput(t *testing.T) {
 			resource: "cat",
 			expected: true,
 		},
-		{
+		{ // ----------------------- 1
 			process: Process{
 				Inputs: map[string]int{
 					"wood":  3,
@@ -314,6 +323,7 @@ func TestProcessHaveInput(t *testing.T) {
 	}
 
 	for test_index, test := range tests {
+		// For each test
 
 		result := test.process.HaveInput(test.resource)
 
@@ -329,7 +339,7 @@ func TestProcessHaveOutput(t *testing.T) {
 		resource string
 		expected bool
 	}{
-		{
+		{ // ----------------------- 0
 			process: Process{
 				Outputs: map[string]int{
 					"cat":   3,
@@ -340,7 +350,7 @@ func TestProcessHaveOutput(t *testing.T) {
 			resource: "cat",
 			expected: true,
 		},
-		{
+		{ // ----------------------- 1
 			process: Process{
 				Outputs: map[string]int{
 					"wood":  3,
@@ -354,7 +364,9 @@ func TestProcessHaveOutput(t *testing.T) {
 	}
 
 	for test_index, test := range tests {
+		// For each test
 
+		// Check if the process have a resource output
 		result := test.process.HaveOutput(test.resource)
 
 		if result != test.expected {
