@@ -8,11 +8,13 @@
 	import { parse_as } from '$lib/utils/parse';
 	import { wasmReady } from '$lib/stores/ready';
 	import { inputs } from '$lib/stores/inputs';
+	import type { ScoredInstance } from '../types/population';
 
 	let start: number = -1;
 
 	// ------------------------------ IO
-	let output = '';
+	let output: ScoredInstance | null = null;
+	let outputError = '';
 	let outputFile = '';
 	let lastError: string | null = null;
 
@@ -25,7 +27,6 @@
 	$: disabled_reset = !running || !stopped;
 
 	// ------------------------------ Loop
-	let frame = 0; // Used to refresh the visualizator
 	let generation = 0;
 	let result_wasm_json: WASMGenerationReturn | undefined = undefined;
 
@@ -41,7 +42,6 @@
 			return;
 		}
 
-		frame++;
 		setTimeout(() => {
 			// Recursive loop
 
@@ -51,19 +51,9 @@
 				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
 			);
 
-			// const processes = result_wasm_json.scored_population?.instances[0]?.simulation?.history
-			// 	?.map((process: any) => {
-			// 		return `cycle:${process.cycle}\t\t${process.process.name}\t(${process.amount})`;
-			// 	})
-			// 	.join('\n');
-
 			const best = result_wasm_json.scored_population.instances[0];
 			outputFile = WASM_generate_output(JSON.stringify(best.simulation));
-			output = `Cycles: ${best.cycle}\nScore: ${best.score}\n${JSON.stringify(
-				best.simulation.stock,
-				null,
-				'\t'
-			)}`;
+			output = best;
 			if (result_wasm_json != undefined) {
 				const remaining = start + $args.time_limit - new Date().getTime();
 				result_wasm_json.running_solver.time_limit_ms = remaining;
@@ -131,7 +121,7 @@
 			);
 
 			if (raw_running_solver == undefined || raw_running_solver == null) {
-				output = 'error';
+				outputError = 'error';
 			} else {
 				generation = -1;
 				const running_solver = parse_as<RunningSolver>(raw_running_solver);
@@ -163,8 +153,8 @@
 			generation = 0;
 			finished = false;
 
-			frame++;
-			output = '';
+			output = null;
+			outputError = '';
 		}
 	}
 
@@ -400,16 +390,11 @@
 		</div>
 	</form>
 	{#if output}
-		<!-- <Visual {frame} /> -->
 		<div class="statistic-container shadow">
 			<p class="statistic">
 				<span class="statistic-label">generation</span>:
 				<span class="statistic-value">{generation}/{$args.max_generations}</span>
 			</p>
-			<!-- <p class="statistic">
-				<span class="statistic-label">best score</span>:
-				<span class="statistic-value">{$StatisticStore.scores.global.best}</span>
-			</p> -->
 		</div>
 		<div class="state-container">
 			<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
@@ -424,13 +409,34 @@
 		</div>
 		<div transition:scale|local class="text-container">
 			<h2>Output</h2>
-			<textarea
-				cols={config.ui.output.cols}
-				rows={config.ui.output.row}
-				placeholder=""
-				value={output}
-				readonly
-			/>
+			<div class="text-left max-w-lg">
+				<div class="flex flex-row w-full mb-2">
+					{#if output}
+						<span class="flex-shrink-0 inline-block p-1">
+							Cycles: {output.cycle}
+						</span>
+						<span class="flex-grow flex-shrink-0" />
+						<span class="flex-shrink-0 inline-block p-1">
+							Score: {output.score}
+						</span>
+					{/if}
+					{#if outputError}
+						{outputError}
+					{/if}
+				</div>
+				{#if output}
+					<div>
+						{#each Object.keys(output.simulation.stock) as product}
+							<span
+								class="badge mr-1 mb-1"
+								class:highlight={output.simulation.initial_context.optimize[product] !== undefined}
+							>
+								{product}: {output.simulation.stock[product]}
+							</span>
+						{/each}
+					</div>
+				{/if}
+			</div>
 			<textarea
 				cols={config.ui.output.cols}
 				rows={config.ui.output.row}
