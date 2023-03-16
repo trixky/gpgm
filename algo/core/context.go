@@ -1,100 +1,8 @@
 package core
 
-import (
-	"math"
-)
-
 type Product struct {
 	Name     string `json:"name"`
 	Quantity int    `json:"quantity"`
-}
-
-type Process struct {
-	Name    string         `json:"name"`
-	Inputs  map[string]int `json:"inputs"`
-	Outputs map[string]int `json:"outputs"`
-	Delay   int            `json:"delay"`
-	Parents []int          `json:"parent"`
-}
-
-func (p *Process) CanBeExecuted(stock *Stock) bool {
-	return p.CanBeExecutedXTimes(stock, 1)
-}
-
-func (p *Process) CanBeExecutedXTimes(stock *Stock, amount int) bool {
-	for product, quantity := range p.Inputs {
-		if stock.Get(product) < quantity*amount {
-			return false
-		}
-	}
-	return true
-}
-
-func (p *Process) CanBeExecutedMaxXTimes(stock *Stock) int {
-	var max_global int = math.MaxInt
-
-	for product, quantity := range p.Inputs {
-		max_production := stock.Get(product) / quantity
-
-		if max_production < max_global {
-			max_global = max_production
-		}
-
-		if max_global == 0 {
-			return max_global
-		}
-	}
-
-	return max_global
-}
-
-func (p *Process) TryExecute(stock *Stock) bool {
-	new_stock := Stock{}
-
-	for product, cost := range p.Inputs {
-		available := stock.Get(product)
-
-		if available < cost {
-			return false
-		} else {
-			new_stock.Insert(product, available-cost)
-		}
-	}
-
-	*stock = new_stock
-
-	return true
-}
-
-// TryExecuteN try to execute n time itself and returns number of execution
-func (p *Process) TryExecuteN(stock *Stock, n int) int {
-	max := p.CanBeExecutedMaxXTimes(stock)
-
-	if max > 0 {
-		if max > n {
-			max = n
-		}
-		p.ExecuteN(stock, max)
-	}
-
-	return max
-}
-
-func (p *Process) IsInOutput(product string) bool {
-	for outputProduct := range p.Outputs {
-		if product == outputProduct {
-			return true
-		}
-	}
-
-	return false
-}
-
-func (p *Process) ExecuteN(stock *Stock, n int) {
-	for product, cost := range p.Inputs {
-		available := stock.Get(product)
-		stock.Insert(product, available-(cost*n))
-	}
 }
 
 type InitialContext struct {
@@ -104,9 +12,9 @@ type InitialContext struct {
 	ScoreRatio map[string]int  `json:"score_ratio"`
 }
 
-func (sm *InitialContext) IsInOutput(product string) bool {
+func (sm *InitialContext) HaveOutput(product string) bool {
 	for _, process := range sm.Processes {
-		if process.IsInOutput(product) {
+		if process.HaveOutput(product) {
 			return true
 		}
 	}

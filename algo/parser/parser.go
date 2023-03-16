@@ -400,7 +400,7 @@ func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
 			for product := range asOptimize {
 				if product == "time" {
 					continue
-				} else if !sm.IsInOutput(product) && !sm.Stock.Exists(product) {
+				} else if !sm.HaveOutput(product) && !sm.Stock.Exists(product) {
 					return sm, fmt.Errorf("unexpected optimize for `%s`, not in any process output", product)
 				}
 			}
