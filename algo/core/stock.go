@@ -47,6 +47,13 @@ func (s Stock) AddResource(resource string, quantity int) {
 	s[resource] = s[resource] + quantity
 }
 
+// ResourceExists checks if a resource exists without looking at it's quantity
+func (s Stock) ResourceExists(resource string) bool {
+	_, exists := s[resource]
+
+	return exists
+}
+
 // HaveResource checks if it has a resource
 func (s Stock) HaveResource(resource string) bool {
 	quantity, ok := s[resource]

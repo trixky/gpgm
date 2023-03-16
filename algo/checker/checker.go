@@ -72,7 +72,7 @@ func CheckOutput(simulationFile string, outputFile string) (res bool, err error)
 				return false, err
 			}
 			for _, product := range products {
-				if !sm.Stock.Exists(product.Name) {
+				if !sm.Stock.ResourceExists(product.Name) {
 					return false, fmt.Errorf("invalid inexisting product `%s`", product.Name)
 				}
 				finalStock[product.Name] = product.Quantity
@@ -102,7 +102,7 @@ func CheckOutput(simulationFile string, outputFile string) (res bool, err error)
 			remaining := []LocalExpectedStock{}
 			for _, e := range expectedStock {
 				if e.AvailableAtCycle <= cycle {
-					simulationStock.Add(e.Product, e.Quantity)
+					simulationStock.AddResource(e.Product, e.Quantity)
 				} else {
 					remaining = append(remaining, e)
 				}
@@ -127,11 +127,11 @@ func CheckOutput(simulationFile string, outputFile string) (res bool, err error)
 				}
 
 				// Execute process and update stock
-				if !process.CanBeExecutedXTimes(&simulationStock, processToken.Quantity) {
+				if !process.CanBeExecutedXTimes(simulationStock, processToken.Quantity) {
 					return false, fmt.Errorf("can't execute process `%s` on cycle %d", processToken.Name, cycle)
 				}
 				for name, quantity := range process.Inputs {
-					simulationStock.Remove(name, quantity*processToken.Quantity)
+					simulationStock.RemoveResource(name, quantity*processToken.Quantity)
 				}
 				for name, quantity := range process.Outputs {
 					expectedStock = append(expectedStock, LocalExpectedStock{
@@ -149,13 +149,13 @@ func CheckOutput(simulationFile string, outputFile string) (res bool, err error)
 
 	// Finish the remaining processes
 	for _, e := range expectedStock {
-		simulationStock.Add(e.Product, e.Quantity)
+		simulationStock.AddResource(e.Product, e.Quantity)
 	}
 
 	// Compare final stock with the simulation stock
 	for name, quantity := range finalStock {
-		if simulationStock.Get(name) != quantity {
-			return false, fmt.Errorf("invalid final stock for a product, expected %d for `%s` but got %d", simulationStock.Get(name), name, quantity)
+		if simulationStock.GetResource(name) != quantity {
+			return false, fmt.Errorf("invalid final stock for a product, expected %d for `%s` but got %d", simulationStock.GetResource(name), name, quantity)
 		}
 	}
 
