@@ -1,6 +1,7 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
+	import type { ScoredInstance } from '../types/population';
 	import { config } from '$lib/config';
 	import args from '$lib/stores/arguments';
 	import examples from '$lib/Examples';
@@ -8,7 +9,6 @@
 	import { parse_as } from '$lib/utils/parse';
 	import { wasmReady } from '$lib/stores/ready';
 	import { inputs } from '$lib/stores/inputs';
-	import type { ScoredInstance } from '../types/population';
 
 	let start: number = -1;
 
@@ -25,6 +25,33 @@
 	let finished = false;
 
 	$: disabled_reset = !running || !stopped;
+
+	// ------------------------------ chrono
+	let chrono = 0;
+	let stop_chrono = false;
+
+	function remaining_chrono(): number {
+		return start + $args.time_limit - new Date().getTime();
+	}
+
+	function recursive_chrono() {
+		if (!stop_chrono) {
+			setTimeout(() => {
+				chrono = remaining_chrono();
+				recursive_chrono();
+			}, 1);
+		} else {
+			stop_chrono = false;
+		}
+	}
+
+	function start_chrono() {
+		recursive_chrono();
+	}
+
+	function finish_chrono() {
+		stop_chrono = true;
+	}
 
 	// ------------------------------ Loop
 	let generation = 0;
@@ -55,7 +82,7 @@
 			outputFile = WASM_generate_output(JSON.stringify(best.simulation));
 			output = best;
 			if (result_wasm_json != undefined) {
-				const remaining = start + $args.time_limit - new Date().getTime();
+				const remaining = remaining_chrono();
 				result_wasm_json.running_solver.time_limit_ms = remaining;
 
 				if (remaining > 0) {
@@ -63,7 +90,6 @@
 				} else {
 					handle_finish();
 				}
-				handle_bottom();
 			}
 		}, 1);
 	}
@@ -100,6 +126,8 @@
 	function handle_finish() {
 		finished = true;
 		stopped = true;
+		finish_chrono();
+		handle_bottom();
 	}
 
 	function handle_run() {
@@ -126,23 +154,10 @@
 				generation = -1;
 				const running_solver = parse_as<RunningSolver>(raw_running_solver);
 				result_wasm_json = { running_solver, scored_population: { instances: [] } };
+				start_chrono();
 				new_generation();
 			}
 		}
-	}
-
-	function handle_stop() {
-		if (running) {
-			stop = true;
-			stopped = true;
-		}
-	}
-
-	function handle_continue() {
-		stop = false;
-		stopped = false;
-
-		new_generation();
 	}
 
 	function handle_reset() {
@@ -399,17 +414,10 @@
 		</div>
 		<div class="state-container">
 			{#if running}
-				<button class="side-button" on:click={handle_bottom}> Bottom </button>
+				<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
 			{:else}
-				<button class="play-button" disabled={lastError !== null}> Run </button>
+				<button class="play-button" disabled={lastError !== null} on:click={handle_run}>Run</button>
 			{/if}
-			<button
-				class="play-button"
-				on:click={handle_run}
-				disabled={!$inputs.current.length || running}
-			>
-				Clear
-			</button>
 		</div>
 	</form>
 	{#if output}
@@ -418,17 +426,9 @@
 				<span class="statistic-label">generation</span>:
 				<span class="statistic-value">{generation}/{$args.max_generations}</span>
 			</p>
-		</div>
-		<div class="state-container">
-			<button class="side-button" on:click={handle_top} disabled={running && !stopped}>Top</button>
-			{#if !running}
-				<button class="play-button" on:click={handle_run}>Run</button>
-			{:else if !stopped}
-				<button class="play-button" on:click={handle_stop}>Stop</button>
-			{:else}
-				<button class="play-button" on:click={handle_continue} disabled={finished}>Continue</button>
-			{/if}
-			<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
+			<p class="statistic">
+				<span class="statistic-value chrono">{chrono} ms</span>
+			</p>
 		</div>
 		<div transition:scale|local class="text-container">
 			<h2>Output</h2>
@@ -569,5 +569,9 @@
 
 	.statistic-value {
 		@apply text-left w-16;
+	}
+
+	.statistic-value.chrono {
+		@apply w-24 mr-4 text-right;
 	}
 </style>

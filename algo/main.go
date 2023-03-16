@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
-	"sort"
 	"syscall/js"
 	"time"
 
@@ -36,7 +35,7 @@ type WASMGenerationReturn struct {
 	RunningSolver    solver.RunningSolver        `json:"running_solver"`
 }
 
-// * Initialize a solver.RunningSolver from the given args
+// initialize initialize a solver from the given args
 func initialize(args Arguments) (solver.RunningSolver, error) {
 	context, err := parser.ParseSimulationFile(args.Text)
 	if err != nil {
@@ -73,46 +72,19 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 	}, nil
 }
 
-func printDependencies(running_solver solver.RunningSolver) {
-	for i_index, instance := range running_solver.Population.Instances {
-		fmt.Println("***********************", i_index)
-		for g_index, gene := range instance.Chromosome.PriorityGenes {
-			fmt.Println("*****", g_index)
-
-			keys := make([]string, len(gene.HistoryProcessDependencies))
-			i := 0
-			for key := range gene.HistoryProcessDependencies {
-				keys[i] = key
-				i++
-			}
-
-			sort.Strings(keys)
-
-			for _, sorted_key := range keys {
-				fmt.Println(sorted_key)
-				for _, dependencie := range gene.HistoryProcessDependencies[sorted_key].InputDependencies {
-					fmt.Println(dependencie.Input)
-					fmt.Println(dependencie.ProcessDependencies)
-				}
-			}
-		}
-	}
-
-}
-
 // runWasm parse arguments, run the simulation and return its result
 func initializeWasm() js.Func {
 	run := js.FuncOf(func(this js.Value, args []js.Value) any {
 		arguments := Arguments{}
 
-		// --------- extract the response
+		// --------- Extract the response
 		if err := json.Unmarshal([]byte(args[0].String()), &arguments); err != nil {
 			fmt.Print(err.Error())
 
 			return nil
 		}
 
-		// --------- call
+		// --------- Call
 		running_solver, err := initialize(arguments)
 
 		if err != nil {
@@ -122,7 +94,7 @@ func initializeWasm() js.Func {
 		}
 		running_solver.Context.FindProcessParents()
 
-		// --------- insert the response
+		// --------- Insert the response
 		running_solver_json, err := json.Marshal(running_solver)
 
 		if err != nil {
@@ -143,21 +115,20 @@ func runGenerationWasm() js.Func {
 		rand.Seed(time.Now().UnixNano())
 		solver := solver.RunningSolver{}
 
-		// --------- extract the response
+		// --------- Extract the response
 		if err := json.Unmarshal([]byte(args[0].String()), &solver); err != nil {
 			fmt.Print(err.Error())
 
 			return nil
 		}
 
-		// --------- init the timer
-		// fmt.Println(solver)
+		// --------- Init the timer
 		solver.InitTimer()
 
-		// --------- call
+		// --------- Call
 		population := solver.RunGeneration()
 
-		// --------- insert the response
+		// --------- Insert the response
 		scored_population_running_solver_json, err := json.Marshal(WASMGenerationReturn{
 			ScoredPopulation: population,
 			RunningSolver:    solver,
@@ -180,13 +151,13 @@ func generateOutput() js.Func {
 	run := js.FuncOf(func(this js.Value, args []js.Value) any {
 		simulation := simulation.Simulation{}
 
-		// --------- extract the response
+		// --------- Extract the response
 		if err := json.Unmarshal([]byte(args[0].String()), &simulation); err != nil {
 			fmt.Print(err.Error())
 			return nil
 		}
 
-		// --------- call
+		// --------- Call
 		output := simulation.GenerateOutputFile()
 
 		return output

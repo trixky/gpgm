@@ -1,7 +1,6 @@
 package instance
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/trixky/krpsim/algo/core"
@@ -99,7 +98,6 @@ func (eg *EntryGene) Init(processes []core.Process, optimize map[string]bool, op
 	// Initializes processes
 	eg.InitProcesses(processes, optimize)
 	eg.Shuffle()
-	fmt.Println(eg.Process_ids)
 
 	if options.RandomCut {
 		// If random option is active

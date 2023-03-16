@@ -25,6 +25,17 @@ type Simulation struct {
 	Cycle          int                 `json:"cycle"`
 }
 
+type HistoryAction struct {
+	Name   string
+	Amount int
+}
+
+type HistoryEntry struct {
+	Cycle   int
+	Actions []HistoryAction
+}
+
+// NewSimulation initializes a new simulation
 func NewSimulation(info core.InitialContext, instance instance.Instance) Simulation {
 	return Simulation{
 		InitialContext: info,
@@ -35,19 +46,24 @@ func NewSimulation(info core.InitialContext, instance instance.Instance) Simulat
 	}
 }
 
+// CalulateFitness calculate the fitness of the simulation
 func (s *Simulation) CalulateFitness(options *core.Options) int {
 	return Fitness(*s, options)
 }
 
+// canExecuteAnyProcess check if any process can be executed
 func (s *Simulation) canExecuteAnyProcess() bool {
 	for _, process := range s.InitialContext.Processes {
+		// For each process
 		if process.CanBeExecuted(&s.Stock) {
+			// If the process can be executed
 			return true
 		}
 	}
 	return false
 }
 
+// Run run the simulation
 func (s *Simulation) Run(options *core.Options) {
 	s.Cycle = -1
 	for s.Cycle < options.MaxCycle {
@@ -57,7 +73,7 @@ func (s *Simulation) Run(options *core.Options) {
 		}
 		s.Cycle++
 
-		// * Update stock for the current cycle
+		// ---------- Update stock for the current cycle
 		ready := []ExpectedStock{}
 		incomplete := []ExpectedStock{}
 		for _, e := range s.ExpectedStock {
@@ -72,12 +88,11 @@ func (s *Simulation) Run(options *core.Options) {
 		}
 		s.ExpectedStock = incomplete
 
-		// ? Execute actions from genes
 		if s.canExecuteAnyProcess() {
 			stock_copy := s.Stock.DeepCopy()
 
 			process_quantities_stack := interpretor.Interpret(s.Instance, s.InitialContext, stock_copy, options)
-			// * Calculate stock
+			// ----------- Calculate stock
 			for _, process_quantity := range process_quantities_stack.Stack {
 				for name, quantity := range process_quantity.Process.Inputs {
 					s.Stock.RemoveResource(name, quantity*process_quantity.Quantity)
@@ -122,20 +137,14 @@ func (s *Simulation) Run(options *core.Options) {
 	s.ExpectedStock = []ExpectedStock{}
 }
 
-type HistoryAction struct {
-	Name   string
-	Amount int
-}
-
-type HistoryEntry struct {
-	Cycle   int
-	Actions []HistoryAction
-}
-
+// GenerateOutputFile generate the output file
 func (s *Simulation) GenerateOutputFile() string {
 	lastCycle := -1
 	actions := []HistoryEntry{}
+
 	for _, action := range s.History {
+		// For each action/process executed
+
 		if lastCycle == action.Cycle {
 			lastIndex := len(actions) - 1
 			added := false
@@ -165,15 +174,20 @@ func (s *Simulation) GenerateOutputFile() string {
 		}
 		lastCycle = action.Cycle
 	}
+
 	lines := make([]string, 0)
+
 	for _, action := range actions {
+		// For each action
 		parts := []string{}
 		for _, action := range action.Actions {
 			parts = append(parts, fmt.Sprintf("%s:%d", action.Name, action.Amount))
 		}
 		lines = append(lines, fmt.Sprintf("%d: %s", action.Cycle, strings.Join(parts, ";")))
 	}
+
 	stock := ""
+
 	for product, quantity := range s.Stock {
 		if stock == "" {
 			stock = fmt.Sprintf("%s:%d", product, quantity)
@@ -181,6 +195,8 @@ func (s *Simulation) GenerateOutputFile() string {
 			stock = fmt.Sprintf("%s;%s:%d", stock, product, quantity)
 		}
 	}
+
 	lines = append(lines, fmt.Sprintf("stock: %s", stock))
+
 	return strings.Join(lines, "\n")
 }
