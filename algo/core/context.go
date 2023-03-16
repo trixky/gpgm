@@ -12,12 +12,16 @@ type InitialContext struct {
 	ScoreRatio map[string]int  `json:"score_ratio"`
 }
 
-func (sm *InitialContext) HaveOutput(product string) bool {
+// HaveOutput check if it has an resource as output
+func (sm *InitialContext) HaveOutput(resource string) bool {
 	for _, process := range sm.Processes {
-		if process.HaveOutput(product) {
+		// For each process
+		if process.HaveOutput(resource) {
+			// If the process have the output
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -27,7 +31,7 @@ func (sm *InitialContext) FindProcessParents() {
 		// For each child process
 		for parent_index, parent := range sm.Processes {
 			// For each parent process
-			// Note that parent can be the child
+			// NOTE: The parent can be the child
 			for resource_name := range parent.Inputs {
 				// For each input resource of the parent
 				if output, ok := child.Outputs[resource_name]; ok {

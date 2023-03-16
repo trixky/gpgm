@@ -18,27 +18,35 @@ func (s Stock) DeepCopy() Stock {
 	return newStorage
 }
 
-func (s Stock) Remove(name string, quantity int) {
-	s[name] = s[name] - quantity
+// RemoveResource removes a quantity of resource
+func (s Stock) RemoveResource(resource string, quantity int) {
+	// WARNING: no negative checker
+	s[resource] = s[resource] - quantity
 }
 
-func (s Stock) Insert(name string, quantity int) {
-	s[name] = quantity
+// RemoveResource set a quantity of resource
+func (s Stock) SetResource(resource string, quantity int) {
+	s[resource] = quantity
 }
 
-func (s Stock) Add(name string, quantity int) {
-	s[name] = s[name] + quantity
+// AddResource add a quantity of resource
+func (s Stock) AddResource(resource string, quantity int) {
+	// WARNING: no overflow checker
+	s[resource] = s[resource] + quantity
 }
 
-func (s Stock) Exists(name string) bool {
-	_, exists := s[name]
+// HaveResource checks if it has a resource
+func (s Stock) HaveResource(resource string) bool {
+	_, exists := s[resource]
+
 	return exists
 }
 
-func (s Stock) Get(name string) int {
-	v, ok := s[name]
-	if !ok {
+// GetResource get a the quantity of a resource
+func (s Stock) GetResource(resource string) int {
+	if quantity, ok := s[resource]; !ok {
 		return 0
+	} else {
+		return quantity
 	}
-	return v
 }

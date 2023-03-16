@@ -66,7 +66,7 @@ func (s *Simulation) Run(options *core.Options) {
 			}
 		}
 		for _, e := range ready {
-			s.Stock.Add(e.Name, e.Quantity)
+			s.Stock.AddResource(e.Name, e.Quantity)
 		}
 		s.ExpectedStock = incomplete
 
@@ -78,7 +78,7 @@ func (s *Simulation) Run(options *core.Options) {
 			// * Calculate stock
 			for _, process_quantity := range process_quantities_stack.Stack {
 				for name, quantity := range process_quantity.Process.Inputs {
-					s.Stock.Remove(name, quantity*process_quantity.Quantity)
+					s.Stock.RemoveResource(name, quantity*process_quantity.Quantity)
 				}
 				for name, quantity := range process_quantity.Process.Outputs {
 					s.ExpectedStock = append(s.ExpectedStock, ExpectedStock{
@@ -115,7 +115,7 @@ func (s *Simulation) Run(options *core.Options) {
 		}
 	}
 	for _, e := range s.ExpectedStock {
-		s.Stock.Add(e.Name, e.Quantity)
+		s.Stock.AddResource(e.Name, e.Quantity)
 	}
 	s.ExpectedStock = []ExpectedStock{}
 }

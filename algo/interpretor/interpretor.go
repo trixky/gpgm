@@ -55,7 +55,7 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 					for _, process_dependencie_id := range process_dependencie_ids {
 						// For each process dependencie of the input dependencie of the process
 
-						input_available := stock.Get(input_name)
+						input_available := stock.GetResource(input_name)
 						input_needed := process.Inputs[input_name] * n
 
 						if input_needed > input_available {

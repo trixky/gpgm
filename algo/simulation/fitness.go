@@ -11,7 +11,7 @@ func OptimizeOnlyFitness(simulation Simulation) int {
 			continue
 		}
 
-		quantity := simulation.Stock.Get(name)
+		quantity := simulation.Stock.GetResource(name)
 		if forTime {
 			score += (quantity / simulation.Cycle) * factor
 		} else {
