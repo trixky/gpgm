@@ -278,9 +278,9 @@ func TestProcessExecuteN(t *testing.T) {
 				stock_cpy := test.stock.DeepCopy()
 
 				// Execute the process n time
-				test.process.ExecuteN(&stock_cpy, n)
+				test.process.ExecuteN(stock_cpy, n)
 
-				for key, resource := range stock_cpy {
+				for key, resource := range *stock_cpy {
 					// For each resource of the copied stock
 
 					if resource != expected[key] {

@@ -29,7 +29,7 @@ func NewSimulation(info core.InitialContext, instance instance.Instance) Simulat
 	return Simulation{
 		InitialContext: info,
 		Instance:       instance,
-		Stock:          info.Stock.DeepCopy(),
+		Stock:          *info.Stock.DeepCopy(),
 		ExpectedStock:  []ExpectedStock{},
 		Cycle:          0,
 	}
@@ -74,7 +74,7 @@ func (s *Simulation) Run(options *core.Options) {
 		if s.canExecuteAnyProcess() {
 			stock_copy := s.Stock.DeepCopy()
 
-			process_quantities_stack := interpretor.Interpret(s.Instance, s.InitialContext, &stock_copy, options)
+			process_quantities_stack := interpretor.Interpret(s.Instance, s.InitialContext, stock_copy, options)
 			// * Calculate stock
 			for _, process_quantity := range process_quantities_stack.Stack {
 				for name, quantity := range process_quantity.Process.Inputs {

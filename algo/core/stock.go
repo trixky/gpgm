@@ -10,17 +10,29 @@ func NewStorage(stocks map[string]int) Stock {
 	return storage
 }
 
-func (s Stock) DeepCopy() Stock {
-	newStorage := make(Stock)
-	for k, v := range s {
-		newStorage[k] = v
+// Reset removes all resources
+func (s *Stock) Reset() {
+	for resource := range *s {
+		delete(*s, resource)
 	}
-	return newStorage
+}
+
+// DeepCopy make a deep copy
+func (s Stock) DeepCopy() *Stock {
+	new_stock := make(Stock)
+
+	for resource, quantity := range s {
+		//
+		new_stock[resource] = quantity
+	}
+
+	return &new_stock
 }
 
 // RemoveResource removes a quantity of resource
 func (s Stock) RemoveResource(resource string, quantity int) {
 	// WARNING: no negative checker
+
 	s[resource] = s[resource] - quantity
 }
 
@@ -37,9 +49,9 @@ func (s Stock) AddResource(resource string, quantity int) {
 
 // HaveResource checks if it has a resource
 func (s Stock) HaveResource(resource string) bool {
-	_, exists := s[resource]
+	quantity, ok := s[resource]
 
-	return exists
+	return ok && quantity > 0
 }
 
 // GetResource get a the quantity of a resource
