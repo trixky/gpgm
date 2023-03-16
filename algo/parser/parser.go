@@ -382,12 +382,12 @@ func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
 		asProcess, processErr := parseProcess(line)
 		if processErr == nil {
 			for key := range asProcess.Inputs {
-				if !sm.Stock.Exists(key) {
+				if !sm.Stock.HaveResource(key) {
 					sm.Stock[key] = 0
 				}
 			}
 			for key := range asProcess.Outputs {
-				if !sm.Stock.Exists(key) {
+				if !sm.Stock.HaveResource(key) {
 					sm.Stock[key] = 0
 				}
 			}
@@ -400,7 +400,7 @@ func ParseSimulationFile(input string) (sm core.InitialContext, err error) {
 			for product := range asOptimize {
 				if product == "time" {
 					continue
-				} else if !sm.IsInOutput(product) && !sm.Stock.Exists(product) {
+				} else if !sm.HaveOutput(product) && !sm.Stock.HaveResource(product) {
 					return sm, fmt.Errorf("unexpected optimize for `%s`, not in any process output", product)
 				}
 			}

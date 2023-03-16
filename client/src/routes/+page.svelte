@@ -9,6 +9,8 @@
 	import { wasmReady } from '$lib/stores/ready';
 	import { inputs } from '$lib/stores/inputs';
 
+	let start: number = -1;
+
 	// ------------------------------ IO
 	let output = '';
 	let outputFile = '';
@@ -30,8 +32,7 @@
 	function new_generation() {
 		generation++;
 		if (generation >= $args.max_generations) {
-			finished = true;
-			stopped = true;
+			handle_finish();
 		}
 
 		if (stop || stopped) {
@@ -63,9 +64,17 @@
 				null,
 				'\t'
 			)}`;
+			if (result_wasm_json != undefined) {
+				const remaining = start + $args.time_limit - new Date().getTime();
+				result_wasm_json.running_solver.time_limit_ms = remaining;
 
-			new_generation();
-			handle_bottom();
+				if (remaining > 0) {
+					new_generation();
+				} else {
+					handle_finish();
+				}
+				handle_bottom();
+			}
 		}, 1);
 	}
 
@@ -98,6 +107,11 @@
 	}
 
 	// -------- State
+	function handle_finish() {
+		finished = true;
+		stopped = true;
+	}
+
 	function handle_run() {
 		lastError = WASM_parse_input($inputs.current);
 
@@ -106,6 +120,8 @@
 			stop = false;
 			stopped = false;
 			handle_bottom();
+
+			start = new Date().getTime();
 
 			const raw_running_solver = WASM_initialize(
 				JSON.stringify({

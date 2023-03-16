@@ -11,6 +11,7 @@ type EntryGene struct {
 	Process_ids []int
 }
 
+// DeepCopy make a deep copy of itself
 func (eg *EntryGene) DeepCopy() *EntryGene {
 	return &EntryGene{
 		Process_ids: append(make([]int, 0, len(eg.Process_ids)), eg.Process_ids...),
@@ -24,10 +25,10 @@ func (eg *EntryGene) Shuffle() {
 	// Generate a random array of index
 	perm := rand.Perm(len(eg.Process_ids))
 
-	for i, v := range perm {
+	for random_index, random := range perm {
 		// For each random index
 		// Use it to extract a random process id
-		dest[v] = eg.Process_ids[i]
+		dest[random_index] = eg.Process_ids[random]
 	}
 
 	eg.Process_ids = dest
@@ -180,7 +181,7 @@ func (eg *EntryGene) Mutate(egeg *EntryGene, options *core.Options) *EntryGene {
 		} else { // 8/9 chance
 			// Mutate randomly as the new entry gene
 
-			// ------------------------ new process ids
+			// ------------------------ New process ids
 			new_process_ids := []int{}
 
 			for _, egeg_process_id := range egeg.Process_ids {
@@ -189,7 +190,7 @@ func (eg *EntryGene) Mutate(egeg *EntryGene, options *core.Options) *EntryGene {
 				}
 			}
 
-			// ------------------------ mutation
+			// ------------------------ Mutation
 			mutated_entry_gene = *eg.DeepCopy()
 
 			if diff := len(new_process_ids); diff > 0 {

@@ -9,6 +9,7 @@ import (
 	"github.com/trixky/krpsim/algo/core"
 	"github.com/trixky/krpsim/algo/instance"
 	"github.com/trixky/krpsim/algo/simulation"
+	"github.com/trixky/krpsim/algo/timer"
 )
 
 type ScoredInstance struct {
@@ -45,11 +46,14 @@ func NewRandomPopulation(context core.InitialContext, options *core.Options) Pop
 	}
 }
 
-func (p *Population) RunAllSimulations(context core.InitialContext, options *core.Options) ScoredPopulation {
+func (p *Population) RunAllSimulations(context core.InitialContext, options *core.Options, timer *timer.Timer) ScoredPopulation {
 	var scored []ScoredInstance
 
 	// Run a simulation on all instances
 	for instance_index, instance := range p.Instances {
+		if timer.TimeOut() {
+			break
+		}
 		fmt.Println("--------- instance", instance_index)
 		simulation := simulation.NewSimulation(context, instance)
 		simulation.Run(options)
@@ -130,6 +134,8 @@ func (s *ScoredPopulation) RandomSelection(forIndex int, options *core.Options) 
 }
 
 func (s *ScoredPopulation) Crossover(initialContext *core.InitialContext, options *core.Options) Population {
+	options.PopulationSize = len(s.Instances)
+
 	population := NewPopulation(options)
 	if len(population.Instances) == 1 {
 		population.Instances[0] = s.Instances[0].Instance

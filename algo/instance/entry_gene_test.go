@@ -16,54 +16,54 @@ func TestEntryGeneRandomCut(t *testing.T) {
 		expected    []int
 	}{
 		// --------- empty process ids
-		{ // ------------------------------------------- 0
+		{ // ----------------------- 0
 			process_ids: []int{},
 			luck:        0,
 			expected:    []int{},
 		},
-		{ // ------------------------------------------- 1
+		{ // ----------------------- 1
 			process_ids: []int{},
 			luck:        1,
 			expected:    []int{},
 		},
-		{ // ------------------------------------------- 2
+		{ // ----------------------- 2
 			process_ids: []int{},
 			luck:        10,
 			expected:    []int{},
 		},
-		{ // ------------------------------------------- 3
+		{ // ----------------------- 3
 			process_ids: []int{},
 			luck:        math.MaxInt,
 			expected:    []int{},
 		},
 		// --------- no cut
-		{ // ------------------------------------------- 4
+		{ // ----------------------- 4
 			process_ids: []int{0, 1, 2, 3, 4},
 			luck:        0,
 			expected:    []int{0, 1, 2, 3, 4},
 		},
-		{ // ------------------------------------------- 5
+		{ // ----------------------- 5
 			process_ids: []int{0, 1, 2, 3, 4},
 			luck:        3000,
 			expected:    []int{0, 1, 2, 3, 4},
 		},
 		// --------- cut
-		{ // ------------------------------------------- 6
+		{ // ----------------------- 6
 			process_ids: []int{0, 1, 2, 3, 4},
 			luck:        2,
 			expected:    []int{1, 2, 3, 4},
 		},
-		{ // ------------------------------------------- 7
+		{ // ----------------------- 7
 			process_ids: []int{0, 1, 2, 3, 4},
 			luck:        3,
 			expected:    []int{0, 1, 2, 3, 4},
 		},
-		{ // ------------------------------------------- 8
+		{ // ----------------------- 8
 			process_ids: []int{0, 1, 2, 3, 4},
 			luck:        4,
 			expected:    []int{2, 3, 4},
 		},
-		{ // ------------------------------------------- 9
+		{ // ----------------------- 9
 			process_ids: []int{4},
 			luck:        1,
 			expected:    []int{4},
@@ -103,64 +103,64 @@ func TestEntryGeneCutN(t *testing.T) {
 		expected    []int
 	}{
 		// --------- empty process ids
-		{ // ------------------------------------------- 0
+		{ // ----------------------- 0
 			process_ids: []int{},
 			n:           0,
 			expected:    []int{},
 		},
-		{ // ------------------------------------------- 1
+		{ // ----------------------- 1
 			process_ids: []int{},
 			n:           1,
 			expected:    []int{},
 		},
-		{ // ------------------------------------------- 2
+		{ // ----------------------- 2
 			process_ids: []int{},
 			n:           10,
 			expected:    []int{},
 		},
-		{ // ------------------------------------------- 3
+		{ // ----------------------- 3
 			process_ids: []int{},
 			n:           math.MaxUint,
 			expected:    []int{},
 		},
 		// --------- no cut
-		{ // ------------------------------------------- 4
+		{ // ----------------------- 4
 			process_ids: []int{0, 1, 2, 3, 4},
 			n:           0,
 			expected:    []int{0, 1, 2, 3, 4},
 		},
-		{ // ------------------------------------------- 5
+		{ // ----------------------- 5
 			process_ids: []int{0, 1, 2, 3, 4},
 			n:           5,
 			expected:    []int{0, 1, 2, 3, 4},
 		},
-		{ // ------------------------------------------- 6
+		{ // ----------------------- 6
 			process_ids: []int{0, 1, 2, 3, 4},
 			n:           150,
 			expected:    []int{0, 1, 2, 3, 4},
 		},
-		{ // ------------------------------------------- 7
+		{ // ----------------------- 7
 			process_ids: []int{0, 1, 2, 3, 4},
 			n:           math.MaxUint,
 			expected:    []int{0, 1, 2, 3, 4},
 		},
 		// --------- cut
-		{ // ------------------------------------------- 8
+		{ // ----------------------- 8
 			process_ids: []int{0, 1, 2, 3, 4},
 			n:           4,
 			expected:    []int{0, 1, 2, 3},
 		},
-		{ // ------------------------------------------- 9
+		{ // ----------------------- 9
 			process_ids: []int{0, 1, 2, 3, 4},
 			n:           3,
 			expected:    []int{0, 1, 2},
 		},
-		{ // ------------------------------------------- 10
+		{ // ----------------------- 10
 			process_ids: []int{0, 1, 2, 3, 4},
 			n:           2,
 			expected:    []int{0, 1},
 		},
-		{ // ------------------------------------------- 11
+		{ // ----------------------- 11
 			process_ids: []int{0, 1, 2, 3, 4},
 			n:           1,
 			expected:    []int{0},
@@ -197,11 +197,11 @@ func TestEntryGeneCutRandomN(t *testing.T) {
 		expected    []int
 	}{
 		// --------- empty process ids
-		{ // ------------------------------------------- 0
+		{ // ----------------------- 0
 			process_ids: []int{},
 			expected:    []int{},
 		},
-		{ // ------------------------------------------- 1
+		{ // ----------------------- 1
 			process_ids: []int{},
 			expected:    []int{},
 		},
@@ -209,36 +209,36 @@ func TestEntryGeneCutRandomN(t *testing.T) {
 			process_ids: []int{},
 			expected:    []int{},
 		},
-		{ // ------------------------------------------- 2
+		{ // ----------------------- 2
 			process_ids: []int{},
 			expected:    []int{},
 		},
 		// --------- cut
-		{ // ------------------------------------------- 3
+		{ // ----------------------- 3
 			process_ids: []int{0},
 			expected:    []int{0},
 		},
-		{ // ------------------------------------------- 4
+		{ // ----------------------- 4
 			process_ids: []int{0, 1, 2, 3, 4},
 			expected:    []int{0, 1, 2},
 		},
-		{ // ------------------------------------------- 5
+		{ // ----------------------- 5
 			process_ids: []int{0, 1},
 			expected:    []int{0, 1},
 		},
-		{ // ------------------------------------------- 6
+		{ // ----------------------- 6
 			process_ids: []int{0, 1, 2},
 			expected:    []int{0, 1, 2},
 		},
-		{ // ------------------------------------------- 7
+		{ // ----------------------- 7
 			process_ids: []int{0, 1, 2},
 			expected:    []int{0, 1},
 		},
-		{ // ------------------------------------------- 8
+		{ // ----------------------- 8
 			process_ids: []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 			expected:    []int{0, 1, 2, 3, 4, 5, 6, 7, 8},
 		},
-		{ // ------------------------------------------- 9
+		{ // ----------------------- 9
 			process_ids: []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 			expected:    []int{0, 1, 2, 3, 4, 5},
 		},
@@ -271,14 +271,14 @@ func TestEntryGeneCutRandomN(t *testing.T) {
 func TestEntryGeneInit(t *testing.T) {
 	tests := []struct {
 		processes []core.Process
-		max       uint
-		random    bool
+		options   core.Options
 		context   core.InitialContext
 		expected  []int
+		seed      int64
 	}{
 		{
 			processes: []core.Process{
-				{ // ------------------------------------------- 0
+				{ // ----------------------- 0
 					Name: "gold_wood",
 					Inputs: map[string]int{
 						"gold": 1,
@@ -287,7 +287,7 @@ func TestEntryGeneInit(t *testing.T) {
 						"wood": 10,
 					},
 				},
-				{ // ------------------------------------------- 1
+				{ // ----------------------- 1
 					Name: "gold_stone",
 					Inputs: map[string]int{
 						"gold": 1,
@@ -296,7 +296,7 @@ func TestEntryGeneInit(t *testing.T) {
 						"stone": 10,
 					},
 				},
-				{ // ------------------------------------------- 2
+				{ // ----------------------- 2
 					Name: "wood_stone_house_1",
 					Inputs: map[string]int{
 						"wood":  10,
@@ -306,7 +306,7 @@ func TestEntryGeneInit(t *testing.T) {
 						"house": 1,
 					},
 				},
-				{ // ------------------------------------------- 3
+				{ // ----------------------- 3
 					Name: "sale_house",
 					Inputs: map[string]int{
 						"house": 1,
@@ -315,7 +315,7 @@ func TestEntryGeneInit(t *testing.T) {
 						"gold": 3,
 					},
 				},
-				{ // ------------------------------------------- 4
+				{ // ----------------------- 4
 					Name: "sale_house_2",
 					Inputs: map[string]int{
 						"house": 2,
@@ -325,8 +325,10 @@ func TestEntryGeneInit(t *testing.T) {
 					},
 				},
 			},
-			max:    2,
-			random: false,
+			options: core.Options{
+				RandomCut: false,
+				MaxCut:    1,
+			},
 			context: core.InitialContext{
 				Stock: core.Stock{
 					"gold":  10,
@@ -338,11 +340,12 @@ func TestEntryGeneInit(t *testing.T) {
 					"gold": true,
 				},
 			},
-			expected: []int{3},
+			expected: []int{4},
+			seed:     42,
 		},
 		{
 			processes: []core.Process{
-				{ // ------------------------------------------- 0
+				{ // ----------------------- 0
 					Name: "buy_cat_1",
 					Inputs: map[string]int{
 						"gold": 1,
@@ -351,7 +354,7 @@ func TestEntryGeneInit(t *testing.T) {
 						"cat": 1,
 					},
 				},
-				{ // ------------------------------------------- 1
+				{ // ----------------------- 1
 					Name: "buy_cat_2",
 					Inputs: map[string]int{
 						"gold": 2,
@@ -360,7 +363,7 @@ func TestEntryGeneInit(t *testing.T) {
 						"cat": 3,
 					},
 				},
-				{ // ------------------------------------------- 2
+				{ // ----------------------- 2
 					Name: "buy_cat_3",
 					Inputs: map[string]int{
 						"gold": 3,
@@ -369,7 +372,7 @@ func TestEntryGeneInit(t *testing.T) {
 						"cat": 6,
 					},
 				},
-				{ // ------------------------------------------- 3
+				{ // ----------------------- 3
 					Name: "buy_cat_4",
 					Inputs: map[string]int{
 						"gold": 4,
@@ -379,8 +382,10 @@ func TestEntryGeneInit(t *testing.T) {
 					},
 				},
 			},
-			max:    3,
-			random: true,
+			options: core.Options{
+				RandomCut: true,
+				MaxCut:    3,
+			},
 			context: core.InitialContext{
 				Stock: core.Stock{
 					"gold": 3,
@@ -391,21 +396,16 @@ func TestEntryGeneInit(t *testing.T) {
 				},
 			},
 			expected: []int{0},
+			seed:     43,
 		},
 	}
 
-	options := core.Options{
-		RandomCut: true,
-		MaxCut:    0,
-	}
-
-	rand.Seed(42)
-
 	for test_index, test := range tests {
+		rand.Seed(test.seed)
 		// For each test
 		entry_gene := EntryGene{}
 
-		entry_gene.Init(test.processes, test.context.Optimize, &options)
+		entry_gene.Init(test.processes, test.context.Optimize, &test.options)
 
 		if expected_length, got_length := len(test.expected), len(entry_gene.Process_ids); expected_length != got_length {
 			// If the process ids length is corrupted
@@ -429,19 +429,19 @@ func TestInsertProcessIdRandomPosition(t *testing.T) {
 		expected    []int
 		seed        int
 	}{
-		{ // ------------------------------------------- 0
+		{ // ----------------------- 0
 			process_ids: []int{0, 1, 2, 3},
 			process_id:  4,
 			expected:    []int{0, 4, 1, 2, 3},
 			seed:        42,
 		},
-		{ // ------------------------------------------- 1
+		{ // ----------------------- 1
 			process_ids: []int{0},
 			process_id:  4,
 			expected:    []int{4, 0},
 			seed:        43,
 		},
-		{ // ------------------------------------------- 2
+		{ // ----------------------- 2
 			process_ids: []int{0, 8, 2, 5, 6, 0, 1, 3},
 			process_id:  7,
 			expected:    []int{0, 7, 8, 2, 5, 6, 0, 1, 3},
@@ -480,17 +480,17 @@ func TestRemoveProcessidRandomPosition(t *testing.T) {
 		expected    []int
 		seed        int
 	}{
-		{ // ------------------------------------------- 1
+		{ // ----------------------- 1
 			process_ids: []int{0, 1, 2, 3},
 			expected:    []int{0, 2, 3},
 			seed:        42,
 		},
-		{ // ------------------------------------------- 2
+		{ // ----------------------- 2
 			process_ids: []int{0},
 			expected:    []int{},
 			seed:        43,
 		},
-		{ // ------------------------------------------- 3
+		{ // ----------------------- 3
 			process_ids: []int{0, 8, 2, 5, 6, 0, 1, 3},
 			expected:    []int{0, 2, 5, 6, 0, 1, 3},
 			seed:        44,
@@ -526,51 +526,63 @@ func TestMutate(t *testing.T) {
 	tests := []struct {
 		process_ids          []int
 		incoming_process_ids []int
-		percentage           float64
+		options              core.Options
 		expected             []int
 		seed                 int
 	}{
-		{ // ------------------------------------------- 0
+		{ // ----------------------- 0
 			process_ids:          []int{0, 1, 2, 3},
 			incoming_process_ids: []int{5},
-			percentage:           99,
-			expected:             []int{5, 0, 1, 3},
-			seed:                 42,
+			options: core.Options{
+				MutationChance: 0.99,
+			},
+			expected: []int{5, 0, 1, 3},
+			seed:     42,
 		},
-		{ // ------------------------------------------- 1
+		{ // ----------------------- 1
 			process_ids:          []int{0, 1, 2, 3},
 			incoming_process_ids: []int{5},
-			percentage:           99,
-			expected:             []int{5, 1, 2, 3},
-			seed:                 44,
+			options: core.Options{
+				MutationChance: 0.99,
+			},
+			expected: []int{5, 1, 2, 3},
+			seed:     44,
 		},
-		{ // ------------------------------------------- 2
+		{ // ----------------------- 2
 			process_ids:          []int{0},
 			incoming_process_ids: []int{5, 2, 1},
-			percentage:           50,
-			expected:             []int{2, 1},
-			seed:                 45,
+			options: core.Options{
+				MutationChance: 0.50,
+			},
+			expected: []int{2, 1},
+			seed:     45,
 		},
-		{ // ------------------------------------------- 3
+		{ // ----------------------- 3
 			process_ids:          []int{0},
 			incoming_process_ids: []int{5, 2, 1},
-			percentage:           50,
-			expected:             []int{1, 2, 5},
-			seed:                 48,
+			options: core.Options{
+				MutationChance: 0.50,
+			},
+			expected: []int{1, 2, 5},
+			seed:     48,
 		},
-		{ // ------------------------------------------- 4
+		{ // ----------------------- 4
 			process_ids:          []int{0},
 			incoming_process_ids: []int{5, 2, 1},
-			percentage:           1,
-			expected:             []int{0},
-			seed:                 49,
+			options: core.Options{
+				MutationChance: 1,
+			},
+			expected: []int{5, 2, 1},
+			seed:     49,
 		},
-		{ // ------------------------------------------- 5
+		{ // ----------------------- 5
 			process_ids:          []int{1, 2, 3, 4},
 			incoming_process_ids: []int{99},
-			percentage:           80,
-			expected:             []int{99, 1, 2, 3},
-			seed:                 51,
+			options: core.Options{
+				MutationChance: 0.8,
+			},
+			expected: []int{99, 1, 2, 3},
+			seed:     51,
 		},
 	}
 
@@ -586,7 +598,7 @@ func TestMutate(t *testing.T) {
 
 		rand.Seed(int64(test.seed))
 
-		mutated_entry_gene := entry_gene.Mutate(&incoming_entry_gene, test.percentage)
+		mutated_entry_gene := entry_gene.Mutate(&incoming_entry_gene, &test.options)
 
 		if expected_length, got_length := len(test.expected), len(mutated_entry_gene.Process_ids); expected_length != got_length {
 			// If the process ids length is corrupted

@@ -104,12 +104,15 @@ func TestInstanceInit(t *testing.T) {
 		RandomCut:            true,
 		MaxCut:               0,
 		HistoryPartMaxLength: 3,
-		HistoryKeyMaxLength:  4,
+		HistoryKeyMaxLength:  3,
 	}
 
 	instance.Init(initial_context.Processes, initial_context.Optimize, &options)
 
 	for g_index, gene := range instance.Chromosome.PriorityGenes {
+		// For each gene
+
+		// -------------- keys
 		keys := make([]string, len(gene.HistoryProcessDependencies))
 		i := 0
 		for key := range gene.HistoryProcessDependencies {
@@ -119,9 +122,7 @@ func TestInstanceInit(t *testing.T) {
 			keys[i] = key
 			i++
 		}
-
 		sort.Strings(keys)
-
 		concatened_keys := strings.Join(keys, "_")
 
 		if expected[g_index] != concatened_keys {

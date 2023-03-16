@@ -70,7 +70,6 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 		Context:    context,
 		Options:    options,
 		Generation: 1,
-		Start:      time.Now(),
 	}, nil
 }
 
@@ -150,6 +149,10 @@ func runGenerationWasm() js.Func {
 
 			return nil
 		}
+
+		// --------- init the timer
+		// fmt.Println(solver)
+		solver.InitTimer()
 
 		// --------- call
 		population := solver.RunGeneration()

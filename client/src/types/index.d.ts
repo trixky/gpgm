@@ -24,6 +24,7 @@ export interface RunningSolver {
   options: Options /* core.Options */;
   generation: number /* int */;
   start: unknown /* time.Time */;
+  time_limit_ms: number /* int */;
 }
 export interface WASMGenerationReturn {
   scored_population: ScoredPopulation /* population.ScoredPopulation */;
