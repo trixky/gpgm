@@ -168,6 +168,18 @@
 		}
 	}
 
+	function handle_input(e: any) {
+		$inputs.selectedExample = 0;
+		$inputs.custom = e.target.value;
+		if (lastError) {
+			lastError = WASM_parse_input(e.target.value);
+		}
+	}
+
+	function handle_input_change(e: any) {
+		lastError = WASM_parse_input(e.target.value);
+	}
+
 	// ------------------------------ Scrolling blocker
 	// https://svelte.dev/repl/2bdbf66371a3418e9e3eda076df6e32d?version=3.18.1
 	/* $: scrollable = !running || stopped;
@@ -190,12 +202,6 @@
 			}
 		};
 	}; */
-
-	function handle_input(e: any) {
-		$inputs.selectedExample = 0;
-		$inputs.custom = e.target.value;
-		lastError = WASM_parse_input(e.target.value);
-	}
 
 	wasmReady.subscribe((ready) => {
 		if (ready) {
@@ -236,6 +242,7 @@
 				autocapitalize="off"
 				spellcheck="false"
 				on:input={handle_input}
+				on:change={handle_input_change}
 			/>
 			<img src="/mascot.png" alt="" class="absolute -translate-y-[44%]" />
 		</div>
@@ -245,146 +252,153 @@
 			</div>
 		{/if}
 	</div>
-	<div class="form-container">
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.max_generations.min}
-				max={config.io.max_generations.max}
-				bind:value={$args.max_generations}
-				disabled={running}
-			/>
-			<p class="input-label">gen</p>
+	<form on:submit|preventDefault={handle_run}>
+		<div class="form-container">
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.max_generations.min}
+					max={config.io.max_generations.max}
+					bind:value={$args.max_generations}
+					disabled={running}
+				/>
+				<p class="input-label">gen</p>
+			</div>
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.population_size.min}
+					max={config.io.population_size.max}
+					bind:value={$args.population_size}
+					disabled={running}
+				/>
+				<p class="input-label">pop</p>
+			</div>
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.max_cycle.min}
+					max={config.io.max_cycle.max}
+					bind:value={$args.max_cycle}
+					disabled={running}
+				/>
+				<p class="input-label">cyc</p>
+			</div>
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.time_limit.min}
+					max={config.io.time_limit.max}
+					bind:value={$args.time_limit}
+					disabled={running}
+				/>
+				<p class="input-label">ms</p>
+			</div>
 		</div>
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.population_size.min}
-				max={config.io.population_size.max}
-				bind:value={$args.population_size}
-				disabled={running}
-			/>
-			<p class="input-label">pop</p>
+		<div class="form-container">
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.max_depth.min}
+					max={config.io.max_depth.max}
+					bind:value={$args.max_depth}
+					disabled={running}
+				/>
+				<p class="input-label">dep</p>
+			</div>
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.elitism_amount.min}
+					max={config.io.elitism_amount.max}
+					bind:value={$args.elitism_amount}
+					disabled={running}
+				/>
+				<p class="input-label">eli</p>
+			</div>
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.max_cut.min}
+					max={config.io.max_cut.max}
+					bind:value={$args.max_cut}
+					disabled={running}
+				/>
+				<p class="input-label">cut</p>
+			</div>
 		</div>
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.max_cycle.min}
-				max={config.io.max_cycle.max}
-				bind:value={$args.max_cycle}
-				disabled={running}
-			/>
-			<p class="input-label">cyc</p>
+		<div class="form-container">
+			<div class="input-container">
+				<select
+					name="selection_method"
+					id="selection_method"
+					bind:value={$args.selection_method}
+					disabled={running}
+				>
+					{#each config.io.selection_method.choices as choice}
+						<option value={choice.value}>{choice.label}</option>
+					{/each}
+				</select>
+			</div>
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.tournament_size.min}
+					max={config.io.tournament_size.max}
+					bind:value={$args.tournament_size}
+					disabled={running}
+				/>
+				<p class="input-label">tor</p>
+			</div>
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.tournament_probability.min}
+					max={config.io.tournament_probability.max}
+					step="0.01"
+					bind:value={$args.tournament_probability}
+					disabled={running}
+				/>
+				<p class="input-label">pro</p>
+			</div>
+			<div class="input-container">
+				<input
+					type="number"
+					min={config.io.crossover_new_instances.min}
+					max={config.io.crossover_new_instances.max}
+					bind:value={$args.crossover_new_instances}
+					disabled={running}
+				/>
+				<p class="input-label">cro</p>
+			</div>
+			<div class="input-container">
+				<select
+					name="mutation_method"
+					id="mutation_method"
+					bind:value={$args.mutation_method}
+					disabled={running}
+				>
+					{#each config.io.mutation_method.choices as choice}
+						<option value={choice.value}>{choice.label}</option>
+					{/each}
+				</select>
+			</div>
 		</div>
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.time_limit.min}
-				max={config.io.time_limit.max}
-				bind:value={$args.time_limit}
-				disabled={running}
-			/>
-			<p class="input-label">ms</p>
-		</div>
-	</div>
-	<div class="form-container">
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.max_depth.min}
-				max={config.io.max_depth.max}
-				bind:value={$args.max_depth}
-				disabled={running}
-			/>
-			<p class="input-label">dep</p>
-		</div>
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.elitism_amount.min}
-				max={config.io.elitism_amount.max}
-				bind:value={$args.elitism_amount}
-				disabled={running}
-			/>
-			<p class="input-label">eli</p>
-		</div>
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.max_cut.min}
-				max={config.io.max_cut.max}
-				bind:value={$args.max_cut}
-				disabled={running}
-			/>
-			<p class="input-label">cut</p>
-		</div>
-	</div>
-	<div class="form-container">
-		<div class="input-container">
-			<select
-				name="selection_method"
-				id="selection_method"
-				bind:value={$args.selection_method}
-				disabled={running}
+		<div class="state-container">
+			{#if running}
+				<button class="side-button" on:click={handle_bottom}> Bottom </button>
+			{:else}
+				<button class="play-button" disabled={lastError !== null}> Run </button>
+			{/if}
+			<button
+				class="play-button"
+				on:click={handle_run}
+				disabled={!$inputs.current.length || running}
 			>
-				{#each config.io.selection_method.choices as choice}
-					<option value={choice.value}>{choice.label}</option>
-				{/each}
-			</select>
+				Clear
+			</button>
 		</div>
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.tournament_size.min}
-				max={config.io.tournament_size.max}
-				bind:value={$args.tournament_size}
-				disabled={running}
-			/>
-			<p class="input-label">tor</p>
-		</div>
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.tournament_probability.min}
-				max={config.io.tournament_probability.max}
-				bind:value={$args.tournament_probability}
-				disabled={running}
-			/>
-			<p class="input-label">pro</p>
-		</div>
-		<div class="input-container">
-			<input
-				type="number"
-				min={config.io.crossover_new_instances.min}
-				max={config.io.crossover_new_instances.max}
-				bind:value={$args.crossover_new_instances}
-				disabled={running}
-			/>
-			<p class="input-label">cro</p>
-		</div>
-		<div class="input-container">
-			<select
-				name="mutation_method"
-				id="mutation_method"
-				bind:value={$args.mutation_method}
-				disabled={running}
-			>
-				{#each config.io.mutation_method.choices as choice}
-					<option value={choice.value}>{choice.label}</option>
-				{/each}
-			</select>
-		</div>
-	</div>
-	<div class="state-container">
-		{#if running}
-			<button class="side-button" on:click={handle_bottom}> Bottom </button>
-		{:else}
-			<button class="play-button" disabled={lastError !== null} on:click={handle_run}> Run </button>
-		{/if}
-		<button class="play-button" on:click={handle_run} disabled={!$inputs.current.length || running}>
-			Clear
-		</button>
-	</div>
+	</form>
 	{#if output}
 		<!-- <Visual {frame} /> -->
 		<div class="statistic-container shadow">

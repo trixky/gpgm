@@ -43,17 +43,17 @@ export const config: ArgumentsConfig = {
     io: {
         max_generations: {
             min: 1,
-            max: 10000,
+            max: 100,
             default: 6
         },
         population_size: {
             min: 1,
-            max: 1000,
+            max: 100,
             default: 6
         },
         max_cycle: {
             min: 10,
-            max: 1000,
+            max: 100000,
             default: 1000
         },
         max_depth: {
@@ -63,7 +63,7 @@ export const config: ArgumentsConfig = {
         },
         time_limit: {
             min: 500,
-            max: 60000,
+            max: 600000,
             default: 5000
         },
         max_cut: {
@@ -87,8 +87,8 @@ export const config: ArgumentsConfig = {
             default: 10
         },
         tournament_probability: {
-            min: 0,
-            max: 1,
+            min: 0.0,
+            max: 1.0,
             default: 0.77
         },
         selection_method: {
