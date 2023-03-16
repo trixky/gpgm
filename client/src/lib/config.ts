@@ -32,8 +32,8 @@ interface ArgumentsConfig {
 export const config: ArgumentsConfig = {
     ui: {
         input: {
-            cols: 84,
-            row: 30,
+            cols: 23,
+            row: 10,
         },
         output: {
             cols: 42,

@@ -4,7 +4,7 @@ import { derived } from 'svelte/store';
 export default derived(
 	InstanceStore,
 	$InstanceStore => $InstanceStore.map((instance, index) => {
-        const color = index === 0 ? 'rgb(50, 255, 255, 0.7)' : 'rgb(255, 255, 255, 0.7)'
+        const color = index === 0 ? 'rgb(220, 252, 231, 1)' : 'rgb(255, 255, 255, 0.7)'
         return{
             // label: '',
             lineWidth: 40,

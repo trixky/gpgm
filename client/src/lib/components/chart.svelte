@@ -93,6 +93,6 @@
 <!-- ---------------------------------------------- STYLE -->
 <style lang="postcss">
 	.chart-container {
-		@apply w-[500px] h-[300px] p-3 m-auto my-3;
+		@apply w-[500px] pl-3 pr-8 m-auto my-6;
 	}
 </style>

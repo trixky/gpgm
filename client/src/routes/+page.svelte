@@ -269,209 +269,208 @@
 		<p class="opacity-30">genetic process graph manager</p>
 	</header>
 
-	<div class="text-container">
-		<h2>Input</h2>
-		<div class="text-left">
-			<select
-				bind:value={$inputs.selectedExample}
-				name="examples"
-				id="examples"
-				on:input={handle_select}
-			>
-				<option value={0}>Custom</option>
-				{#each examples as example, index}
-					<option value={index + 1}>{example.name}</option>
-				{/each}
-			</select>
-		</div>
-		<div class="relative mt-4">
-			<textarea
-				cols={config.ui.input.cols}
-				rows={config.ui.input.row}
-				placeholder=""
-				bind:value={$inputs.current}
-				autocorrect="off"
-				autocapitalize="off"
-				spellcheck="false"
-				on:input={handle_input}
-				on:change={handle_input_change}
-			/>
-			<img src="/mascot.png" alt="" class="absolute -translate-y-[44%]" />
-		</div>
-		{#if lastError}
-			<div class="error mt-4">
-				{lastError}
-			</div>
-		{/if}
-	</div>
-	<form on:submit|preventDefault={handle_run}>
-		<div class="form-container">
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.max_generations.min}
-					max={config.io.max_generations.max}
-					bind:value={$args.max_generations}
-					disabled={running}
-				/>
-				<p class="input-label">gen</p>
-			</div>
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.population_size.min}
-					max={config.io.population_size.max}
-					bind:value={$args.population_size}
-					disabled={running}
-				/>
-				<p class="input-label">pop</p>
-			</div>
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.max_cycle.min}
-					max={config.io.max_cycle.max}
-					bind:value={$args.max_cycle}
-					disabled={running}
-				/>
-				<p class="input-label">cyc</p>
-			</div>
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.time_limit.min}
-					max={config.io.time_limit.max}
-					bind:value={$args.time_limit}
-					disabled={running}
-				/>
-				<p class="input-label">ms</p>
-			</div>
-		</div>
-		<div class="form-container">
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.max_depth.min}
-					max={config.io.max_depth.max}
-					bind:value={$args.max_depth}
-					disabled={running}
-				/>
-				<p class="input-label">dep</p>
-			</div>
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.elitism_amount.min}
-					max={config.io.elitism_amount.max}
-					bind:value={$args.elitism_amount}
-					disabled={running}
-				/>
-				<p class="input-label">eli</p>
-			</div>
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.max_cut.min}
-					max={config.io.max_cut.max}
-					bind:value={$args.max_cut}
-					disabled={running}
-				/>
-				<p class="input-label">cut</p>
-			</div>
-		</div>
-		<div class="form-container">
-			<div class="input-container">
+	<div class="block-top">
+		<div class="text-container">
+			<h2>Input</h2>
+			<div class="text-left">
 				<select
-					name="selection_method"
-					id="selection_method"
-					bind:value={$args.selection_method}
-					disabled={running}
+					bind:value={$inputs.selectedExample}
+					name="examples"
+					id="examples"
+					on:input={handle_select}
 				>
-					{#each config.io.selection_method.choices as choice}
-						<option value={choice.value}>{choice.label}</option>
+					<option value={0}>Custom</option>
+					{#each examples as example, index}
+						<option value={index + 1}>{example.name}</option>
 					{/each}
 				</select>
 			</div>
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.tournament_size.min}
-					max={config.io.tournament_size.max}
-					bind:value={$args.tournament_size}
-					disabled={running}
+			<div class="relative mt-4 w-full">
+				<textarea
+					placeholder=""
+					bind:value={$inputs.current}
+					autocorrect="off"
+					autocapitalize="off"
+					spellcheck="false"
+					on:input={handle_input}
+					on:change={handle_input_change}
 				/>
-				<p class="input-label">tor</p>
+				<img src="/mascot.png" alt="" class="absolute -translate-y-[44%]" />
 			</div>
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.tournament_probability.min}
-					max={config.io.tournament_probability.max}
-					step="0.01"
-					bind:value={$args.tournament_probability}
-					disabled={running}
-				/>
-				<p class="input-label">pro</p>
-			</div>
-			<div class="input-container">
-				<input
-					type="number"
-					min={config.io.crossover_new_instances.min}
-					max={config.io.crossover_new_instances.max}
-					bind:value={$args.crossover_new_instances}
-					disabled={running}
-				/>
-				<p class="input-label">cro</p>
-			</div>
-			<div class="input-container">
-				<select
-					name="mutation_method"
-					id="mutation_method"
-					bind:value={$args.mutation_method}
-					disabled={running}
-				>
-					{#each config.io.mutation_method.choices as choice}
-						<option value={choice.value}>{choice.label}</option>
-					{/each}
-				</select>
-			</div>
-		</div>
-		<div class="state-container">
-			{#if running}
-				<button class="side-button" on:click={handle_reset} disabled={disabled_reset}>Reset</button>
-			{:else}
-				<button class="play-button" disabled={lastError !== null} on:click={handle_run}>Run</button>
+			{#if lastError}
+				<div class="error mt-4">
+					{lastError}
+				</div>
 			{/if}
 		</div>
-	</form>
+		<form on:submit|preventDefault={handle_run}>
+			<div class="form-container">
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.max_generations.min}
+						max={config.io.max_generations.max}
+						bind:value={$args.max_generations}
+						disabled={running}
+					/>
+					<p class="input-label">gen</p>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.population_size.min}
+						max={config.io.population_size.max}
+						bind:value={$args.population_size}
+						disabled={running}
+					/>
+					<p class="input-label">pop</p>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.max_cycle.min}
+						max={config.io.max_cycle.max}
+						bind:value={$args.max_cycle}
+						disabled={running}
+					/>
+					<p class="input-label">cyc</p>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.time_limit.min}
+						max={config.io.time_limit.max}
+						bind:value={$args.time_limit}
+						disabled={running}
+					/>
+					<p class="input-label">ms</p>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.max_depth.min}
+						max={config.io.max_depth.max}
+						bind:value={$args.max_depth}
+						disabled={running}
+					/>
+					<p class="input-label">dep</p>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.elitism_amount.min}
+						max={config.io.elitism_amount.max}
+						bind:value={$args.elitism_amount}
+						disabled={running}
+					/>
+					<p class="input-label">eli</p>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.max_cut.min}
+						max={config.io.max_cut.max}
+						bind:value={$args.max_cut}
+						disabled={running}
+					/>
+					<p class="input-label">cut</p>
+				</div>
+				<div class="input-container">
+					<select
+						name="selection_method"
+						id="selection_method"
+						bind:value={$args.selection_method}
+						disabled={running}
+					>
+						{#each config.io.selection_method.choices as choice}
+							<option value={choice.value}>{choice.label}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.tournament_size.min}
+						max={config.io.tournament_size.max}
+						bind:value={$args.tournament_size}
+						disabled={running}
+					/>
+					<p class="input-label">tor</p>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.tournament_probability.min}
+						max={config.io.tournament_probability.max}
+						step="0.01"
+						bind:value={$args.tournament_probability}
+						disabled={running}
+					/>
+					<p class="input-label">pro</p>
+				</div>
+				<div class="input-container">
+					<input
+						type="number"
+						min={config.io.crossover_new_instances.min}
+						max={config.io.crossover_new_instances.max}
+						bind:value={$args.crossover_new_instances}
+						disabled={running}
+					/>
+					<p class="input-label">cro</p>
+				</div>
+				<div class="input-container">
+					<select
+						name="mutation_method"
+						id="mutation_method"
+						bind:value={$args.mutation_method}
+						disabled={running}
+					>
+						{#each config.io.mutation_method.choices as choice}
+							<option value={choice.value}>{choice.label}</option>
+						{/each}
+					</select>
+				</div>
+			</div>
+			<div class="state-container">
+				{#if running}
+					<button class="side-button" on:click={handle_reset} disabled={disabled_reset}
+						>Reset</button
+					>
+				{:else}
+					<button class="play-button" disabled={lastError !== null} on:click={handle_run}
+						>Run</button
+					>
+				{/if}
+			</div>
+		</form>
+	</div>
 	{#if output}
-		<div class="statistic-container shadow">
-			<p class="statistic">
-				<span class="statistic-label">generation</span>:
-				<span class="statistic-value">{generation}/{$args.max_generations}</span>
-			</p>
-			<p class="statistic">
-				<span class="statistic-value chrono">{chrono} ms</span>
-			</p>
-		</div>
-		<div transition:scale|local class="text-container">
-			<h2>Output</h2>
-			<div class="text-left max-w-lg">
-				<div class="flex flex-row w-full mb-2">
+		<div class="block-bottom">
+			<div transition:scale|local class="text-container">
+				<h2>Output</h2>
+				<div class="statistic-container shadow">
+					<p class="statistic">
+						<span class="statistic-label">generation</span>:
+						<span class="statistic-value">{generation}/{$args.max_generations}</span>
+					</p>
+					<p class="statistic">
+						<span class="statistic-value chrono">{chrono} ms</span>
+					</p>
+				</div>
+				<div class="flex flex-row w-full mb-1 mt-3">
 					{#if output}
-						<span class="flex-shrink-0 inline-block p-1">
-							Cycles: {output.cycle}
-						</span>
-						<span class="flex-grow flex-shrink-0" />
-						<span class="flex-shrink-0 inline-block p-1">
+						<span class="flex-shrink-0 inline-block w-40 text-left">
 							Score: {output.score}
+						</span>
+						<span class="flex-shrink-0 inline-block w-40 text-left">
+							Cycles: {output.cycle}
 						</span>
 					{/if}
 					{#if outputError}
 						{outputError}
 					{/if}
 				</div>
-				{#if output}
+				<div class="text-left max-w-lg">
 					<div>
 						{#each Object.keys(output.simulation.stock) as product}
 							<span
@@ -482,27 +481,28 @@
 							</span>
 						{/each}
 					</div>
-				{/if}
-			</div>
-			<div class="flex flex-col">
-				<button class="ml-auto mr-0 mt-1 mb-1" on:click={download_output}>Download</button>
-				<textarea
-					cols={config.ui.output.cols}
-					rows={config.ui.output.row}
-					placeholder=""
-					value={outputFile}
-					readonly
-				/>
+				</div>
+				<Chart />
+				<div class="flex flex-col">
+					<textarea placeholder="" value={outputFile} readonly />
+					<button class="download" on:click={download_output}>Download</button>
+				</div>
 			</div>
 		</div>
 	{/if}
-	<Chart />
 </main>
 
 <!-- <svelte:window use:wheel={{ scrollable }} /> -->
 
 <!-- ---------------------------------------------- STYLE -->
 <style lang="postcss">
+	/* ----------------------- Input/Output block */
+	.block-top,
+	.block-bottom {
+		@apply m-auto px-3;
+		width: 520px;
+	}
+
 	/* ----------------------- Global */
 	header {
 		@apply relative w-fit m-auto mb-12 mt-8;
@@ -520,6 +520,7 @@
 
 	/* ----------------------- Buttons */
 	.state-container {
+		@apply my-3;
 	}
 
 	button {
@@ -536,11 +537,17 @@
 
 	/* ----------------------- Form/Inputs */
 	.form-container {
-		@apply relative w-fit flex m-auto;
+		@apply relative w-fit flex m-auto flex-wrap justify-between;
 	}
 
 	.input-container {
 		@apply relative;
+		padding: -10px;
+		margin: -4px;
+	}
+
+	.input-container > select {
+		@apply mx-1 !important;
 	}
 
 	input,
@@ -568,7 +575,7 @@
 
 	/* ----------------------- Textarea */
 	.text-container {
-		@apply relative m-auto w-fit;
+		@apply relative m-auto w-full;
 	}
 
 	.text-container > h2 {
@@ -576,12 +583,12 @@
 	}
 
 	textarea {
-		@apply relative p-3 z-10;
+		@apply relative p-3 z-10 w-full h-56;
 	}
 
 	/* ----------------------- Textarea */
 	.statistic-container {
-		@apply flex m-auto w-fit py-2 mt-4;
+		@apply flex w-fit py-2 mt-4 mb-4;
 	}
 
 	.statistic > span {
@@ -599,4 +606,58 @@
 	.statistic-value.chrono {
 		@apply w-24 mr-4 text-right;
 	}
+
+	.download {
+		@apply ml-auto mr-0 mt-4;
+	}
+
+	@media screen and (max-width: 580px) {
+		.form-container {
+			@apply justify-center;
+		}
+
+		.block-top,
+		.block-bottom {
+			width: 480px;
+		}
+
+		.input-container {
+			padding: 0;
+			margin: 0;
+		}
+	}
+
+	@media screen and (max-width: 520px) {
+		.form-container {
+			@apply justify-center;
+		}
+
+		.block-top,
+		.block-bottom {
+			width: 400px;
+		}
+
+		.input-container {
+			padding: 0;
+			margin: 0;
+		}
+	}
+
+	@media screen and (max-width: 420px) {
+		.form-container {
+			@apply justify-center;
+		}
+
+		.block-top,
+		.block-bottom {
+			width: 90%;
+		}
+
+		.input-container {
+			padding: 0;
+			margin: 0;
+		}
+	}
+
+
 </style>

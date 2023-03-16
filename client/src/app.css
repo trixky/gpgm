@@ -25,7 +25,7 @@ h1 {
 }
 
 h2 {
-	@apply text-xl ml-3 w-fit px-2;
+	@apply text-xl w-fit;
 }
 
 textarea {
@@ -47,6 +47,10 @@ input,
 select {
 	@apply rounded;
 	border: solid 1px black;
+}
+
+select {
+	@apply mx-0 px-0 !important;
 }
 
 select {
@@ -103,4 +107,10 @@ select,
 .badge.success,
 .badge.highlight {
 	@apply inline-block whitespace-nowrap rounded bg-green-100 px-[0.65em] pt-[0.35em] pb-[0.25em] text-center align-baseline text-[0.75em] font-bold leading-none text-green-700;
+}
+
+textarea {
+	overflow-y: auto;
+	overflow-x: auto;
+	resize: both;
 }
