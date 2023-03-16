@@ -271,10 +271,10 @@ func TestEntryGeneCutRandomN(t *testing.T) {
 func TestEntryGeneInit(t *testing.T) {
 	tests := []struct {
 		processes []core.Process
-		max       uint
-		random    bool
+		options   core.Options
 		context   core.InitialContext
 		expected  []int
+		seed      int64
 	}{
 		{
 			processes: []core.Process{
@@ -325,8 +325,10 @@ func TestEntryGeneInit(t *testing.T) {
 					},
 				},
 			},
-			max:    2,
-			random: false,
+			options: core.Options{
+				RandomCut: false,
+				MaxCut:    1,
+			},
 			context: core.InitialContext{
 				Stock: core.Stock{
 					"gold":  10,
@@ -338,7 +340,8 @@ func TestEntryGeneInit(t *testing.T) {
 					"gold": true,
 				},
 			},
-			expected: []int{3},
+			expected: []int{4},
+			seed:     42,
 		},
 		{
 			processes: []core.Process{
@@ -379,8 +382,10 @@ func TestEntryGeneInit(t *testing.T) {
 					},
 				},
 			},
-			max:    3,
-			random: true,
+			options: core.Options{
+				RandomCut: true,
+				MaxCut:    3,
+			},
 			context: core.InitialContext{
 				Stock: core.Stock{
 					"gold": 3,
@@ -391,21 +396,16 @@ func TestEntryGeneInit(t *testing.T) {
 				},
 			},
 			expected: []int{0},
+			seed:     43,
 		},
 	}
 
-	options := core.Options{
-		RandomCut: true,
-		MaxCut:    0,
-	}
-
-	rand.Seed(42)
-
 	for test_index, test := range tests {
+		rand.Seed(test.seed)
 		// For each test
 		entry_gene := EntryGene{}
 
-		entry_gene.Init(test.processes, test.context.Optimize, &options)
+		entry_gene.Init(test.processes, test.context.Optimize, &test.options)
 
 		if expected_length, got_length := len(test.expected), len(entry_gene.Process_ids); expected_length != got_length {
 			// If the process ids length is corrupted
@@ -526,51 +526,63 @@ func TestMutate(t *testing.T) {
 	tests := []struct {
 		process_ids          []int
 		incoming_process_ids []int
-		percentage           float64
+		options              core.Options
 		expected             []int
 		seed                 int
 	}{
 		{ // ------------------------------------------- 0
 			process_ids:          []int{0, 1, 2, 3},
 			incoming_process_ids: []int{5},
-			percentage:           99,
-			expected:             []int{5, 0, 1, 3},
-			seed:                 42,
+			options: core.Options{
+				MutationChance: 0.99,
+			},
+			expected: []int{5, 0, 1, 3},
+			seed:     42,
 		},
 		{ // ------------------------------------------- 1
 			process_ids:          []int{0, 1, 2, 3},
 			incoming_process_ids: []int{5},
-			percentage:           99,
-			expected:             []int{5, 1, 2, 3},
-			seed:                 44,
+			options: core.Options{
+				MutationChance: 0.99,
+			},
+			expected: []int{5, 1, 2, 3},
+			seed:     44,
 		},
 		{ // ------------------------------------------- 2
 			process_ids:          []int{0},
 			incoming_process_ids: []int{5, 2, 1},
-			percentage:           50,
-			expected:             []int{2, 1},
-			seed:                 45,
+			options: core.Options{
+				MutationChance: 0.50,
+			},
+			expected: []int{2, 1},
+			seed:     45,
 		},
 		{ // ------------------------------------------- 3
 			process_ids:          []int{0},
 			incoming_process_ids: []int{5, 2, 1},
-			percentage:           50,
-			expected:             []int{1, 2, 5},
-			seed:                 48,
+			options: core.Options{
+				MutationChance: 0.50,
+			},
+			expected: []int{1, 2, 5},
+			seed:     48,
 		},
 		{ // ------------------------------------------- 4
 			process_ids:          []int{0},
 			incoming_process_ids: []int{5, 2, 1},
-			percentage:           1,
-			expected:             []int{0},
-			seed:                 49,
+			options: core.Options{
+				MutationChance: 1,
+			},
+			expected: []int{5, 2, 1},
+			seed:     49,
 		},
 		{ // ------------------------------------------- 5
 			process_ids:          []int{1, 2, 3, 4},
 			incoming_process_ids: []int{99},
-			percentage:           80,
-			expected:             []int{99, 1, 2, 3},
-			seed:                 51,
+			options: core.Options{
+				MutationChance: 0.8,
+			},
+			expected: []int{99, 1, 2, 3},
+			seed:     51,
 		},
 	}
 
@@ -586,7 +598,7 @@ func TestMutate(t *testing.T) {
 
 		rand.Seed(int64(test.seed))
 
-		mutated_entry_gene := entry_gene.Mutate(&incoming_entry_gene, test.percentage)
+		mutated_entry_gene := entry_gene.Mutate(&incoming_entry_gene, &test.options)
 
 		if expected_length, got_length := len(test.expected), len(mutated_entry_gene.Process_ids); expected_length != got_length {
 			// If the process ids length is corrupted
