@@ -7,6 +7,8 @@ import (
 	"github.com/trixky/krpsim/algo/history"
 )
 
+const CHANCE_PRECISION = 1000
+
 type PriorityGene struct {
 	HistoryProcessDependencies map[string]ProcessDependencies
 	Process                    *core.Process
@@ -75,7 +77,7 @@ func (pg *PriorityGene) Mutate(pgpg *PriorityGene, options *core.Options) *Prior
 	for pgpg_history_process_dependencie_key, pgpg_history_process_dependencie := range pgpg.HistoryProcessDependencies {
 		// For each history process dependencie
 
-		if rand.Intn(1000) < int(options.MutationChance*1000) {
+		if rand.Intn(CHANCE_PRECISION) < int(options.MutationChance*CHANCE_PRECISION) {
 			// Take the value of the new priority gene
 			new_priority_gene.HistoryProcessDependencies[pgpg_history_process_dependencie_key] = pgpg_history_process_dependencie
 		} else {
