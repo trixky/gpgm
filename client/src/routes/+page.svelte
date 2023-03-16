@@ -1,6 +1,7 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { dev } from '$app/environment';
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import InstanceStore from '$lib/stores/instance';
@@ -75,10 +76,21 @@
 			return;
 		}
 
-		setTimeout(() => {
+		setTimeout(async () => {
 			// Recursive loop
 
-			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
+			// SvelteKit fail to compile the Service Worker in dev mode, so we fallback to the default implementation
+			let result_wasm: string;
+			if (dev) {
+				result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
+			} else {
+				// Use a fetch request to send a message to a ServiceWorker than can run a generation
+				const response = await fetch('/sw/generate', {
+					method: 'POST',
+					body: JSON.stringify(result_wasm_json!.running_solver)
+				});
+				result_wasm = await response.text();
+			}
 			result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
 			console.log(
 				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
@@ -104,13 +116,6 @@
 
 	// ------------------------------ Handlers
 	// -------- Navigation
-	function handle_top() {
-		window.scrollTo({
-			top: 0,
-			behavior: 'smooth'
-		});
-	}
-
 	function handle_bottom() {
 		window.scrollTo({
 			top: document.body.scrollHeight,
@@ -484,6 +489,7 @@
 					</div>
 				{/if}
 			</div>
+			<Chart />
 			<div class="flex flex-col">
 				<button class="ml-auto mr-0 mt-1 mb-1" on:click={download_output}>Download</button>
 				<textarea
@@ -496,7 +502,6 @@
 			</div>
 		</div>
 	{/if}
-	<Chart />
 </main>
 
 <!-- <svelte:window use:wheel={{ scrollable }} /> -->
