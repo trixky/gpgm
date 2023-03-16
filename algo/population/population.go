@@ -211,7 +211,13 @@ func (p *Population) Mutate(context core.InitialContext, options *core.Options) 
 	for instance_index, instance := range p.Instances {
 		// For each instance of the population
 		// Mutate the instance
-		mutated_population.Instances[instance_index] = *instance.Mutate(context.Processes, context.Optimize, options)
+
+		if instance_index >= options.ElitismAmount {
+			// If instance is not a part of the elite
+			mutated_population.Instances[instance_index] = *instance.Mutate(context.Processes, context.Optimize, options)
+		} else {
+			mutated_population.Instances[instance_index] = instance
+		}
 	}
 
 	return &mutated_population
