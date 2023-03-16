@@ -1,7 +1,7 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
-	import Config from '$lib/config';
+	import { config } from '$lib/config';
 	import args from '$lib/stores/arguments';
 	import examples from '$lib/Examples';
 	import { scale } from 'svelte/transition';
@@ -175,10 +175,6 @@
 		};
 	}; */
 
-	// ------------------------------ cookie
-	// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies
-	// https://developer.mozilla.org/en-US/docs/Glossary/Base64
-
 	function handle_input(e: any) {
 		$inputs.selectedExample = 0;
 		$inputs.custom = e.target.value;
@@ -216,8 +212,8 @@
 		</div>
 		<div class="relative mt-4">
 			<textarea
-				cols={Config.ui.input.cols}
-				rows={Config.ui.input.row}
+				cols={config.ui.input.cols}
+				rows={config.ui.input.row}
 				placeholder=""
 				bind:value={$inputs.current}
 				autocorrect="off"
@@ -237,9 +233,9 @@
 		<div class="input-container">
 			<input
 				type="number"
-				min={Config.io.max_generations.min}
-				max={Config.io.max_generations.max}
-				value={$args.max_generations}
+				min={config.io.max_generations.min}
+				max={config.io.max_generations.max}
+				bind:value={$args.max_generations}
 				disabled={running}
 			/>
 			<p class="input-label">gen</p>
@@ -247,9 +243,9 @@
 		<div class="input-container">
 			<input
 				type="number"
-				min={Config.io.population_size.min}
-				max={Config.io.population_size.max}
-				value={$args.population_size}
+				min={config.io.population_size.min}
+				max={config.io.population_size.max}
+				bind:value={$args.population_size}
 				disabled={running}
 			/>
 			<p class="input-label">pop</p>
@@ -257,9 +253,9 @@
 		<div class="input-container">
 			<input
 				type="number"
-				min={Config.io.max_cycle.min}
-				max={Config.io.max_cycle.max}
-				value={$args.max_cycle}
+				min={config.io.max_cycle.min}
+				max={config.io.max_cycle.max}
+				bind:value={$args.max_cycle}
 				disabled={running}
 			/>
 			<p class="input-label">cyc</p>
@@ -267,12 +263,100 @@
 		<div class="input-container">
 			<input
 				type="number"
-				min={Config.io.time_limit.min}
-				max={Config.io.time_limit.max}
-				value={$args.time_limit}
+				min={config.io.time_limit.min}
+				max={config.io.time_limit.max}
+				bind:value={$args.time_limit}
 				disabled={running}
 			/>
 			<p class="input-label">ms</p>
+		</div>
+	</div>
+	<div class="form-container">
+		<div class="input-container">
+			<input
+				type="number"
+				min={config.io.max_depth.min}
+				max={config.io.max_depth.max}
+				bind:value={$args.max_depth}
+				disabled={running}
+			/>
+			<p class="input-label">dep</p>
+		</div>
+		<div class="input-container">
+			<input
+				type="number"
+				min={config.io.elitism_amount.min}
+				max={config.io.elitism_amount.max}
+				bind:value={$args.elitism_amount}
+				disabled={running}
+			/>
+			<p class="input-label">eli</p>
+		</div>
+		<div class="input-container">
+			<input
+				type="number"
+				min={config.io.max_cut.min}
+				max={config.io.max_cut.max}
+				bind:value={$args.max_cut}
+				disabled={running}
+			/>
+			<p class="input-label">cut</p>
+		</div>
+	</div>
+	<div class="form-container">
+		<div class="input-container">
+			<select
+				name="selection_method"
+				id="selection_method"
+				bind:value={$args.selection_method}
+				disabled={running}
+			>
+				{#each config.io.selection_method.choices as choice}
+					<option value={choice.value}>{choice.label}</option>
+				{/each}
+			</select>
+		</div>
+		<div class="input-container">
+			<input
+				type="number"
+				min={config.io.tournament_size.min}
+				max={config.io.tournament_size.max}
+				bind:value={$args.tournament_size}
+				disabled={running}
+			/>
+			<p class="input-label">tor</p>
+		</div>
+		<div class="input-container">
+			<input
+				type="number"
+				min={config.io.tournament_probability.min}
+				max={config.io.tournament_probability.max}
+				bind:value={$args.tournament_probability}
+				disabled={running}
+			/>
+			<p class="input-label">pro</p>
+		</div>
+		<div class="input-container">
+			<input
+				type="number"
+				min={config.io.crossover_new_instances.min}
+				max={config.io.crossover_new_instances.max}
+				bind:value={$args.crossover_new_instances}
+				disabled={running}
+			/>
+			<p class="input-label">cro</p>
+		</div>
+		<div class="input-container">
+			<select
+				name="mutation_method"
+				id="mutation_method"
+				bind:value={$args.mutation_method}
+				disabled={running}
+			>
+				{#each config.io.mutation_method.choices as choice}
+					<option value={choice.value}>{choice.label}</option>
+				{/each}
+			</select>
 		</div>
 	</div>
 	<div class="state-container">
@@ -311,15 +395,15 @@
 		<div transition:scale|local class="text-container">
 			<h2>Output</h2>
 			<textarea
-				cols={Config.ui.output.cols}
-				rows={Config.ui.output.row}
+				cols={config.ui.output.cols}
+				rows={config.ui.output.row}
 				placeholder=""
 				value={output}
 				readonly
 			/>
 			<textarea
-				cols={Config.ui.output.cols}
-				rows={Config.ui.output.row}
+				cols={config.ui.output.cols}
+				rows={config.ui.output.row}
 				placeholder=""
 				value={outputFile}
 				readonly
@@ -372,8 +456,16 @@
 		@apply relative;
 	}
 
-	input {
+	input,
+	select {
 		@apply mt-5 px-3 py-1 w-[116px];
+	}
+
+	select {
+		@apply pl-1;
+	}
+	option {
+		@apply py-1;
 	}
 
 	.input-label {

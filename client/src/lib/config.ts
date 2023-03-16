@@ -14,7 +14,7 @@ interface NumericConfig {
 
 interface ChoiceConfig {
     default: number
-    choices: number[]
+    choices: { value: number, label: string }[]
 }
 
 interface ArgumentsConfig {
@@ -59,7 +59,7 @@ export const config: ArgumentsConfig = {
         max_depth: {
             min: 1,
             max: 10,
-            default: 1
+            default: 6
         },
         time_limit: {
             min: 500,
@@ -93,11 +93,17 @@ export const config: ArgumentsConfig = {
         },
         selection_method: {
             default: TournamentSelection,
-            choices: [RandomSelection, TournamentSelection]
+            choices: [
+                { value: RandomSelection, label: 'Random' },
+                { value: TournamentSelection, label: 'Tournament' }
+            ]
         },
         mutation_method: {
             default: LogarithmicMutation,
-            choices: [LinearMutation, LogarithmicMutation]
+            choices: [
+                { value: LinearMutation, label: 'Linear' },
+                { value: LogarithmicMutation, label: 'Logarithmic' }
+            ]
         },
     }
 }

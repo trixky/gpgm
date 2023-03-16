@@ -49,11 +49,13 @@ func (s *Simulation) canExecuteAnyProcess() bool {
 }
 
 func (s *Simulation) Run(options *core.Options) {
-	for ; s.Cycle < options.MaxCycle; s.Cycle++ {
+	s.Cycle = -1
+	for s.Cycle < options.MaxCycle {
 		// ? Abort early if there is no executable processes and no expected stocks
 		if !s.canExecuteAnyProcess() && len(s.ExpectedStock) == 0 {
 			break
 		}
+		s.Cycle++
 
 		// * Update stock for the current cycle
 		ready := []ExpectedStock{}

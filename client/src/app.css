@@ -68,22 +68,26 @@ img {
 }
 
 button,
-input {
+input,
+select {
 	@apply mx-1;
 }
 
 button:not([disabled]):hover,
-input:not([disabled]):hover {
+input:not([disabled]):hover,
+select:not([disabled]):hover {
 	@apply bg-black;
 }
 
 button:disabled,
-input:disabled {
+input:disabled,
+select:disabled {
 	@apply opacity-50;
 }
 
 button,
 input,
+select,
 .transition {
 	@apply transition-all duration-150;
 }
