@@ -8,6 +8,9 @@
 	import { parse_as } from '$lib/utils/parse';
 	import { wasmReady } from '$lib/stores/ready';
 	import { inputs } from '$lib/stores/inputs';
+	import InstanceStore from '$lib/stores/instance';
+	import Chart from '$lib/components/chart.svelte'
+	import type GenerationModel from '$lib/models/generation'
 
 	let start: number = -1;
 
@@ -25,30 +28,30 @@
 	$: disabled_reset = !running || !stopped;
 
 	// ------------------------------ chrono
-	let chrono = 0
-	let stop_chrono = false
+	let chrono = 0;
+	let stop_chrono = false;
 
 	function remaining_chrono(): number {
 		return start + $args.time_limit - new Date().getTime();
 	}
-	
+
 	function recursive_chrono() {
 		if (!stop_chrono) {
 			setTimeout(() => {
-				chrono = remaining_chrono()
-				recursive_chrono()
+				chrono = remaining_chrono();
+				recursive_chrono();
 			}, 1);
 		} else {
-			stop_chrono = false
+			stop_chrono = false;
 		}
 	}
 
 	function start_chrono() {
-		recursive_chrono()
+		recursive_chrono();
 	}
 
 	function finish_chrono() {
-		stop_chrono = true
+		stop_chrono = true;
 	}
 
 	// ------------------------------ Loop
@@ -94,7 +97,9 @@
 			if (result_wasm_json != undefined) {
 				const remaining = remaining_chrono();
 				result_wasm_json.running_solver.time_limit_ms = remaining;
-
+				InstanceStore.insert_population(<GenerationModel>{
+					scores: result_wasm_json.scored_population.instances.map(instance => instance.score)
+				})
 				if (remaining > 0) {
 					new_generation();
 				} else {
@@ -148,6 +153,7 @@
 			stop = false;
 			stopped = false;
 			handle_bottom();
+			InstanceStore.reset()
 
 			start = new Date().getTime();
 
@@ -164,7 +170,10 @@
 				generation = -1;
 				const running_solver = parse_as<RunningSolver>(raw_running_solver);
 				result_wasm_json = { running_solver, scored_population: { instances: [] } };
-				start_chrono()
+				start_chrono();
+				InstanceStore.insert_population(<GenerationModel>{
+					scores: result_wasm_json.scored_population.instances.map(instance => instance.score)
+				})
 				new_generation();
 			}
 		}
@@ -172,6 +181,7 @@
 
 	function handle_reset() {
 		if (running && stopped) {
+			InstanceStore.reset()
 			running = false;
 			stop = false;
 			stopped = false;
@@ -225,6 +235,7 @@
 		<h1>GPGM</h1>
 		<p class="opacity-30">genetic process graph manager</p>
 	</header>
+
 
 	<div class="text-container">
 		<h2>Input</h2>
@@ -426,6 +437,7 @@
 			/>
 		</div>
 	{/if}
+	<Chart />
 </main>
 
 <!-- <svelte:window use:wheel={{ scrollable }} /> -->
