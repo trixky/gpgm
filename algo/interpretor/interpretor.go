@@ -75,7 +75,7 @@ func TryExecuteMProcess(history *history.History, process_id int, i *instance.In
 							history_clone := history.Clone()
 
 							// Execute the process dependencies recursively
-							dependencie_process_quantities_stack, xx, _ := TryExecuteMProcess(&history_clone, process_dependencie_id, i, stock, processes, int(nn), depth, options)
+							dependencie_process_quantities_stack, xx, _ := TryExecuteMProcess(history_clone, process_dependencie_id, i, stock, processes, int(nn), depth, options)
 
 							if xx != int(nn) {
 								// If the process dependencie executions are not complete

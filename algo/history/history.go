@@ -3,9 +3,10 @@ package history
 import "strings"
 
 type History struct {
-	ProcessesIds string
+	ProcessIds string
 }
 
+// reverse reverses a string
 func reverse(s string) (r string) {
 	for _, v := range s {
 		r = string(v) + r
@@ -13,30 +14,33 @@ func reverse(s string) (r string) {
 	return
 }
 
+// Reset resets its process ids
 func (h *History) Reset() {
-	h.ProcessesIds = ""
+	h.ProcessIds = ""
 }
 
+// PushProcessId push a process id at the end
 func (h *History) PushProcessId(process_id int) {
-	h.ProcessesIds = string(rune(process_id+48)) + h.ProcessesIds
+	h.ProcessIds = string(rune(process_id+48)) + h.ProcessIds
 }
 
+// PushProcessId push a process id at the beginning
 func (h *History) InvertedPushProcessId(process_id int) {
-	h.ProcessesIds = h.ProcessesIds + string(rune(process_id+48))
+	h.ProcessIds = h.ProcessIds + string(rune(process_id+48))
 }
 
+// GetLastProcessIds gets the n last process ids
 func (h *History) GetLastProcessIds(n int) string {
-	if n == 0 || len(h.ProcessesIds) < n {
-		return h.ProcessesIds
-		// return reverse(h.ProcessesIds)
+	if n == 0 || len(h.ProcessIds) < n {
+		return h.ProcessIds
 	}
 
-	return h.ProcessesIds[:n]
-	// return reverse(h.ProcessesIds[:n])
+	return h.ProcessIds[:n]
 }
 
-func (h *History) Clone() History {
-	return History{
-		ProcessesIds: strings.Clone(h.ProcessesIds),
+// Clone returns a copy
+func (h *History) Clone() *History {
+	return &History{
+		ProcessIds: strings.Clone(h.ProcessIds),
 	}
 }

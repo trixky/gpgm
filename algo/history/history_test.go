@@ -13,18 +13,18 @@ func TestHistoryReset(t *testing.T) {
 		{
 			history: History{},
 			expected: History{
-				ProcessesIds: "",
+				ProcessIds: "",
 			},
 		},
 		{
 			history: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 			expected: History{},
 		},
 		{
 			history: History{
-				ProcessesIds: "BA@?>=<;:9876543210",
+				ProcessIds: "BA@?>=<;:9876543210",
 			},
 			expected: History{},
 		},
@@ -32,8 +32,8 @@ func TestHistoryReset(t *testing.T) {
 
 	for test_index, test := range tests {
 		test.history.Reset()
-		if test.history.ProcessesIds != test.expected.ProcessesIds {
-			t.Fatalf(`test %d: expected = %s, got = %s`, test_index, test.expected.ProcessesIds, test.history.ProcessesIds)
+		if test.history.ProcessIds != test.expected.ProcessIds {
+			t.Fatalf(`test %d: expected = %s, got = %s`, test_index, test.expected.ProcessIds, test.history.ProcessIds)
 		}
 	}
 }
@@ -48,21 +48,21 @@ func TestHistoryPushProcessId(t *testing.T) {
 			history:       History{},
 			processes_ids: []int{},
 			expected: History{
-				ProcessesIds: "",
+				ProcessIds: "",
 			},
 		},
 		{
 			history:       History{},
 			processes_ids: []int{0, 1, 2, 3},
 			expected: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 		},
 		{
 			history:       History{},
 			processes_ids: []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18},
 			expected: History{
-				ProcessesIds: "BA@?>=<;:9876543210",
+				ProcessIds: "BA@?>=<;:9876543210",
 			},
 		},
 	}
@@ -71,8 +71,8 @@ func TestHistoryPushProcessId(t *testing.T) {
 		for _, process_id := range test.processes_ids {
 			test.history.PushProcessId(process_id)
 		}
-		if test.history.ProcessesIds != test.expected.ProcessesIds {
-			t.Fatalf(`test %d: expected = %s, got = %s`, test_index, test.history.ProcessesIds, test.expected.ProcessesIds)
+		if test.history.ProcessIds != test.expected.ProcessIds {
+			t.Fatalf(`test %d: expected = %s, got = %s`, test_index, test.history.ProcessIds, test.expected.ProcessIds)
 		}
 	}
 }
@@ -100,42 +100,42 @@ func TestHistoryGetLastProcessIds(t *testing.T) {
 		},
 		{
 			history: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 			n:        0,
 			expected: "3210",
 		},
 		{
 			history: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 			n:        1,
 			expected: "3",
 		},
 		{
 			history: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 			n:        2,
 			expected: "32",
 		},
 		{
 			history: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 			n:        3,
 			expected: "321",
 		},
 		{
 			history: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 			n:        4,
 			expected: "3210",
 		},
 		{
 			history: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 			n:        5,
 			expected: "3210",
@@ -145,7 +145,7 @@ func TestHistoryGetLastProcessIds(t *testing.T) {
 	for test_index, test := range tests {
 		last_n_history_part := test.history.GetLastProcessIds(test.n)
 		if last_n_history_part != test.expected {
-			t.Fatalf(`test %d: expected = %s, got = %s`, test_index, test.history.ProcessesIds, last_n_history_part)
+			t.Fatalf(`test %d: expected = %s, got = %s`, test_index, test.history.ProcessIds, last_n_history_part)
 		}
 	}
 }
@@ -158,26 +158,26 @@ func TestHistoryClone(t *testing.T) {
 	}{
 		{
 			history: History{
-				ProcessesIds: "",
+				ProcessIds: "",
 			},
 			expected: History{
-				ProcessesIds: "",
+				ProcessIds: "",
 			},
 		},
 		{
 			history: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 			expected: History{
-				ProcessesIds: "3210",
+				ProcessIds: "3210",
 			},
 		},
 		{
 			history: History{
-				ProcessesIds: "333333333333333333333",
+				ProcessIds: "333333333333333333333",
 			},
 			expected: History{
-				ProcessesIds: "333333333333333333333",
+				ProcessIds: "333333333333333333333",
 			},
 		},
 	}
@@ -187,8 +187,8 @@ func TestHistoryClone(t *testing.T) {
 
 		// ------------------------ reset
 		test.history.Reset()
-		if clone.ProcessesIds != test.expected.ProcessesIds {
-			t.Fatalf(`test %d (reset): expected = %s, got = %s`, test_index, test.expected.ProcessesIds, clone.ProcessesIds)
+		if clone.ProcessIds != test.expected.ProcessIds {
+			t.Fatalf(`test %d (reset): expected = %s, got = %s`, test_index, test.expected.ProcessIds, clone.ProcessIds)
 		}
 
 		// ------------------------ push
@@ -197,8 +197,8 @@ func TestHistoryClone(t *testing.T) {
 		test.history.PushProcessId(2)
 		test.history.PushProcessId(3)
 
-		if clone.ProcessesIds != test.expected.ProcessesIds {
-			t.Fatalf(`test %d (push): expected = %s, got = %s`, test_index, test.expected.ProcessesIds, clone.ProcessesIds)
+		if clone.ProcessIds != test.expected.ProcessIds {
+			t.Fatalf(`test %d (push): expected = %s, got = %s`, test_index, test.expected.ProcessIds, clone.ProcessIds)
 		}
 	}
 }

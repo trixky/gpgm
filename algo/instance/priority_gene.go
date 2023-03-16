@@ -45,7 +45,7 @@ func (pg *PriorityGene) InitHistory(h *history.History, depth int, process *core
 			h_clone := h.Clone()
 			h_clone.PushProcessId(process_parent)
 
-			pg.InitHistory(&h_clone, depth, &processes[process_parent], processes)
+			pg.InitHistory(h_clone, depth, &processes[process_parent], processes)
 		}
 	}
 }
