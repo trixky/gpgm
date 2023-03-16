@@ -25,6 +25,7 @@ func (i *Instance) Cross(ii *Instance) (child_1 Instance, child_2 Instance) {
 	return
 }
 
+// Mutate make a mutated version of itself
 func (i *Instance) Mutate(processes []core.Process, optimize map[string]bool, options *core.Options) *Instance {
 	mutated_instance := Instance{}
 	mutated_instance.Chromosome = *i.Chromosome.Mutate(processes, optimize, options)

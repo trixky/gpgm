@@ -14,6 +14,9 @@ type ProcessDependencies struct {
 	InputDependencies []InputDependencies
 }
 
+// --------------------------- InputDependencies
+
+// DeepCopy make a deep copy of itself
 func (id *InputDependencies) DeepCopy() *InputDependencies {
 	new_input_dependencies := InputDependencies{
 		Input:               id.Input,
@@ -57,6 +60,9 @@ func (id *InputDependencies) Init(input string, processes []core.Process) {
 	}
 }
 
+// --------------------------- ProcessDependencies
+
+// DeepCopy make a deep copy of itself
 func (pd *ProcessDependencies) DeepCopy() *ProcessDependencies {
 	new_processd_ependencies := ProcessDependencies{
 		InputDependencies: make([]InputDependencies, len(pd.InputDependencies)),
