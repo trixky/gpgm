@@ -39,8 +39,7 @@
 	function new_generation() {
 		generation++;
 		if (generation >= $ArgumentStore.generations) {
-			finished = true;
-			stopped = true;
+			handle_finish()
 		}
 
 		if (stop || stopped) {
@@ -80,6 +79,8 @@
 				
 				if (remaining > 0) {
 					new_generation();
+				} else {
+					handle_finish()
 				}
 			}
 		}, 1);
@@ -114,6 +115,11 @@
 	}
 
 	// -------- State
+	function handle_finish() {
+		finished = true;
+		stopped = true;
+	}
+
 	function handle_run() {
 		lastError = WASM_parse_input(input);
 
