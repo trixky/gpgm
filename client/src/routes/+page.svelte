@@ -335,7 +335,7 @@
 	<div class="block-top">
 		<div class="text-container">
 			<h2>Input</h2>
-			<div class="text-left relative w-fit z-20">
+			<div class="examples-container">
 				<select
 					bind:value={$inputs.selectedExample}
 					name="examples"
@@ -348,7 +348,7 @@
 					{/each}
 				</select>
 			</div>
-			<div class="relative mt-4 w-full">
+			<div class="text-input-container">
 				<textarea
 					placeholder=""
 					class="scrollbar-custom"
@@ -508,7 +508,7 @@
 				</div>
 				<div
 					class="input-container"
-					title="Mutation strategy&#13(The mutation rate decreases over time)"
+					title="Mutation strategy&#13(The mutation rate decreases over the time)"
 				>
 					<select
 						name="mutation_method"
@@ -546,12 +546,12 @@
 						<span class="statistic-value chrono">{chrono} ms</span>
 					</p>
 				</div>
-				<div class="flex flex-row w-full mb-1 mt-3">
+				<div class="best-info-container">
 					{#if output}
-						<span class="flex-shrink-0 inline-block w-40 text-left">
+						<span class="best-info">
 							Score: {output.score}
 						</span>
-						<span class="flex-shrink-0 inline-block w-40 text-left">
+						<span class="best-info">
 							Cycles: {output.cycle}
 						</span>
 					{/if}
@@ -559,11 +559,11 @@
 						{outputError}
 					{/if}
 				</div>
-				<div class="text-left max-w-lg">
+				<div class="resource-badge-container">
 					<div>
 						{#each Object.keys(output.simulation.stock) as product}
 							<span
-								class="badge mr-1 mb-1"
+								class="resource-badge badge"
 								class:highlight={output.simulation.initial_context.optimize[product] !== undefined}
 							>
 								{product}: {output.simulation.stock[product]}
@@ -572,7 +572,7 @@
 					</div>
 				</div>
 				<Chart />
-				<div class="flex flex-col mt-3">
+				<div class="output-container">
 					<textarea class="scrollbar-custom" placeholder="" value={outputFile} readonly />
 					<button class="download" on:click={download_output}>Download</button>
 				</div>
@@ -641,6 +641,14 @@
 	}
 
 	/* ----------------------- Form/Inputs */
+	.examples-container {
+		@apply text-left relative w-fit z-20;
+	}
+
+	.text-input-container {
+		@apply relative mt-4 w-full;
+	}
+
 	.form-container {
 		@apply relative w-fit flex m-auto flex-wrap justify-between;
 	}
@@ -696,7 +704,27 @@
 		@apply relative p-3 z-10 w-full h-56;
 	}
 
-	/* ----------------------- Textarea */
+	/* ----------------------- Output */
+	.best-info-container {
+		@apply flex flex-row w-full mb-2 mt-3;
+	}
+
+	.best-info {
+		@apply flex-shrink-0 inline-block w-40 text-left;
+	}
+
+	.resource-badge-container {
+		@apply text-left max-w-lg;
+	}
+
+	.resource-badge {
+		@apply mr-1 mb-1;
+	}
+
+	.output-container {
+		@apply flex flex-col mt-3;
+	}
+
 	.statistic-container {
 		@apply flex w-fit py-2 mt-5 mb-4;
 	}
