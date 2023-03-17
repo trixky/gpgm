@@ -321,7 +321,7 @@
 				</div>
 			</div>
 			{#if lastError}
-				<div class="error mt-4">
+				<div class="input-error">
 					{lastError}
 				</div>
 			{/if}
@@ -577,6 +577,11 @@
 	/* ----------------------- Form/Inputs */
 	.form-container {
 		@apply relative w-fit flex m-auto flex-wrap justify-between;
+	}
+
+	.input-error {
+		@apply mt-4;
+		color: #e69999;
 	}
 
 	.input-container {

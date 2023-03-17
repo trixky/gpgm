@@ -30,16 +30,6 @@ interface ArgumentsConfig {
 }
 
 export const config: ArgumentsConfig = {
-    ui: {
-        input: {
-            cols: 23,
-            row: 10,
-        },
-        output: {
-            cols: 42,
-            row: 10,
-        }
-    },
     io: {
         max_generations: {
             min: 1,
