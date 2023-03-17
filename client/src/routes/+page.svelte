@@ -571,7 +571,7 @@
 	/* ----------------------- Mascot / Information */
 
 	.mascot-container {
-		@apply absolute -top-[0px] right-0 w-[100px] h-[1px] transition-all duration-[2000ms];
+		@apply absolute -top-[0px] right-0 w-[100px] h-[1px] transition-all duration-[2000ms] -z-10;
 		transition-timing-function: linear;
 	}
 
