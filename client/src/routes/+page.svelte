@@ -1,7 +1,7 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { dev } from '$app/environment';
+	import { browser } from '$app/environment';
 	import type { WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import InstanceStore from '$lib/stores/instance';
@@ -11,7 +11,7 @@
 	import args from '$lib/stores/arguments';
 	import examples from '$lib/examples';
 	import { scale } from 'svelte/transition';
-	import { globalReady } from '$lib/stores/ready';
+	import { globalReady } from '$lib/stores/globalReady';
 	import { inputs } from '$lib/stores/inputs';
 	import Wasm from '$lib/wasm';
 
@@ -236,7 +236,8 @@
 		};
 	}; */
 
-	if (dev) {
+	// Always load WASM as fallback
+	if (browser) {
 		onMount(() => {
 			// @ts-expect-error
 			// Go is loaded from the app.html (wasm)

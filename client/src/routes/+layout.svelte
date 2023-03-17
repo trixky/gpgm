@@ -1,7 +1,9 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { browser, dev } from '$app/environment';
-	import { globalReady } from '$lib/stores/ready';
+	import { globalReady } from '$lib/stores/globalReady';
+	import { useWorker } from '$lib/stores/useWorker';
+	import { workerReady } from '$lib/stores/workerReady';
 	import '../app.css';
 
 	export let data: { bytes: BufferSource } | undefined;
@@ -17,9 +19,17 @@
 					serviceWorker = registration.active;
 				}
 				if (serviceWorker && serviceWorker.state === 'activated') {
-					$globalReady = true;
+					if (navigator.serviceWorker.controller) {
+						$workerReady = true;
+						$globalReady = true;
+					}
 				}
+			})
+			.catch(() => {
+				$useWorker = false;
 			});
+	} else {
+		$useWorker = false;
 	}
 </script>
 
