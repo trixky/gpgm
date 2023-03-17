@@ -7,7 +7,7 @@
 	import InstanceStore from '$lib/stores/instance';
 	import Chart from '$lib/components/chart.svelte';
 	import type GenerationModel from '$lib/models/generation';
-	import { config } from '$lib/config';
+	import { config, type NumericConfigKeys } from '$lib/config';
 	import args from '$lib/stores/arguments';
 	import examples from '$lib/examples';
 	import { scale } from 'svelte/transition';
@@ -129,8 +129,41 @@
 		handle_bottom();
 	}
 
+	async function validate_inputs() {
+		const hadLastError = lastError !== null;
+		lastError = null;
+		let errors: string[] = [];
+		for (const key of Object.keys($args)) {
+			const inputKey = key as NumericConfigKeys;
+			const numberValue = Number($args[inputKey]);
+			const keyConfig = config.io[inputKey];
+			if (
+				keyConfig &&
+				((!$args[inputKey] && config.io[inputKey].min) ||
+					numberValue < config.io[inputKey].min ||
+					numberValue > config.io[inputKey].max ||
+					(!Number.isInteger(numberValue) && Number.isInteger(config.io[inputKey].default)))
+			) {
+				errors.push(`invalid input value for ${key}`);
+			}
+		}
+		if (errors.length > 0) {
+			lastError = errors.join('\n');
+		} else if (hadLastError) {
+			lastError = await Wasm.parseInput($inputs.current);
+		}
+	}
+
+	args.subscribe(async () => {
+		validate_inputs();
+	});
+
 	async function handle_run() {
+		lastError = null;
 		lastError = await Wasm.parseInput($inputs.current);
+		if (!lastError) {
+			validate_inputs();
+		}
 
 		if (!lastError && !running) {
 			running = true;
@@ -394,7 +427,7 @@
 						{/each}
 					</select>
 				</div>
-				<div class="input-container" title="Tournament size ???">
+				<div class="input-container" title="Tournament population size">
 					<input
 						type="number"
 						min={config.io.tournament_size.min}
@@ -404,7 +437,7 @@
 					/>
 					<p class="input-label">tor</p>
 				</div>
-				<div class="input-container" title="Tournament probability ???">
+				<div class="input-container" title="Initial tournament selection probability">
 					<input
 						type="number"
 						min={config.io.tournament_probability.min}
@@ -415,7 +448,7 @@
 					/>
 					<p class="input-label">pro</p>
 				</div>
-				<div class="input-container" title="Cross-over ???">
+				<div class="input-container" title="Amount of new instances on cross-over">
 					<input
 						type="number"
 						min={config.io.crossover_new_instances.min}
@@ -447,9 +480,7 @@
 						>Reset</button
 					>
 				{:else}
-					<button class="play-button" disabled={lastError !== null} on:click={handle_run}
-						>Run</button
-					>
+					<button class="play-button" on:click={handle_run}>Run</button>
 				{/if}
 			</div>
 		</form>

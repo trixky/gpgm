@@ -17,6 +17,8 @@ interface ChoiceConfig {
     choices: { value: number, label: string }[]
 }
 
+export type NumericConfigKeys = keyof Omit<Arguments, "text" | "selection_method" | "mutation_method">;
+
 interface ArgumentsConfig {
     ui: {
         input: TextareaConfig
@@ -26,7 +28,7 @@ interface ArgumentsConfig {
         selection_method: ChoiceConfig
         mutation_method: ChoiceConfig
     } &
-    { [key in keyof Omit<Arguments, "text" | "selection_method" | "mutation_method">]: NumericConfig }
+    { [key in NumericConfigKeys]: NumericConfig }
 }
 
 export const config: ArgumentsConfig = {
@@ -77,7 +79,7 @@ export const config: ArgumentsConfig = {
             default: 1
         },
         elitism_amount: {
-            min: 1,
+            min: 0,
             max: 10,
             default: 1
         },
