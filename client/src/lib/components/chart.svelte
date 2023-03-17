@@ -14,10 +14,18 @@
 		ArcElement,
 		CategoryScale,
 		LinearScale,
-		PointElement
+		PointElement,
+		type ChartDataset,
+		type Point,
+		type CoreChartOptions,
+		type PluginChartOptions,
+		type ChartData,
+		type LegendOptions,
+		type ScaleChartOptions
 	} from 'chart.js';
+	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
 
-	let chart: any = undefined;
+	let chart: ChartJS<'line', (number | Point)[], unknown> | undefined = undefined;
 
 	ChartJS.register(
 		LineElement,
@@ -30,8 +38,8 @@
 		PointElement
 	);
 
-	let dataLine: any = {
-		labels: $ArgumentStore.max_generations,
+	let dataLine: ChartData<'line', (number | Point)[]> = {
+		labels: [`${$ArgumentStore.max_generations}`],
 		datasets: []
 	};
 
@@ -43,7 +51,7 @@
 			dataLine.datasets = $InstanceStore.map((instance, index) => {
 				const color = index === 0 ? 'rgb(220, 252, 231, 1)' : 'rgb(255, 255, 255, 0.7)';
 
-				return {
+				return <ChartDataset<'line', (number | Point)[]>>{
 					lineWidth: 40,
 					width: 40,
 					weight: 40,
@@ -68,7 +76,7 @@
 				};
 			});
 		} else {
-			dataLine.labels.push($InstanceStore[0].length.toString());
+			dataLine.labels!.push($InstanceStore[0].length.toString());
 			$InstanceStore.forEach((instance, index) => {
 				dataLine.datasets[index].data.push(instance[instance.length - 1]);
 			});
@@ -76,7 +84,12 @@
 		chart?.update();
 	}
 
-	const options = {
+	const options: _DeepPartialObject<
+		CoreChartOptions<'line'> &
+			PluginChartOptions<'line'> &
+			LegendOptions<'line'> &
+			ScaleChartOptions<'line'>
+	> = {
 		events: [], // disable mouse hover events
 		plugins: {
 			legend: {
