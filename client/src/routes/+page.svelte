@@ -269,7 +269,7 @@
 	<div class="block-top">
 		<div class="text-container">
 			<h2>Input</h2>
-			<div class="text-left">
+			<div class="text-left relative">
 				<select
 					bind:value={$inputs.selectedExample}
 					name="examples"
@@ -293,7 +293,10 @@
 					on:input={handle_input}
 					on:change={handle_input_change}
 				/>
-				<img src="/mascot.png" alt="" class="absolute -translate-y-[44%]" />
+				<div class="mascot-container">
+					<img src="/mascot.png" alt="" class="mascot" />
+					<img src="/information.svg" alt="" class="information" title="GPGM is a solution that find the best sequence of process execution&#13to optimize focused resources production using pathfinding graph and genetic algorithms"/>
+				</div>
 			</div>
 			{#if lastError}
 				<div class="error mt-4">
@@ -514,6 +517,20 @@
 		@apply absolute -top-[43px] -right-[0px];
 		width: 100px;
 		height: 100px;
+	}
+
+	/* ----------------------- Mascot / Information */
+
+	.mascot-container {
+		@apply absolute -top-[0px] right-0 w-[100px] h-[1px];
+	}
+
+	.mascot {
+		@apply absolute -top-[86px] right-0;
+	}
+
+	.information {
+		@apply absolute w-6 -top-[118px] opacity-70 cursor-help;
 	}
 
 	/* ----------------------- Buttons */
