@@ -1,11 +1,6 @@
 import type { Arguments } from "../types"
 import { LinearMutation, LogarithmicMutation, RandomSelection, TournamentSelection } from "../types/core.d"
 
-interface TextareaConfig {
-    cols: number,
-    row: number,
-}
-
 interface NumericConfig {
     min: number,
     max: number,
@@ -18,10 +13,6 @@ interface ChoiceConfig {
 }
 
 interface ArgumentsConfig {
-    ui: {
-        input: TextareaConfig
-        output: TextareaConfig
-    }
     io: {
         selection_method: ChoiceConfig
         mutation_method: ChoiceConfig

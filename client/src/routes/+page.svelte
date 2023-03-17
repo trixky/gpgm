@@ -1,10 +1,11 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Header from '$lib/components/header.svelte'
+	import Header from '$lib/components/header.svelte';
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import InstanceStore from '$lib/stores/instance';
+	// import { insert_population } from '$lib/stores/instance';
 	import Chart from '$lib/components/chart.svelte';
 	import type GenerationModel from '$lib/models/generation';
 	import { config } from '$lib/config';
@@ -220,49 +221,52 @@
 	}
 
 	// ------------------------------ Mascot
-	const mascot_random_duration_secondes = 5
-	const mascot_minimum_duration_secondes = 5
-	const mascot_minimum_x_deplacement = 30
-	const mascot_maximum_x_deplacement = 80
-	const mascot_maximum_x = 140
-	const second_ratio = 1000
+	const mascot_random_duration_secondes = 5;
+	const mascot_minimum_duration_secondes = 5;
+	const mascot_minimum_x_deplacement = 30;
+	const mascot_maximum_x_deplacement = 80;
+	const mascot_maximum_x = 140;
+	const second_ratio = 1000;
 
-	let mascot_x = 0
-	let mascot_reverse = false
-	let mascot_pause = false
+	let mascot_x = 0;
+	let mascot_reverse = false;
+	let mascot_pause = false;
 
-	let information_readed = false
+	let information_readed = false;
 
 	function move_mascot() {
 		setTimeout(() => {
 			if (!mascot_pause) {
-				while(true) {
-					const new_mascot_x = Math.ceil(Math.random() * mascot_maximum_x)
-					
-					const mascot_deplacement = Math.abs(new_mascot_x - mascot_x)
+				while (true) {
+					const new_mascot_x = Math.ceil(Math.random() * mascot_maximum_x);
 
-					if (mascot_deplacement > mascot_minimum_x_deplacement && mascot_deplacement < mascot_maximum_x_deplacement) {
-						mascot_reverse = new_mascot_x > mascot_x
-						mascot_x = new_mascot_x
-						break
+					const mascot_deplacement = Math.abs(new_mascot_x - mascot_x);
+
+					if (
+						mascot_deplacement > mascot_minimum_x_deplacement &&
+						mascot_deplacement < mascot_maximum_x_deplacement
+					) {
+						mascot_reverse = new_mascot_x > mascot_x;
+						mascot_x = new_mascot_x;
+						break;
 					}
 				}
 			}
-	
-			move_mascot()
-		}, ((Math.random() * mascot_random_duration_secondes) + mascot_minimum_duration_secondes) * second_ratio);
+
+			move_mascot();
+		}, (Math.random() * mascot_random_duration_secondes + mascot_minimum_duration_secondes) * second_ratio);
 	}
 
 	function mascot_mouse_in() {
-		mascot_pause = true
+		mascot_pause = true;
 	}
-	
+
 	function mascot_mouse_out() {
-		mascot_pause = false
+		mascot_pause = false;
 	}
 
 	function information_mouse_in() {
-		information_readed = true
+		information_readed = true;
 	}
 
 	onMount(() => {
@@ -275,7 +279,7 @@
 			$wasmReady = true;
 		});
 
-		move_mascot()
+		move_mascot();
 	});
 
 	wasmReady.subscribe((ready) => {
@@ -315,9 +319,27 @@
 					on:input={handle_input}
 					on:change={handle_input_change}
 				/>
-				<div class="mascot-container" style="transform: translateX(-{mascot_x}px)" on:mouseenter={mascot_mouse_in} on:mouseleave={mascot_mouse_out}>
-					<img src="/mascot.png" alt="" class="mascot" class:reverse={mascot_reverse} title="GPGM mascot engineer"/>
-					<img src="/information.svg" alt="" class="information" class:animate-pulse={!information_readed} on:mouseenter={information_mouse_in} title="GPGM is a solution that find the best sequence of process execution&#13to optimize focused resources production using pathfinding graph and genetic algorithms"/>
+				<div
+					class="mascot-container"
+					style="transform: translateX(-{mascot_x}px)"
+					on:mouseenter={mascot_mouse_in}
+					on:mouseleave={mascot_mouse_out}
+				>
+					<img
+						src="/mascot.png"
+						alt=""
+						class="mascot"
+						class:reverse={mascot_reverse}
+						title="GPGM mascot engineer"
+					/>
+					<img
+						src="/information.svg"
+						alt=""
+						class="information"
+						class:animate-pulse={!information_readed}
+						on:mouseenter={information_mouse_in}
+						title="GPGM is a solution that find the best sequence of process execution&#13to optimize focused resources production using pathfinding graph and genetic algorithms"
+					/>
 				</div>
 			</div>
 			{#if lastError}
@@ -388,7 +410,10 @@
 					/>
 					<p class="input-label">eli</p>
 				</div>
-				<div class="input-container" title="Number maximum of entry point/process by instance&#13(Set to 0 to disable)">
+				<div
+					class="input-container"
+					title="Number maximum of entry point/process by instance&#13(Set to 0 to disable)"
+				>
 					<input
 						type="number"
 						min={config.io.max_cut.min}
@@ -441,7 +466,10 @@
 					/>
 					<p class="input-label">cro</p>
 				</div>
-				<div class="input-container" title="Mutation strategy&#13(The mutation rate decreases over time)">
+				<div
+					class="input-container"
+					title="Mutation strategy&#13(The mutation rate decreases over time)"
+				>
 					<select
 						name="mutation_method"
 						id="mutation_method"
@@ -550,7 +578,7 @@
 	}
 
 	.mascot.reverse {
-		transform: scaleX(-1)
+		transform: scaleX(-1);
 	}
 
 	.information {
@@ -661,7 +689,6 @@
 			width: 420px;
 		}
 	}
-
 
 	@media screen and (max-width: 440px) {
 		.form-container {
