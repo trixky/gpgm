@@ -16,7 +16,7 @@ export class Wasm {
 			});
 			result = await response.text();
 		}
-		return result;
+		return !result ? null : result;
 	}
 
 	public async initialize(args: Arguments): Promise<RunningSolver | null> {

@@ -15,9 +15,8 @@ const wasmLoader = WebAssembly.instantiateStreaming(fetch('wasm/src/main.wasm'),
 });
 
 // Set as ready when the WASM loaded
-sw.addEventListener("install", (event) => {
-	sw.skipWaiting();
-	event.waitUntil(wasmLoader)
+sw.addEventListener("install", () => {
+	sw.skipWaiting()
 });
 
 // Directly claim clients to avoid page reload
@@ -33,11 +32,12 @@ const routes = [
 ]
 
 // Use fetch events to run a new generation
-sw.addEventListener('fetch', (event) => {
+sw.addEventListener('fetch', async (event) => {
 	// Ignore everything except /sw/generate
 	if (event.request.method !== 'POST') return;
 	const url = new URL(event.request.url);
 	if (!routes.includes(url.pathname)) return;
+	await wasmLoader
 
 	// Execute the generation and return it's response
 	async function respond() {

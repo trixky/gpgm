@@ -11,7 +11,7 @@
 	import args from '$lib/stores/arguments';
 	import examples from '$lib/examples';
 	import { scale } from 'svelte/transition';
-	import { wasmReady } from '$lib/stores/ready';
+	import { globalReady } from '$lib/stores/ready';
 	import { inputs } from '$lib/stores/inputs';
 	import Wasm from '$lib/wasm';
 
@@ -244,20 +244,16 @@
 
 			WebAssembly.instantiate(data!.bytes, goWasm.importObject).then((result) => {
 				goWasm.run(result.instance);
-				$wasmReady = true;
+				$globalReady = true;
 			});
 		});
-
-		wasmReady.subscribe(async (ready) => {
-			if (ready) {
-				lastError = await Wasm.parseInput($inputs.current);
-			}
-		});
-	} else {
-		onMount(async () => {
-			lastError = await Wasm.parseInput($inputs.current);
-		});
 	}
+
+	globalReady.subscribe(async (ready) => {
+		if (ready) {
+			lastError = await Wasm.parseInput($inputs.current);
+		}
+	});
 </script>
 
 <!-- ---------------------------------------------- CONTENT -->

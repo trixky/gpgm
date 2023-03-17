@@ -214,7 +214,7 @@ func parseProcess(line string) (process core.Process, err error) {
 			if err != nil {
 				return process, err
 			}
-			if delay < 0 {
+			if delay <= 0 {
 				return process, fmt.Errorf("invalid process delay `%d`", delay)
 			}
 			process.Delay = delay
