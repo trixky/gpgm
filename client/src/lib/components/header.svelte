@@ -1,6 +1,6 @@
 <!-- ---------------------------------------------- CONTENT -->
 <header class="hover:scale-105 transition-all duration-150">
-	<a href="https://github.com/trixky/gpgm">
+	<a href="https://github.com/trixky/gpgm" target="_blank">
 		<h1>GPGM</h1>
 		<p class="opacity-30">genetic process graph manager</p>
 	</a>
