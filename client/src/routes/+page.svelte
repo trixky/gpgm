@@ -2,20 +2,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { dev } from '$app/environment';
-	import type { RunningSolver, WASMGenerationReturn } from '../types';
+	import type { WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import InstanceStore from '$lib/stores/instance';
 	import Chart from '$lib/components/chart.svelte';
 	import type GenerationModel from '$lib/models/generation';
 	import { config } from '$lib/config';
 	import args from '$lib/stores/arguments';
-	import examples from '$lib/Examples';
+	import examples from '$lib/examples';
 	import { scale } from 'svelte/transition';
-	import { parse_as } from '$lib/utils/parse';
 	import { wasmReady } from '$lib/stores/ready';
 	import { inputs } from '$lib/stores/inputs';
+	import Wasm from '$lib/wasm';
 
-	export let data: { bytes: BufferSource };
+	export let data: { bytes: BufferSource } | undefined;
 
 	let start: number = -1;
 
@@ -80,21 +80,10 @@
 			// Recursive loop
 
 			// SvelteKit fail to compile the Service Worker in dev mode, so we fallback to the default implementation
-			let result_wasm: string;
-			if (dev) {
-				result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
-			} else {
-				// Use a fetch request to send a message to a ServiceWorker than can run a generation
-				const response = await fetch('/sw/generate', {
-					method: 'POST',
-					body: JSON.stringify(result_wasm_json!.running_solver)
-				});
-				result_wasm = await response.text();
-			}
-			result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
+			result_wasm_json = await Wasm.runGeneration(result_wasm_json!.running_solver);
 
 			const best = result_wasm_json.scored_population.instances[0];
-			outputFile = WASM_generate_output(JSON.stringify(best.simulation));
+			outputFile = await Wasm.generateOutput(best.simulation);
 			output = best;
 			if (result_wasm_json != undefined) {
 				const remaining = remaining_chrono();
@@ -121,14 +110,14 @@
 	}
 
 	// -------- Example
-	function handle_select(e: any) {
+	async function handle_select(e: any) {
 		const index = e.target.value as number;
 		if (index == 0) {
 			$inputs.current = $inputs.custom;
 		} else if (index > 0 && index <= examples.length) {
 			$inputs.current = examples[index - 1].text;
 		}
-		lastError = WASM_parse_input($inputs.current);
+		lastError = await Wasm.parseInput($inputs.current);
 		handle_reset();
 	}
 
@@ -140,8 +129,8 @@
 		handle_bottom();
 	}
 
-	function handle_run() {
-		lastError = WASM_parse_input($inputs.current);
+	async function handle_run() {
+		lastError = await Wasm.parseInput($inputs.current);
 
 		if (!lastError && !running) {
 			running = true;
@@ -152,18 +141,15 @@
 
 			start = new Date().getTime();
 
-			const raw_running_solver = WASM_initialize(
-				JSON.stringify({
-					...$args,
-					text: $inputs.current
-				})
-			);
+			const running_solver = await Wasm.initialize({
+				...$args,
+				text: $inputs.current
+			});
 
-			if (raw_running_solver == undefined || raw_running_solver == null) {
+			if (running_solver == null) {
 				outputError = 'error';
 			} else {
 				generation = -1;
-				const running_solver = parse_as<RunningSolver>(raw_running_solver);
 				result_wasm_json = { running_solver, scored_population: { instances: [] } };
 				start_chrono();
 				InstanceStore.insert_population(<GenerationModel>{
@@ -188,16 +174,16 @@
 		}
 	}
 
-	function handle_input(e: any) {
+	async function handle_input(e: any) {
 		$inputs.selectedExample = 0;
 		$inputs.custom = e.target.value;
 		if (lastError) {
-			lastError = WASM_parse_input(e.target.value);
+			lastError = await Wasm.parseInput(e.target.value);
 		}
 	}
 
-	function handle_input_change(e: any) {
-		lastError = WASM_parse_input(e.target.value);
+	async function handle_input_change(e: any) {
+		lastError = await Wasm.parseInput(e.target.value);
 	}
 
 	function download_output(e: Event) {
@@ -250,22 +236,28 @@
 		};
 	}; */
 
-	onMount(() => {
-		// @ts-expect-error
-		// Go is loaded from the app.html (wasm)
-		const goWasm = new Go();
+	if (dev) {
+		onMount(() => {
+			// @ts-expect-error
+			// Go is loaded from the app.html (wasm)
+			const goWasm = new Go();
 
-		WebAssembly.instantiate(data.bytes, goWasm.importObject).then((result) => {
-			goWasm.run(result.instance);
-			$wasmReady = true;
+			WebAssembly.instantiate(data!.bytes, goWasm.importObject).then((result) => {
+				goWasm.run(result.instance);
+				$wasmReady = true;
+			});
 		});
-	});
 
-	wasmReady.subscribe((ready) => {
-		if (ready) {
-			lastError = WASM_parse_input($inputs.current);
-		}
-	});
+		wasmReady.subscribe(async (ready) => {
+			if (ready) {
+				lastError = await Wasm.parseInput($inputs.current);
+			}
+		});
+	} else {
+		onMount(async () => {
+			lastError = await Wasm.parseInput($inputs.current);
+		});
+	}
 </script>
 
 <!-- ---------------------------------------------- CONTENT -->

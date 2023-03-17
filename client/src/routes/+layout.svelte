@@ -2,7 +2,7 @@
 <script lang="ts">
 	import '../app.css';
 
-	export let data: { bytes: BufferSource };
+	export let data: { bytes: BufferSource } | undefined;
 </script>
 
 <!-- ---------------------------------------------- CONTENT -->
