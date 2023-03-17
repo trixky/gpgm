@@ -5,7 +5,6 @@
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import InstanceStore from '$lib/stores/instance';
-	// import { insert_population } from '$lib/stores/instance';
 	import Chart from '$lib/components/chart.svelte';
 	import type GenerationModel from '$lib/models/generation';
 	import { config } from '$lib/config';
@@ -185,6 +184,7 @@
 		}
 	}
 
+	// ------------------------------ Input
 	function handle_input(e: any) {
 		$inputs.selectedExample = 0;
 		$inputs.custom = e.target.value;
@@ -197,6 +197,7 @@
 		lastError = WASM_parse_input(e.target.value);
 	}
 
+	// ------------------------------ Download
 	function download_output(e: Event) {
 		e.preventDefault();
 		if (outputFile) {
@@ -269,6 +270,7 @@
 		information_readed = true;
 	}
 
+	// ------------------------------ Mounting
 	onMount(() => {
 		// @ts-expect-error
 		// Go is loaded from the app.html (wasm)
@@ -282,6 +284,7 @@
 		move_mascot();
 	});
 
+	// ------------------------------ WASM initialization
 	wasmReady.subscribe((ready) => {
 		if (ready) {
 			lastError = WASM_parse_input($inputs.current);

@@ -37,10 +37,6 @@
 
 	let last_data_length = -1;
 
-	function generate_instance_data(instance: number, index: number):any {
-		
-	}
-
 	$: if ($InstanceStore.length > 0 && $InstanceStore[0].length > last_data_length && browser) {
 		if ($InstanceStore[0].length == 1) {
 			dataLine.labels = ['1'];
