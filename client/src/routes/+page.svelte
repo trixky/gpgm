@@ -1,6 +1,7 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Header from '$lib/components/header.svelte'
 	import type { RunningSolver, WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import InstanceStore from '$lib/stores/instance';
@@ -286,11 +287,7 @@
 
 <!-- ---------------------------------------------- CONTENT -->
 <main>
-	<header>
-		<h1>GPGM</h1>
-		<p class="opacity-30">genetic process graph manager</p>
-	</header>
-
+	<Header />
 	<div class="block-top">
 		<div class="text-container">
 			<h2>Input</h2>
@@ -530,9 +527,6 @@
 	}
 
 	/* ----------------------- Global */
-	header {
-		@apply relative w-fit m-auto mb-12 mt-8;
-	}
 
 	main {
 		@apply text-center mb-16;
