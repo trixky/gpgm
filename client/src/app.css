@@ -112,5 +112,8 @@ select,
 textarea {
 	overflow-y: auto;
 	overflow-x: auto;
-	resize: both;
+	resize: none;
+
+	white-space: pre;
+	overflow-wrap: normal;
 }

@@ -483,7 +483,7 @@
 					</div>
 				</div>
 				<Chart />
-				<div class="flex flex-col">
+				<div class="flex flex-col mt-3">
 					<textarea placeholder="" value={outputFile} readonly />
 					<button class="download" on:click={download_output}>Download</button>
 				</div>
@@ -612,38 +612,14 @@
 	}
 
 	@media screen and (max-width: 580px) {
-		.form-container {
-			@apply justify-center;
-		}
-
 		.block-top,
 		.block-bottom {
-			width: 480px;
-		}
-
-		.input-container {
-			padding: 0;
-			margin: 0;
+			width: 420px;
 		}
 	}
 
-	@media screen and (max-width: 520px) {
-		.form-container {
-			@apply justify-center;
-		}
 
-		.block-top,
-		.block-bottom {
-			width: 400px;
-		}
-
-		.input-container {
-			padding: 0;
-			margin: 0;
-		}
-	}
-
-	@media screen and (max-width: 420px) {
+	@media screen and (max-width: 440px) {
 		.form-container {
 			@apply justify-center;
 		}
@@ -658,6 +634,4 @@
 			margin: 0;
 		}
 	}
-
-
 </style>
