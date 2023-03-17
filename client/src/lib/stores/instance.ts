@@ -16,11 +16,11 @@ function create_instance_store() {
         insert_population: (population: GenerationModel) => {
             update(instances => {
                 if (instances.length) {
-                    population.scores.sort((a, b) => a + b).forEach((score, index) => {
+                    population.scores.sort((a, b) => a > b ? -1 : 1).forEach((score, index) => {
                         instances[index].push(score)
                     })
                 } else {
-                    instances = population.scores.sort((a, b) => a + b).map(score => [score])
+                    instances = population.scores.sort((a, b) => a > b ? -1 : 1).map(score => [score])
                 }
 
                 return instances

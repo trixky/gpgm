@@ -14,6 +14,7 @@ export const examples: Example[] = [
 			max_cycle: 60,
 			time_limit: 5000,
 			population_size: 1,
+			max_depth: 3,
 		}
 	},
 	{
@@ -24,6 +25,7 @@ export const examples: Example[] = [
 			max_cycle: 50,
 			time_limit: 5000,
 			population_size: 1,
+			max_depth: 3,
 		}
 	},
 	{
@@ -35,6 +37,7 @@ export const examples: Example[] = [
 			max_cycle: 50000,
 			time_limit: 600000,
 			elitism_amount: 1,
+			max_depth: 6,
 		}
 	},
 	{
@@ -46,6 +49,7 @@ export const examples: Example[] = [
 			max_cycle: 50000,
 			time_limit: 600000,
 			elitism_amount: 1,
+			max_depth: 6,
 		}
 	},
 	{
@@ -56,6 +60,7 @@ export const examples: Example[] = [
 			max_cycle: 50,
 			time_limit: 5000,
 			population_size: 1,
+			max_depth: 3,
 		}
 	},
 	{
@@ -67,6 +72,7 @@ export const examples: Example[] = [
 			max_cycle: 5000,
 			time_limit: 600000,
 			elitism_amount: 1,
+			max_depth: 3,
 		}
 	},
 	// {
