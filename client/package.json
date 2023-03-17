@@ -32,7 +32,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@sveltejs/adapter-static": "^2.0.1",
 		"chart.js": "^4.2.1",
 		"svelte-chartjs": "^3.1.2"
 	}
