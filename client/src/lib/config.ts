@@ -42,7 +42,7 @@ export const config: ArgumentsConfig = {
         max_depth: {
             min: 1,
             max: 10,
-            default: 6
+            default: 3
         },
         time_limit: {
             min: 500,
