@@ -6,7 +6,7 @@
 	import { workerReady } from '$lib/stores/workerReady';
 	import '../app.css';
 
-	export let data: { bytes: BufferSource } | undefined;
+	export let data: { bytes: BufferSource };
 
 	if (!dev && browser && 'serviceWorker' in navigator) {
 		navigator.serviceWorker

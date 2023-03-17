@@ -1,11 +1,6 @@
 import type { Arguments } from "../types"
 import { LinearMutation, LogarithmicMutation, RandomSelection, TournamentSelection } from "../types/core.d"
 
-interface TextareaConfig {
-    cols: number,
-    row: number,
-}
-
 interface NumericConfig {
     min: number,
     max: number,
@@ -20,10 +15,6 @@ interface ChoiceConfig {
 export type NumericConfigKeys = keyof Omit<Arguments, "text" | "selection_method" | "mutation_method">;
 
 interface ArgumentsConfig {
-    ui: {
-        input: TextareaConfig
-        output: TextareaConfig
-    }
     io: {
         selection_method: ChoiceConfig
         mutation_method: ChoiceConfig
@@ -32,16 +23,6 @@ interface ArgumentsConfig {
 }
 
 export const config: ArgumentsConfig = {
-    ui: {
-        input: {
-            cols: 23,
-            row: 10,
-        },
-        output: {
-            cols: 42,
-            row: 10,
-        }
-    },
     io: {
         max_generations: {
             min: 1,

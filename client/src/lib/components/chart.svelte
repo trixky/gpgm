@@ -1,5 +1,9 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
+	import InstanceStore from '$lib/stores/instance';
+	import ArgumentStore from '$lib/stores/arguments';
+	import { browser } from '$app/environment';
+
 	import { Line } from 'svelte-chartjs';
 	import {
 		Chart as ChartJS,
@@ -10,12 +14,10 @@
 		ArcElement,
 		CategoryScale,
 		LinearScale,
-		PointElement,
-		type ChartData,
-		type Point
+		PointElement
 	} from 'chart.js';
-	import DataStore from '$lib/stores/data';
-	import LabelStore from '$lib/stores/label';
+
+	let chart: any = undefined;
 
 	ChartJS.register(
 		LineElement,
@@ -28,15 +30,51 @@
 		PointElement
 	);
 
-	let dataLine: ChartData<'line', (number | Point)[]> = {
-		labels: [],
-		datasets: $DataStore
+	let dataLine: any = {
+		labels: $ArgumentStore.max_generations,
+		datasets: []
 	};
 
-	$: dataLine = {
-		labels: $LabelStore,
-		datasets: $DataStore
-	};
+	let last_data_length = -1;
+
+	$: if ($InstanceStore.length > 0 && $InstanceStore[0].length > last_data_length && browser) {
+		if ($InstanceStore[0].length == 1) {
+			dataLine.labels = ['1'];
+			dataLine.datasets = $InstanceStore.map((instance, index) => {
+				const color = index === 0 ? 'rgb(220, 252, 231, 1)' : 'rgb(255, 255, 255, 0.7)';
+
+				return {
+					lineWidth: 40,
+					width: 40,
+					weight: 40,
+					lineTension: 0,
+					backgroundColor: color,
+					borderColor: color,
+					borderCapStyle: 'butt',
+					borderDash: [],
+					borderDashOffset: 0.0,
+					borderJoinStyle: 'miter',
+					pointBorderColor: color,
+					pointBackgroundColor: color,
+					borderWidth: 2,
+					pointBorderWidth: 4,
+					pointHoverRadius: 5,
+					pointHoverBackgroundColor: color,
+					pointHoverBorderColor: color,
+					pointHoverBorderWidth: 2,
+					pointRadius: 1,
+					pointHitRadius: 10,
+					data: instance.map((score: number) => score)
+				};
+			});
+		} else {
+			dataLine.labels.push($InstanceStore[0].length.toString());
+			$InstanceStore.forEach((instance, index) => {
+				dataLine.datasets[index].data.push(instance[instance.length - 1]);
+			});
+		}
+		chart?.update();
+	}
 
 	const options = {
 		events: [], // disable mouse hover events
@@ -82,7 +120,7 @@
 
 <!-- ---------------------------------------------- CONTENT -->
 <div class="chart-container">
-	<Line data={dataLine} {options} />
+	<Line bind:chart data={dataLine} {options} />
 </div>
 
 <!-- ---------------------------------------------- STYLE -->

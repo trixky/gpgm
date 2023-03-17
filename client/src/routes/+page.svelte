@@ -1,8 +1,8 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import type { WASMGenerationReturn } from '../types';
+	import Header from '$lib/components/header.svelte';
+	import type { RunningSolver, WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import InstanceStore from '$lib/stores/instance';
 	import Chart from '$lib/components/chart.svelte';
@@ -15,7 +15,7 @@
 	import { inputs } from '$lib/stores/inputs';
 	import Wasm from '$lib/wasm';
 
-	export let data: { bytes: BufferSource } | undefined;
+	export let data: { bytes: BufferSource };
 
 	let start: number = -1;
 
@@ -230,6 +230,7 @@
 		lastError = await Wasm.parseInput(e.target.value);
 	}
 
+	// ------------------------------ Download
 	function download_output(e: Event) {
 		e.preventDefault();
 		if (outputFile) {
@@ -257,43 +258,70 @@
 		}
 	}
 
-	// ------------------------------ Scrolling blocker
-	// https://svelte.dev/repl/2bdbf66371a3418e9e3eda076df6e32d?version=3.18.1
-	/* $: scrollable = !running || stopped;
+	// ------------------------------ Mascot
+	const mascot_random_duration_secondes = 5;
+	const mascot_minimum_duration_secondes = 5;
+	const mascot_minimum_x_deplacement = 30;
+	const mascot_maximum_x_deplacement = 80;
+	const mascot_maximum_x = 140;
+	const second_ratio = 1000;
 
-	const wheel = (node: any, options: any) => {
-		let { scrollable } = options;
+	let mascot_x = 0;
+	let mascot_reverse = false;
+	let mascot_pause = false;
 
-		const handler = (e: any) => {
-			if (!scrollable) e.preventDefault();
-		};
+	let information_readed = false;
 
-		node.addEventListener('wheel', handler, { passive: false });
+	function move_mascot() {
+		setTimeout(() => {
+			if (!mascot_pause) {
+				while (true) {
+					const new_mascot_x = Math.ceil(Math.random() * mascot_maximum_x);
 
-		return {
-			update(options: any) {
-				scrollable = options.scrollable;
-			},
-			destroy() {
-				node.removeEventListener('wheel', handler, { passive: false });
+					const mascot_deplacement = Math.abs(new_mascot_x - mascot_x);
+
+					if (
+						mascot_deplacement > mascot_minimum_x_deplacement &&
+						mascot_deplacement < mascot_maximum_x_deplacement
+					) {
+						mascot_reverse = new_mascot_x > mascot_x;
+						mascot_x = new_mascot_x;
+						break;
+					}
+				}
 			}
-		};
-	}; */
 
-	// Always load WASM as fallback
-	if (browser) {
-		onMount(() => {
-			// @ts-expect-error
-			// Go is loaded from the app.html (wasm)
-			const goWasm = new Go();
-
-			WebAssembly.instantiate(data!.bytes, goWasm.importObject).then((result) => {
-				goWasm.run(result.instance);
-				$globalReady = true;
-			});
-		});
+			move_mascot();
+		}, (Math.random() * mascot_random_duration_secondes + mascot_minimum_duration_secondes) * second_ratio);
 	}
 
+	function mascot_mouse_in() {
+		mascot_pause = true;
+	}
+
+	function mascot_mouse_out() {
+		mascot_pause = false;
+	}
+
+	function information_mouse_in() {
+		information_readed = true;
+	}
+
+	// ------------------------------ Mounting
+	onMount(() => {
+		// @ts-expect-error
+		// Go is loaded from the app.html (wasm)
+		const goWasm = new Go();
+
+		WebAssembly.instantiate(data.bytes, goWasm.importObject).then((result) => {
+			goWasm.run(result.instance);
+			$globalReady = true;
+		});
+
+		move_mascot();
+	});
+
+	// ------------------------------ WASM initialization
 	globalReady.subscribe(async (ready) => {
 		if (ready) {
 			lastError = await Wasm.parseInput($inputs.current);
@@ -303,15 +331,11 @@
 
 <!-- ---------------------------------------------- CONTENT -->
 <main>
-	<header>
-		<h1>GPGM</h1>
-		<p class="opacity-30">genetic process graph manager</p>
-	</header>
-
+	<Header />
 	<div class="block-top">
 		<div class="text-container">
 			<h2>Input</h2>
-			<div class="text-left relative">
+			<div class="text-left relative w-fit z-20">
 				<select
 					bind:value={$inputs.selectedExample}
 					name="examples"
@@ -335,18 +359,31 @@
 					on:input={handle_input}
 					on:change={handle_input_change}
 				/>
-				<div class="mascot-container">
-					<img src="/mascot.png" alt="" class="mascot" />
+				<div
+					class="mascot-container"
+					style="transform: translateX(-{mascot_x}px)"
+					on:mouseenter={mascot_mouse_in}
+					on:mouseleave={mascot_mouse_out}
+				>
+					<img
+						src="/mascot.png"
+						alt=""
+						class="mascot"
+						class:reverse={mascot_reverse}
+						title="GPGM mascot engineer"
+					/>
 					<img
 						src="/information.svg"
 						alt=""
 						class="information"
+						class:animate-pulse={!information_readed}
+						on:mouseenter={information_mouse_in}
 						title="GPGM is a solution that find the best sequence of process execution&#13to optimize focused resources production using pathfinding graph and genetic algorithms"
 					/>
 				</div>
 			</div>
 			{#if lastError}
-				<div class="error mt-4">
+				<div class="input-error">
 					{lastError}
 				</div>
 			{/if}
@@ -556,9 +593,6 @@
 	}
 
 	/* ----------------------- Global */
-	header {
-		@apply relative w-fit m-auto mb-12 mt-8;
-	}
 
 	main {
 		@apply text-center mb-16;
@@ -573,11 +607,16 @@
 	/* ----------------------- Mascot / Information */
 
 	.mascot-container {
-		@apply absolute -top-[0px] right-0 w-[100px] h-[1px];
+		@apply absolute -top-[0px] right-0 w-[100px] h-[1px] transition-all duration-[2000ms];
+		transition-timing-function: linear;
 	}
 
 	.mascot {
 		@apply absolute -top-[86px] right-0;
+	}
+
+	.mascot.reverse {
+		transform: scaleX(-1);
 	}
 
 	.information {
@@ -604,6 +643,11 @@
 	/* ----------------------- Form/Inputs */
 	.form-container {
 		@apply relative w-fit flex m-auto flex-wrap justify-between;
+	}
+
+	.input-error {
+		@apply mt-4;
+		color: #e69999;
 	}
 
 	.input-container {

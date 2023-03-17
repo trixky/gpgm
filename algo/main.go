@@ -41,6 +41,13 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 	if err != nil {
 		return solver.RunningSolver{}, err
 	}
+
+	history_global_max_length := args.MaxDepth
+
+	if history_global_max_length > 3 {
+		history_global_max_length = 3
+	}
+
 	options := core.Options{
 		MaxGeneration: args.MaxGeneration,
 		TimeLimitMS:   args.TimeLimitMilliseconds,
@@ -57,9 +64,9 @@ func initialize(args Arguments) (solver.RunningSolver, error) {
 		MutationChance: 0,
 		MutationMethod: args.MutationMethod,
 		// Genetic
-		NEntry:               1,
-		HistoryPartMaxLength: 3,
-		HistoryKeyMaxLength:  3,
+		NEntry:               1, // HARDCODED
+		HistoryPartMaxLength: history_global_max_length,
+		HistoryKeyMaxLength:  history_global_max_length,
 		RandomCut:            true,
 		MaxCut:               args.MaxCut,
 	}
