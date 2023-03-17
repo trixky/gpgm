@@ -264,30 +264,6 @@
 		information_readed = true
 	}
 
-
-	// ------------------------------ Scrolling blocker
-	// https://svelte.dev/repl/2bdbf66371a3418e9e3eda076df6e32d?version=3.18.1
-	/* $: scrollable = !running || stopped;
-
-	const wheel = (node: any, options: any) => {
-		let { scrollable } = options;
-
-		const handler = (e: any) => {
-			if (!scrollable) e.preventDefault();
-		};
-
-		node.addEventListener('wheel', handler, { passive: false });
-
-		return {
-			update(options: any) {
-				scrollable = options.scrollable;
-			},
-			destroy() {
-				node.removeEventListener('wheel', handler, { passive: false });
-			}
-		};
-	}; */
-
 	onMount(() => {
 		// @ts-expect-error
 		// Go is loaded from the app.html (wasm)
