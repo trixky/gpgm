@@ -306,7 +306,7 @@
 		</div>
 		<form on:submit|preventDefault={handle_run}>
 			<div class="form-container">
-				<div class="input-container">
+				<div class="input-container" title="Number of generation to execute">
 					<input
 						type="number"
 						min={config.io.max_generations.min}
@@ -316,7 +316,7 @@
 					/>
 					<p class="input-label">gen</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Population size of each generation">
 					<input
 						type="number"
 						min={config.io.population_size.min}
@@ -326,7 +326,7 @@
 					/>
 					<p class="input-label">pop</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Maximum number of cycle">
 					<input
 						type="number"
 						min={config.io.max_cycle.min}
@@ -336,7 +336,7 @@
 					/>
 					<p class="input-label">cyc</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Time out in millisecond">
 					<input
 						type="number"
 						min={config.io.time_limit.min}
@@ -346,7 +346,7 @@
 					/>
 					<p class="input-label">ms</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Maximum depth of the graph explorer">
 					<input
 						type="number"
 						min={config.io.max_depth.min}
@@ -356,7 +356,7 @@
 					/>
 					<p class="input-label">dep</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Number of preserved instances by elitism">
 					<input
 						type="number"
 						min={config.io.elitism_amount.min}
@@ -366,7 +366,7 @@
 					/>
 					<p class="input-label">eli</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Number maximum of entry point/process by instance&#13(Set to 0 to disable)">
 					<input
 						type="number"
 						min={config.io.max_cut.min}
@@ -376,7 +376,7 @@
 					/>
 					<p class="input-label">cut</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Cross-over strategy (genetic)">
 					<select
 						name="selection_method"
 						id="selection_method"
@@ -388,7 +388,7 @@
 						{/each}
 					</select>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Tournament size ???">
 					<input
 						type="number"
 						min={config.io.tournament_size.min}
@@ -398,7 +398,7 @@
 					/>
 					<p class="input-label">tor</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Tournament probability ???">
 					<input
 						type="number"
 						min={config.io.tournament_probability.min}
@@ -409,7 +409,7 @@
 					/>
 					<p class="input-label">pro</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Cross-over ???">
 					<input
 						type="number"
 						min={config.io.crossover_new_instances.min}
@@ -419,7 +419,7 @@
 					/>
 					<p class="input-label">cro</p>
 				</div>
-				<div class="input-container">
+				<div class="input-container" title="Mutation strategy&#13(The mutation rate decreases over time)">
 					<select
 						name="mutation_method"
 						id="mutation_method"
