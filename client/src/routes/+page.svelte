@@ -14,6 +14,7 @@
 	import { parse_as } from '$lib/utils/parse';
 	import { wasmReady } from '$lib/stores/ready';
 	import { inputs } from '$lib/stores/inputs';
+	import { tick } from 'svelte';
 
 	export let data: { bytes: BufferSource };
 
@@ -64,7 +65,7 @@
 	let generation = 0;
 	let result_wasm_json: WASMGenerationReturn | undefined = undefined;
 
-	function new_generation() {
+	async function new_generation() {
 		generation++;
 		if (generation >= $args.max_generations) {
 			handle_finish();
@@ -76,39 +77,30 @@
 			return;
 		}
 
-		setTimeout(() => {
-			// Recursive loop
+		const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
+		result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
 
-			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
-			result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
-
-			const best = result_wasm_json.scored_population.instances[0];
-			outputFile = WASM_generate_output(JSON.stringify(best.simulation));
-			output = best;
-			if (result_wasm_json != undefined) {
-				const remaining = remaining_chrono();
-				result_wasm_json.running_solver.time_limit_ms = remaining;
-				InstanceStore.insert_population(<GenerationModel>{
-					scores: result_wasm_json.scored_population.instances.map((instance) => instance.score)
-				});
-				if (remaining > 0) {
-					new_generation();
-				} else {
-					handle_finish();
-				}
+		const best = result_wasm_json.scored_population.instances[0];
+		outputFile = WASM_generate_output(JSON.stringify(best.simulation));
+		output = best;
+		if (result_wasm_json != undefined) {
+			const remaining = remaining_chrono();
+			result_wasm_json.running_solver.time_limit_ms = remaining;
+			InstanceStore.insert_population(<GenerationModel>{
+				scores: result_wasm_json.scored_population.instances.map((instance) => instance.score)
+			});
+			if (remaining > 0) {
+				// Recursive loop
+				await tick()
+				new_generation();
+			} else {
+				handle_finish();
 			}
-		}, 1);
+		}
 	}
 
 	// ------------------------------ Handlers
 	// -------- Navigation
-	function handle_top() {
-		window.scrollTo({
-			top: 0,
-			behavior: 'smooth'
-		});
-	}
-
 	function handle_bottom() {
 		window.scrollTo({
 			top: document.body.scrollHeight,
@@ -136,7 +128,7 @@
 		handle_bottom();
 	}
 
-	function handle_run() {
+	async function handle_run() {
 		lastError = WASM_parse_input($inputs.current);
 
 		if (!lastError && !running) {
@@ -165,6 +157,7 @@
 				InstanceStore.insert_population(<GenerationModel>{
 					scores: result_wasm_json.scored_population.instances.map((instance) => instance.score)
 				});
+				await tick()
 				new_generation();
 			}
 		}
