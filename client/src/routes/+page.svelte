@@ -115,7 +115,18 @@
 		if (index == 0) {
 			$inputs.current = $inputs.custom;
 		} else if (index > 0 && index <= examples.length) {
-			$inputs.current = examples[index - 1].text;
+			const example = examples[index - 1];
+			$inputs.current = example.text;
+			if (example.arguments) {
+				for (const key of Object.keys(config.io)) {
+					const inputKey = key as NumericConfigKeys;
+					if (example.arguments[inputKey]) {
+						$args[inputKey] = example.arguments[inputKey]!;
+					} else {
+						$args[inputKey] = config.io[inputKey].default;
+					}
+				}
+			}
 		}
 		lastError = await Wasm.parseInput($inputs.current);
 		handle_reset();
