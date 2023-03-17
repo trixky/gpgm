@@ -291,7 +291,7 @@
 	<div class="block-top">
 		<div class="text-container">
 			<h2>Input</h2>
-			<div class="text-left relative">
+			<div class="text-left relative w-fit z-20">
 				<select
 					bind:value={$inputs.selectedExample}
 					name="examples"
@@ -541,7 +541,7 @@
 	/* ----------------------- Mascot / Information */
 
 	.mascot-container {
-		@apply absolute -top-[0px] right-0 w-[100px] h-[1px] transition-all duration-[2000ms] -z-10;
+		@apply absolute -top-[0px] right-0 w-[100px] h-[1px] transition-all duration-[2000ms];
 		transition-timing-function: linear;
 	}
 
