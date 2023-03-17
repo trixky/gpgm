@@ -288,6 +288,7 @@
 			<div class="relative mt-4 w-full">
 				<textarea
 					placeholder=""
+					class="scrollbar-custom"
 					bind:value={$inputs.current}
 					autocorrect="off"
 					autocapitalize="off"
@@ -484,7 +485,7 @@
 				</div>
 				<Chart />
 				<div class="flex flex-col mt-3">
-					<textarea placeholder="" value={outputFile} readonly />
+					<textarea class="scrollbar-custom" placeholder="" value={outputFile} readonly />
 					<button class="download" on:click={download_output}>Download</button>
 				</div>
 			</div>
