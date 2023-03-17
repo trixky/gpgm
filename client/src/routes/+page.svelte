@@ -499,7 +499,7 @@
 	/* ----------------------- Input/Output block */
 	.block-top,
 	.block-bottom {
-		@apply m-auto px-3;
+		@apply m-auto px-3 mt-6;
 		width: 520px;
 	}
 
@@ -579,7 +579,7 @@
 	}
 
 	.text-container > h2 {
-		@apply mt-4 mb-2 text-left;
+		@apply mt-4 text-left;
 	}
 
 	textarea {
@@ -588,7 +588,7 @@
 
 	/* ----------------------- Textarea */
 	.statistic-container {
-		@apply flex w-fit py-2 mt-4 mb-4;
+		@apply flex w-fit py-2 mt-5 mb-4;
 	}
 
 	.statistic > span {

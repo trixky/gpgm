@@ -25,7 +25,7 @@ h1 {
 }
 
 h2 {
-	@apply text-xl w-fit;
+	@apply text-xl w-fit my-0;
 }
 
 textarea {
