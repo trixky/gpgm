@@ -80,9 +80,6 @@
 
 			const result_wasm = WASM_run_generation(JSON.stringify(result_wasm_json!.running_solver));
 			result_wasm_json = parse_as<WASMGenerationReturn>(result_wasm);
-			console.log(
-				result_wasm_json.scored_population.instances[0].instance.chromosome.entry_gene.Process_ids
-			);
 
 			const best = result_wasm_json.scored_population.instances[0];
 			outputFile = WASM_generate_output(JSON.stringify(best.simulation));
