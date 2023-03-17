@@ -1,7 +1,6 @@
 package population
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -101,7 +100,6 @@ func (s *ScoredPopulation) TournamentSelection(forIndex int, options *core.Optio
 	rand.Shuffle(k, func(i, j int) { instanceIndexes[i], instanceIndexes[j] = instanceIndexes[j], instanceIndexes[i] })
 
 	// Select individual from the population
-	fmt.Printf("%v\n", instanceIndexes)
 	stopAt := int(math.Min(float64(k), float64(options.TournamentSize)))
 	for i := 0; i < stopAt; i++ {
 		globalIndex := instanceIndexes[i]

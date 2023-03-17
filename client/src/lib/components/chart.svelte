@@ -82,12 +82,36 @@
 
 <!-- ---------------------------------------------- CONTENT -->
 <div class="chart-container">
-	<Line data={dataLine} {options} width={100} height={50} />
+	<Line data={dataLine} {options} />
 </div>
 
 <!-- ---------------------------------------------- STYLE -->
 <style lang="postcss">
 	.chart-container {
-		@apply w-[500px] h-[300px] p-3 m-auto my-3;
+		@apply w-[500px] pl-3 pr-8 m-auto my-6;
+	}
+
+	@media screen and (max-width: 580px) {
+		.chart-container {
+			@apply w-[400px];
+		}
+	}
+
+	@media screen and (max-width: 440px) {
+		.chart-container {
+			@apply w-[320px] pl-2 pr-5;
+		}
+	}
+
+	@media screen and (max-width: 390px) {
+		.chart-container {
+			@apply w-[240px] pl-0 pr-3;
+		}
+	}
+
+	@media screen and (max-width: 280px) {
+		.chart-container {
+			@apply hidden;
+		}
 	}
 </style>

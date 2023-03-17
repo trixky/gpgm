@@ -25,7 +25,7 @@ h1 {
 }
 
 h2 {
-	@apply text-xl ml-3 w-fit px-2;
+	@apply text-xl w-fit my-0;
 }
 
 textarea {
@@ -47,6 +47,10 @@ input,
 select {
 	@apply rounded;
 	border: solid 1px black;
+}
+
+select {
+	@apply mx-0 px-0 !important;
 }
 
 select {
@@ -104,3 +108,49 @@ select,
 .badge.highlight {
 	@apply inline-block whitespace-nowrap rounded bg-green-100 px-[0.65em] pt-[0.35em] pb-[0.25em] text-center align-baseline text-[0.75em] font-bold leading-none text-green-700;
 }
+
+textarea {
+	overflow-y: auto;
+	overflow-x: auto;
+	resize: none;
+
+	white-space: pre;
+	overflow-wrap: normal;
+}
+
+/* --------------------- Scrollbar */
+/* https://webkit-scroll-gen.sourceforge.net/ */
+
+.scrollbar-custom::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+  }
+.scrollbar-custom::-webkit-scrollbar-button {
+	width: 0px;
+	height: 0px;
+  }
+.scrollbar-custom::-webkit-scrollbar-thumb {
+	background: #4b4b4b;
+	/* border: 0px none #ffffff; */
+	border-radius: 50px;
+  }
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+	/* background: #ffffff; */
+  }
+.scrollbar-custom::-webkit-scrollbar-thumb:active {
+	background: #4b4b4b;
+  }
+.scrollbar-custom::-webkit-scrollbar-track {
+	/* background: #666666; */
+	/* border: 0px none #ffffff; */
+	border-radius: 0px;
+  }
+.scrollbar-custom::-webkit-scrollbar-track:hover {
+	/* background: #666666; */
+  }
+.scrollbar-custom::-webkit-scrollbar-track:active {
+	/* background: #333333; */
+  }
+.scrollbar-custom::-webkit-scrollbar-corner {
+	background: transparent;
+  }
