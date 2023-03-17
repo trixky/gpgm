@@ -1,8 +1,5 @@
 <!-- ---------------------------------------------- SCRIPT -->
 <script lang="ts">
-	import DataStore from '$lib/stores/data'
-	import LabelStore from '$lib/stores/label'
-	
 	import { Line } from 'svelte-chartjs';
 	import {
 		Chart as ChartJS,
@@ -14,7 +11,11 @@
 		CategoryScale,
 		LinearScale,
 		PointElement,
+		type ChartData,
+		type Point
 	} from 'chart.js';
+	import DataStore from '$lib/stores/data';
+	import LabelStore from '$lib/stores/label';
 
 	ChartJS.register(
 		LineElement,
@@ -24,11 +25,10 @@
 		ArcElement,
 		CategoryScale,
 		LinearScale,
-		PointElement,
+		PointElement
 	);
 
-
-	let dataLine: any = {
+	let dataLine: ChartData<'line', (number | Point)[]> = {
 		labels: [],
 		datasets: $DataStore
 	};
@@ -38,56 +38,51 @@
 		datasets: $DataStore
 	};
 
-	const  options={
-			events: [], // disable mouse hover events
-			plugins: {
-				legend: {
-					display: false, // remove line legends
-					labels: {
-						color: 'white'
-					}
+	const options = {
+		events: [], // disable mouse hover events
+		plugins: {
+			legend: {
+				display: false, // remove line legends
+				labels: {
+					color: 'white'
+				}
+			}
+		},
+		responsive: true,
+		scales: {
+			y: {
+				title: {
+					display: false,
+					text: 'score',
+					color: 'white'
+				},
+				grid: {
+					color: 'black'
+				},
+				ticks: {
+					color: 'white'
 				}
 			},
-			responsive: true,
-			scales: {
-				y: {
-					title: {
-						display: false,
-						text: 'score',
-						color: 'white'
-					},
-					grid: {
-						color: 'black',
-					},
-					ticks: {
-						color: 'white'
-					}
+			x: {
+				title: {
+					display: false,
+					text: 'generation',
+					color: 'white'
 				},
-				x: {
-					title: {
-						display: false,
-						text: 'generation',
-						color: 'white'
-					},
-					grid: {
-						color: 'black'
-					},
-					ticks: {
-						color: 'white'
-					}
+				grid: {
+					color: 'black'
+				},
+				ticks: {
+					color: 'white'
 				}
 			}
 		}
+	};
 </script>
 
 <!-- ---------------------------------------------- CONTENT -->
 <div class="chart-container">
-	<Line
-		data={dataLine}
-		options={options}
-		width={100}
-		height={50}
-	/>
+	<Line data={dataLine} {options} width={100} height={50} />
 </div>
 
 <!-- ---------------------------------------------- STYLE -->

@@ -1,11 +1,12 @@
 import InstanceStore from './instance'
 import { derived } from 'svelte/store';
+import type { ChartDataset, Point } from 'chart.js';
 
 export default derived(
-	InstanceStore,
-	$InstanceStore => $InstanceStore.map((instance, index) => {
+    InstanceStore,
+    $InstanceStore => $InstanceStore.map((instance, index) => {
         const color = index === 0 ? 'rgb(50, 255, 255, 0.7)' : 'rgb(255, 255, 255, 0.7)'
-        return{
+        return <ChartDataset<'line', (number | Point)[]>>{
             // label: '',
             lineWidth: 40,
             width: 40,
@@ -28,5 +29,6 @@ export default derived(
             pointRadius: 1,
             pointHitRadius: 10,
             data: instance.scores
-    }})
+        }
+    })
 );

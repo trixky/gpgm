@@ -212,7 +212,11 @@
 			const url = URL.createObjectURL(file);
 			const anchor = document.createElement('a');
 			anchor.href = url;
-			anchor.download = `${examples[$inputs.selectedExample].name.toLocaleLowerCase()}.out`;
+			const name =
+				$inputs.selectedExample === 0
+					? 'custom'
+					: examples[$inputs.selectedExample - 1].name.toLocaleLowerCase();
+			anchor.download = `${name}.out`;
 
 			// Append to the DOM
 			document.body.appendChild(anchor);
