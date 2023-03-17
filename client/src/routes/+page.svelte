@@ -2,7 +2,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Header from '$lib/components/header.svelte';
-	import type { RunningSolver, WASMGenerationReturn } from '../types';
+	import type { WASMGenerationReturn } from '../types';
 	import type { ScoredInstance } from '../types/population';
 	import InstanceStore from '$lib/stores/instance';
 	import Chart from '$lib/components/chart.svelte';
@@ -14,6 +14,7 @@
 	import { globalReady } from '$lib/stores/globalReady';
 	import { inputs } from '$lib/stores/inputs';
 	import Wasm from '$lib/wasm';
+	import { tick } from 'svelte';
 
 	export let data: { bytes: BufferSource };
 
@@ -64,7 +65,7 @@
 	let generation = 0;
 	let result_wasm_json: WASMGenerationReturn | undefined = undefined;
 
-	function new_generation() {
+	async function new_generation() {
 		generation++;
 		if (generation >= $args.max_generations) {
 			handle_finish();
@@ -76,28 +77,26 @@
 			return;
 		}
 
-		setTimeout(async () => {
-			// Recursive loop
+		// SvelteKit fail to compile the Service Worker in dev mode, so we fallback to the default implementation
+		result_wasm_json = await Wasm.runGeneration(result_wasm_json!.running_solver);
 
-			// SvelteKit fail to compile the Service Worker in dev mode, so we fallback to the default implementation
-			result_wasm_json = await Wasm.runGeneration(result_wasm_json!.running_solver);
-
-			const best = result_wasm_json.scored_population.instances[0];
-			outputFile = await Wasm.generateOutput(best.simulation);
-			output = best;
-			if (result_wasm_json != undefined) {
-				const remaining = remaining_chrono();
-				result_wasm_json.running_solver.time_limit_ms = remaining;
-				InstanceStore.insert_population(<GenerationModel>{
-					scores: result_wasm_json.scored_population.instances.map((instance) => instance.score)
-				});
-				if (remaining > 0) {
-					new_generation();
-				} else {
-					handle_finish();
-				}
+		const best = result_wasm_json.scored_population.instances[0];
+		outputFile = await Wasm.generateOutput(best.simulation);
+		output = best;
+		if (result_wasm_json != undefined) {
+			const remaining = remaining_chrono();
+			result_wasm_json.running_solver.time_limit_ms = remaining;
+			InstanceStore.insert_population(<GenerationModel>{
+				scores: result_wasm_json.scored_population.instances.map((instance) => instance.score)
+			});
+			if (remaining > 0) {
+				// Recursive loop
+				await tick();
+				new_generation();
+			} else {
+				handle_finish();
 			}
-		}, 1);
+		}
 	}
 
 	// ------------------------------ Handlers
@@ -199,6 +198,7 @@
 				InstanceStore.insert_population(<GenerationModel>{
 					scores: result_wasm_json.scored_population.instances.map((instance) => instance.score)
 				});
+				await tick();
 				new_generation();
 			}
 		}
