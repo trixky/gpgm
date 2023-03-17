@@ -218,6 +218,53 @@
 		}
 	}
 
+	// ------------------------------ Mascot
+	const mascot_random_duration_secondes = 5
+	const mascot_minimum_duration_secondes = 5
+	const mascot_minimum_x_deplacement = 30
+	const mascot_maximum_x_deplacement = 80
+	const mascot_maximum_x = 140
+	const second_ratio = 1000
+
+	let mascot_x = 0
+	let mascot_reverse = false
+	let mascot_pause = false
+
+	let information_readed = false
+
+	function move_mascot() {
+		setTimeout(() => {
+			if (!mascot_pause) {
+				while(true) {
+					const new_mascot_x = Math.ceil(Math.random() * mascot_maximum_x)
+					
+					const mascot_deplacement = Math.abs(new_mascot_x - mascot_x)
+
+					if (mascot_deplacement > mascot_minimum_x_deplacement && mascot_deplacement < mascot_maximum_x_deplacement) {
+						mascot_reverse = new_mascot_x > mascot_x
+						mascot_x = new_mascot_x
+						break
+					}
+				}
+			}
+	
+			move_mascot()
+		}, ((Math.random() * mascot_random_duration_secondes) + mascot_minimum_duration_secondes) * second_ratio);
+	}
+
+	function mascot_mouse_in() {
+		mascot_pause = true
+	}
+	
+	function mascot_mouse_out() {
+		mascot_pause = false
+	}
+
+	function information_mouse_in() {
+		information_readed = true
+	}
+
+
 	// ------------------------------ Scrolling blocker
 	// https://svelte.dev/repl/2bdbf66371a3418e9e3eda076df6e32d?version=3.18.1
 	/* $: scrollable = !running || stopped;
@@ -250,6 +297,8 @@
 			goWasm.run(result.instance);
 			$wasmReady = true;
 		});
+
+		move_mascot()
 	});
 
 	wasmReady.subscribe((ready) => {
@@ -293,9 +342,9 @@
 					on:input={handle_input}
 					on:change={handle_input_change}
 				/>
-				<div class="mascot-container">
-					<img src="/mascot.png" alt="" class="mascot" />
-					<img src="/information.svg" alt="" class="information" title="GPGM is a solution that find the best sequence of process execution&#13to optimize focused resources production using pathfinding graph and genetic algorithms"/>
+				<div class="mascot-container" style="transform: translateX(-{mascot_x}px)" on:mouseenter={mascot_mouse_in} on:mouseleave={mascot_mouse_out}>
+					<img src="/mascot.png" alt="" class="mascot" class:reverse={mascot_reverse} title="GPGM mascot engineer"/>
+					<img src="/information.svg" alt="" class="information" class:animate-pulse={!information_readed} on:mouseenter={information_mouse_in} title="GPGM is a solution that find the best sequence of process execution&#13to optimize focused resources production using pathfinding graph and genetic algorithms"/>
 				</div>
 			</div>
 			{#if lastError}
@@ -522,11 +571,16 @@
 	/* ----------------------- Mascot / Information */
 
 	.mascot-container {
-		@apply absolute -top-[0px] right-0 w-[100px] h-[1px];
+		@apply absolute -top-[0px] right-0 w-[100px] h-[1px] transition-all duration-[2000ms];
+		transition-timing-function: linear;
 	}
 
 	.mascot {
 		@apply absolute -top-[86px] right-0;
+	}
+
+	.mascot.reverse {
+		transform: scaleX(-1)
 	}
 
 	.information {
