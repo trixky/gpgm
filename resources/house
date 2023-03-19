@@ -1,16 +1,42 @@
-# ============================= RESOURCES
-house:10
-wood:10
-stone:10
-gold:10
+gold:100
+master:1
+seller:0
+slave:1
+food:30
+wheelbarrow:1
+axe:1
+foundry:1
+workbench:1
 
-# ============================= PROCESS
+buy_slave:(master:1;gold:10;food:1):(slave:1):15
+buy_food:(slave:1;gold:1;wheelbarrow:1;food:1):(slave:1;wheelbarrow:1;food:10):15
+buy_wheelbarrow:(slave:1;gold:2;food:1):(slave:1;wheelbarrow:1):20
+buy_axe:(slave:1;gold:2;food:1):(slave:1;axe:1):10
+buy_axes:(slave:1;wheelbarrow:1;gold:6;food:1):(slave:1;wheelbarrow:1;axe:4):15
+buy_pickaxe:(slave:1;gold:2;food:1):(slave:1;pickaxe:1):10
+buy_pickaxes:(slave:1;wheelbarrow:1;gold:6;food:1):(slave:1;wheelbarrow:1;pickaxe:4):15
+buy_and_install_foundry:(slave:2;wheelbarrow:2;gold:10;food:2):(slave:2;wheelbarrow:2;foundry:1):50
+buy_and_install_workbench:(slave:2;wheelbarrow:2;gold:3;food:2):(slave:2;wheelbarrow:2;foundry:1):30
 
-house_gold:(house:3):(gold:20):3
-gold_wood:(gold:10):(wood:20):3
-gold_stone:(gold:10):(stone:20):3
-gold_wood_stone:(gold:15):(wood:20;stone:20):3
-wood_stone_house:(wood:3;stone:3):(house:1):3
+buy_wood:(slave:1;wheelbarrow:1;gold:3;food:1):(slave:1;wheelbarrow:1;wood:10):25
+buy_stone:(slave:1;wheelbarrow:1;gold:3;food:1):(slave:1;wheelbarrow:1;stone:10):30
+buy_sand:(slave:1;wheelbarrow:1;gold:3;food:1):(slave:1;wheelbarrow:1;sand:10):25
 
+make_stone_brick:(slave:1;pickaxe:1;stone:1;food:1):(slave:1;pickaxe:1;stone_brick:20):20
+make_wood_planck:(slave:1;pickaxe:1;wood:1;food:1):(slave:1;pickaxe:1;wood_planck:20):20
+make_glass:(slave:1;foundry:1;sand:1;food:1):(slave:1;foundry:1;glass:1):30
 
-optimize:(time;gold)
+craft_and_install_foundry:(slave:3;workbench:2;stone_brick:50;wood_planck:30;food:3):(slave:3;workbench:2;foundry:1):80
+craft_and_install_workbench:(slave:2;workbench:1;wood:2;wood_planck:20;food:3):(slave:3;workbench:1):50
+
+craft_door:(slave:1;workbench:1;wood_planck:20;glass:1;food:1):(slave:1;workbench:1;window:1):30
+craft_window:(slave:1;workbench:1;wood_planck:10;glass:1;food:1):(slave:1;workbench:1;window:1):30
+
+construct_house:(slave:5;wood:8;stone:4;wood_planck:100;stone_brick:60;door:1;window:3;food:15):(slave:5;house:1):200
+
+sell_wood_planck_with_master:(master:1;wheelbarrow:1;wood_planck:100;food:1):(master:1;wheelbarrow:1;gold:40):20
+sell_wood_planck_with_slave:(slave:1;wheelbarrow:1;wood_planck:100;food:1):(slave:1;wheelbarrow:1;gold:35):20
+sell_house_with_master:(master:1;house:1;food:2):(master:1;gold:200):300
+sell_house_with_seller:(master:1;gold:20;house:1;food:2):(master:1;gold:210):200
+
+optimize:(gold)
