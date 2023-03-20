@@ -9,7 +9,6 @@ furniture:0
 colored_furniture:0
 paint:0
 
-
 buy_slave:(master:1;gold:5):(master:1;slave:1):20
 
 buy_wood:(master:1;gold:10):(master:1;wood:50):10

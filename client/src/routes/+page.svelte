@@ -370,7 +370,7 @@
 						alt=""
 						class="mascot"
 						class:reverse={mascot_reverse}
-						title="GPGM mascot engineer"
+						title="GPGM mascot scientist"
 					/>
 					<img
 						src="/information.svg"
@@ -612,7 +612,9 @@
 	}
 
 	.mascot {
-		@apply absolute -top-[86px] right-0;
+		@apply absolute -top-[71px] right-[26px];
+		width: 48px;
+		height: auto;
 	}
 
 	.mascot.reverse {
