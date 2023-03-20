@@ -32,15 +32,15 @@ const routes = [
 ]
 
 // Use fetch events to run a new generation
-sw.addEventListener('fetch', async (event) => {
+sw.addEventListener('fetch', (event) => {
 	// Ignore everything except /sw/generate
 	if (event.request.method !== 'POST') return;
 	const url = new URL(event.request.url);
 	if (!routes.includes(url.pathname)) return;
-	await wasmLoader
 
 	// Execute the generation and return it's response
 	async function respond() {
+		await wasmLoader
 		const route = url.pathname
 		const input = await event.request.text()
 		let body = ''
