@@ -549,7 +549,7 @@
 				<div class="best-info-container">
 					{#if output}
 						<span class="best-info">
-							Score: {output.score}
+							Score: {Number.isInteger(output.score) ? output.score : output.score.toFixed(3)}
 						</span>
 						<span class="best-info">
 							Cycles: {output.cycle}

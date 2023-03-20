@@ -47,7 +47,7 @@ func NewSimulation(info core.InitialContext, instance instance.Instance) Simulat
 }
 
 // CalulateFitness calculate the fitness of the simulation
-func (s *Simulation) CalulateFitness(options *core.Options) int {
+func (s *Simulation) CalulateFitness(options *core.Options) float64 {
 	return Fitness(*s, options)
 }
 
@@ -110,6 +110,10 @@ func (s *Simulation) Run(options *core.Options) {
 					Quantity: process_quantity.Quantity,
 				})
 			}
+
+			if len(process_quantities_stack.Stack) == 0 && len(s.ExpectedStock) == 0 {
+				break
+			}
 		}
 
 		// * Skip cycles until the next expected stock is ready if no process can be executed
@@ -124,6 +128,11 @@ func (s *Simulation) Run(options *core.Options) {
 			s.Cycle += closer.RemainingCycles - 1
 			for i := range s.ExpectedStock {
 				s.ExpectedStock[i].RemainingCycles -= closer.RemainingCycles
+			}
+
+			if s.Cycle >= options.MaxCycle {
+				s.Cycle++
+				break
 			}
 		} else {
 			for i := range s.ExpectedStock {

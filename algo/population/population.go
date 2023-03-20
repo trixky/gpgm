@@ -14,7 +14,7 @@ import (
 type ScoredInstance struct {
 	Instance   instance.Instance     `json:"instance"`
 	Simulation simulation.Simulation `json:"simulation"`
-	Score      int                   `json:"score"`
+	Score      float64               `json:"score"`
 	Cycle      int                   `json:"cycle"`
 }
 
