@@ -18,6 +18,17 @@ export const examples: Example[] = [
 		}
 	},
 	{
+		name: "Furniture",
+		text: "master:1\n\nbuy_slave:(master:1;gold:5):(master:1;slave:1):20\nbuy_wood:(master:1;gold:10):(master:1;wood:50):10\nbuy_paint:(master:1;gold:1):(master:1;paint:1):5\nbuy_planck:(master:1;gold:10):(master:1;planck:1200):20\n\nstill_wood_with_master:(master:1):(master:1;wood:3):30\nstill_wood_with_slave:(slave:1):(slave:1;wood:3):20\n\nmake_planck:(wood:1):(planck:10):20\n\ncraft_furniture:(slave:1;planck:50):(slave:1;furniture:1):50\ncraft_colored_furniture:(slave:1;planck:50;paint:2):(slave:1;colored_furniture:1):80\n\nsell_wood_with_master:(master:1;wood:7):(master:1;gold:1):15\nsell_wood_with_slave:(slave:1;wood:8):(slave:1;gold:1):5\nsell_planck_with_master:(master:1;planck:95):(master:1;gold:1):10\nsell_planck_with_slave:(slave:1;planck:95):(slave:1;gold:1):10\nsell_furniture_1_with_master:(master:1;furniture:1):(master:1;gold:7):10\nsell_furniture_2_with_master:(master:1;furniture:2):(master:1;gold:15):15\nsell_colored_furniture_with_master:(master:1;colored_furniture:1):(master:1;gold:15):10\n\noptimize:(gold)\n",
+		arguments: {
+			max_generations: 8,
+			max_cycle: 3000,
+			time_limit: 30000,
+			population_size: 8,
+			max_depth: 7,
+		}
+	},
+	{
 		name: "Steak",
 		text: "#\n# steak demo - krpsim\n#\n# stock      name:quantity\nsteak_cru:3\npoele:1\n#\n# process   name:(need1:qty1;need2:qty2;[...]):(result1:qty1;result2:qty2;[...]):delay\n#\ncuisson_1:(steak_cru:2;poele:1):(steak_mi_cuit:2;poele:1):10\ncuisson_2:(steak_mi_cuit:2;poele:1):(steak_cuit:2;poele:1):10\ncuisson_3:(steak_cru:1;steak_mi_cuit:1;poele:1):(steak_mi_cuit:1;steak_cuit:1;poele:1):10\ncuisson_4:(steak_cru:1;poele:1):(steak_mi_cuit:1;poele:1):10\ncuisson_5:(steak_mi_cuit:1;poele:1):(steak_cuit:1;poele:1):10\n#\n# optimize time for 0 stock and no process possible,\n# or maximize some products over a long delay\n# optimize:(stock1;stock2;...)\n#\noptimize:(time;steak_cuit)\n#\n",
 		arguments: {
