@@ -1,36 +1,12 @@
 version: '3.9'
 services:
-  base:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
-
-    # Image name is set explicitly because it's shared by other services:
-    image: gpgm
-
-    # Because `base` is strictly a utility service that is not part of the
-    # app's run time, its `scale` is set to zero so that it doesn't run when
-    # `docker-compose up` is invoked.
-    deploy:
-      replicas: 0
-
-  app:
-    command: [ "yarn", "preview", "--host", "--port", "7777" ]
-
-    image: gpgm
-
     # Ensure proper handling of signals:
     init: true
-
     ports:
       - 7777:7777
-
     env_file:
       - .env
-
-    volumes:
-      # Mount the codebase into the container:
-      - base:/app:delegated
-
-volumes:
-  base:

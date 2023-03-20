@@ -12,7 +12,7 @@ COPY ./algo ./
 
 RUN mkdir /build
 RUN go mod download
-RUN GOOS=js GOARCH=wasm go build -ldflags "-s -w" -gcflags "all=-N -l" -o /build/main.wasm
+RUN GOOS=js GOARCH=wasm go build -o /build/main.wasm
 
 # Third build stage:
 FROM node:18-alpine3.17
@@ -33,3 +33,5 @@ RUN yarn set version berry
 
 RUN yarn install --inline-builds
 RUN yarn build
+
+ENTRYPOINT yarn run preview --host --port ${PORT}
