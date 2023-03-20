@@ -36,7 +36,7 @@ construct_house:(slave:5;wood:8;stone:4;wood_planck:100;stone_brick:60;door:1;wi
 
 sell_wood_planck_with_master:(master:1;wheelbarrow:1;wood_planck:100;food:1):(master:1;wheelbarrow:1;gold:40):20
 sell_wood_planck_with_slave:(slave:1;wheelbarrow:1;wood_planck:100;food:1):(slave:1;wheelbarrow:1;gold:35):20
-sell_house_with_master:(master:1;house:1;food:2):(master:1;gold:200):300
-sell_house_with_seller:(master:1;gold:20;house:1;food:2):(master:1;gold:210):200
+sell_house_with_master:(master:1;house:1;food:2):(master:1;gold:400):300
+sell_house_with_seller:(master:1;gold:20;house:1;food:2):(master:1;gold:420):200
 
 optimize:(gold)

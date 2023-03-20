@@ -19,7 +19,30 @@ export const examples: Example[] = [
 	},
 	{
 		name: "Furniture",
-		text: "master:1\n\nbuy_slave:(master:1;gold:5):(master:1;slave:1):20\nbuy_wood:(master:1;gold:10):(master:1;wood:50):10\nbuy_paint:(master:1;gold:1):(master:1;paint:1):5\nbuy_planck:(master:1;gold:10):(master:1;planck:1200):20\n\nstill_wood_with_master:(master:1):(master:1;wood:3):30\nstill_wood_with_slave:(slave:1):(slave:1;wood:3):20\n\nmake_planck:(wood:1):(planck:10):20\n\ncraft_furniture:(slave:1;planck:50):(slave:1;furniture:1):50\ncraft_colored_furniture:(slave:1;planck:50;paint:2):(slave:1;colored_furniture:1):80\n\nsell_wood_with_master:(master:1;wood:7):(master:1;gold:1):15\nsell_wood_with_slave:(slave:1;wood:8):(slave:1;gold:1):5\nsell_planck_with_master:(master:1;planck:95):(master:1;gold:1):10\nsell_planck_with_slave:(slave:1;planck:95):(slave:1;gold:1):10\nsell_furniture_1_with_master:(master:1;furniture:1):(master:1;gold:7):10\nsell_furniture_2_with_master:(master:1;furniture:2):(master:1;gold:15):15\nsell_colored_furniture_with_master:(master:1;colored_furniture:1):(master:1;gold:15):10\n\noptimize:(gold)\n",
+		text: `master:1
+
+buy_slave:(master:1;gold:5):(master:1;slave:1):20
+buy_wood:(master:1;gold:10):(master:1;wood:50):10
+buy_paint:(master:1;gold:1):(master:1;paint:3):5
+buy_planck:(master:1;gold:10):(master:1;planck:1200):20
+
+still_wood_with_master:(master:1):(master:1;wood:3):30
+still_wood_with_slave:(slave:1):(slave:1;wood:3):20
+
+make_planck:(wood:1):(planck:10):20
+
+craft_furniture:(slave:1;planck:50):(slave:1;furniture:1):50
+craft_colored_furniture:(slave:1;planck:50;paint:2):(slave:1;colored_furniture:1):80
+
+sell_wood_with_master:(master:1;wood:7):(master:1;gold:1):15
+sell_wood_with_slave:(slave:1;wood:8):(slave:1;gold:1):5
+sell_planck_with_master:(master:1;planck:95):(master:1;gold:1):10
+sell_planck_with_slave:(slave:1;planck:95):(slave:1;gold:1):10
+sell_furniture_1_with_master:(master:1;furniture:1):(master:1;gold:7):5
+sell_furniture_2_with_master:(master:1;furniture:2):(master:1;gold:15):15
+sell_colored_furniture_with_master:(master:1;colored_furniture:1):(master:1;gold:20):5
+
+optimize:(gold)`,
 		arguments: {
 			max_generations: 8,
 			max_cycle: 3000,
