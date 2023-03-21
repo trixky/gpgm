@@ -43,19 +43,19 @@ Each gene represents a process, with its dependencies to call or not in a certai
 ### Dev
 
 ```bash
-export PORT=2178
+cp .env.example .env
 docker compose up -d
 # add the --build argument if a package is added or the environment changes
-# localhost:2178
+# localhost:7777
 ```
 
 ### Production
 
 ```bash
-export PORT=2178
+cp .env.example .env
 docker compose -f docker-compose.prod.yml up -d
 # add the --build argument if a package is added or the environment changes
-# localhost:2178
+# localhost:7777
 ```
 
 ## Online
