@@ -110,7 +110,10 @@
 
 	// -------- Example
 	async function handle_select(e: any) {
-		const index = e.target.value as number;
+		const index = Number(e.target.value);
+
+		$inputs.selectedExample = index;
+
 		if (index == 0) {
 			$inputs.current = $inputs.custom;
 		} else if (index > 0 && index <= examples.length) {
@@ -344,7 +347,7 @@
 				>
 					<option value={0}>Custom</option>
 					{#each examples as example, index}
-						<option value={index + 1}>{example.name}</option>
+						<option value={index + 1}>{example.name}{typeof index + 1}{index + 1}</option>
 					{/each}
 				</select>
 			</div>
