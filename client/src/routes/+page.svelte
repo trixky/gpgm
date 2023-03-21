@@ -378,7 +378,7 @@
 						class="information"
 						class:animate-pulse={!information_readed}
 						on:mouseenter={information_mouse_in}
-						title="GPGM is a solution that find the best sequence of process execution&#13to optimize focused resources production using pathfinding graph and genetic algorithms"
+						title="GPGM (genetic process graph manager) is a homemade algorithm&#13that find the best sequence of process execution to optimize focused resources production&#13using graph traversal and genetic algorithm."
 					/>
 				</div>
 			</div>
