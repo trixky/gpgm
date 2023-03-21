@@ -2,7 +2,7 @@
 
 GPGM (genetic process graph manager) is a homemade algorithm that find the best sequence of process execution to optimize focused resources production using pathfinding [graph traversal](https://en.wikipedia.org/wiki/Graph_traversal) and [genetic algorithm](https://en.wikipedia.org/wiki/Genetic_algorithm).
 
-<img src="https://raw.githubusercontent.com/trixky/gpgm/main/.demo/demo.gif" alt="Demo gif" width="600"/>
+<img src="https://github.com/trixky/gpgm/blob/main/.demo/screenshots.gif" alt="Demo gif" width="600"/>
 
 ## Usage
 
