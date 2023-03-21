@@ -6,10 +6,10 @@ GPGM (genetic process graph manager) is a homemade algorithm that find the best 
 
 ## Usage
 
-The program take in input a text that describe a scenario with tree parts:
+The program takes in input a text that describes a scenario with tree parts:
 
 - The __starting resources__ with which the program begins.
-- The __processes__ the program can execute. (take consume and product resources with a delay)
+- The __processes__ the program can execute. (consume and product resources with a delay)
 - The __resources to optimize__.
 
 ```bash
@@ -45,7 +45,7 @@ Each gene represents a process, with its dependencies to call or not in a certai
 ```bash
 export PORT=2178
 docker compose up -d
-# add --build argument if a package is added or environment change
+# add the --build argument if a package is added or the environment changes
 # localhost:2178
 ```
 
@@ -54,7 +54,7 @@ docker compose up -d
 ```bash
 export PORT=2178
 docker compose -f docker-compose.prod.yml up -d
-# add --build argument if a package is added or environment change
+# add the --build argument if a package is added or the environment changes
 # localhost:2178
 ```
 
