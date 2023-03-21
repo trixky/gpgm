@@ -26,9 +26,9 @@ optimize:(time|stock1;time|stock2;...)
 
 ## Algorithm
 
-The algorithm start by explore the graph in the graph traversal part and save the dependencies of each process.
+The algorithm starts by the graph traversal part, exploring the dependencies of each process.
 
-Next the genetic part start, using a population that evolves over the generations by [mutation](https://en.wikipedia.org/wiki/Mutation_(genetic_algorithm)) and [crossing](https://en.wikipedia.org/wiki/Crossover_(genetic_algorithm)).
+Next the genetic part uses a population that evolves over the generations by [mutation](https://en.wikipedia.org/wiki/Mutation_(genetic_algorithm)) and [crossing](https://en.wikipedia.org/wiki/Crossover_(genetic_algorithm)).
 
 Each instance of the population is represented by a chromosome, made up of genes.
 
