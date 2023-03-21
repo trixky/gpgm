@@ -11,7 +11,6 @@ make_wood_planck:(worker:1;wood:5):(worker:1;wood_planck:50):12
 make_stone_brick:(worker:2;stone:5):(worker:2;stone_brick:50):12
 
 build_house:(worker:2;wood_planck:100;stone_brick:100):(worker:2;house:1):48
-
 sell_house:(worker:1;house:1):(worker:1;gold:150):24
 
 optimize:(gold)

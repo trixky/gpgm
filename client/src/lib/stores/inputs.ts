@@ -13,6 +13,8 @@ const defaultValue = () => JSON.stringify({
 	selectedExample: 0,
 })
 
-export const inputs = writable<Inputs>(JSON.parse(browser ? localStorage.getItem('inputs') ?? defaultValue() : defaultValue()))
+const inputs = writable<Inputs>(JSON.parse(browser ? localStorage.getItem('inputs') ?? defaultValue() : defaultValue()))
+
+export default inputs
 
 inputs.subscribe((value) => browser ? localStorage.setItem('inputs', JSON.stringify(value)) : undefined)

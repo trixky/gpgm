@@ -12,7 +12,7 @@
 	import examples from '$lib/examples';
 	import { scale } from 'svelte/transition';
 	import { globalReady } from '$lib/stores/globalReady';
-	import { inputs } from '$lib/stores/inputs';
+	import InputStore from '$lib/stores/inputs';
 	import Wasm from '$lib/wasm';
 	import { tick } from 'svelte';
 
@@ -112,13 +112,11 @@
 	async function handle_select(e: any) {
 		const index = Number(e.target.value);
 
-		$inputs.selectedExample = index;
+		if (index > 0 && index <= examples.length) {
+			$InputStore.selectedExample = index;
 
-		if (index == 0) {
-			$inputs.current = $inputs.custom;
-		} else if (index > 0 && index <= examples.length) {
 			const example = examples[index - 1];
-			$inputs.current = example.text;
+			$InputStore.current = example.text;
 			if (example.arguments) {
 				for (const key of Object.keys(config.io)) {
 					const inputKey = key as NumericConfigKeys;
@@ -130,7 +128,11 @@
 				}
 			}
 		}
-		lastError = await Wasm.parseInput($inputs.current);
+		if ($InputStore.current.length > 0) {
+			lastError = await Wasm.parseInput($InputStore.current);
+		} else {
+			lastError = null;
+		}
 		handle_reset();
 	}
 
@@ -163,7 +165,11 @@
 		if (errors.length > 0) {
 			lastError = errors.join('\n');
 		} else if (hadLastError) {
-			lastError = await Wasm.parseInput($inputs.current);
+			if ($InputStore.current.length > 0) {
+				lastError = await Wasm.parseInput($InputStore.current);
+			} else {
+				lastError = null;
+			}
 		}
 	}
 
@@ -173,7 +179,11 @@
 
 	async function handle_run() {
 		lastError = null;
-		lastError = await Wasm.parseInput($inputs.current);
+		if ($InputStore.current.length > 0) {
+			lastError = await Wasm.parseInput($InputStore.current);
+		} else {
+			lastError = null;
+		}
 		if (!lastError) {
 			validate_inputs();
 		}
@@ -189,7 +199,7 @@
 
 			const running_solver = await Wasm.initialize({
 				...$args,
-				text: $inputs.current
+				text: $InputStore.current
 			});
 
 			if (running_solver == null) {
@@ -222,15 +232,23 @@
 	}
 
 	async function handle_input(e: any) {
-		$inputs.selectedExample = 0;
-		$inputs.custom = e.target.value;
+		$InputStore.selectedExample = 0;
+		$InputStore.custom = e.target.value;
 		if (lastError) {
-			lastError = await Wasm.parseInput(e.target.value);
+			if ($InputStore.current.length > 0) {
+				lastError = await Wasm.parseInput($InputStore.current);
+			} else {
+				lastError = null;
+			}
 		}
 	}
 
 	async function handle_input_change(e: any) {
-		lastError = await Wasm.parseInput(e.target.value);
+		if ($InputStore.current.length > 0) {
+			lastError = await Wasm.parseInput($InputStore.current);
+		} else {
+			lastError = null;
+		}
 	}
 
 	// ------------------------------ Download
@@ -244,9 +262,9 @@
 			const anchor = document.createElement('a');
 			anchor.href = url;
 			const name =
-				$inputs.selectedExample === 0
+				$InputStore.selectedExample === 0
 					? 'custom'
-					: examples[$inputs.selectedExample - 1].name.toLocaleLowerCase();
+					: examples[$InputStore.selectedExample - 1].name.toLocaleLowerCase();
 			anchor.download = `${name}.out`;
 
 			// Append to the DOM
@@ -327,7 +345,27 @@
 	// ------------------------------ WASM initialization
 	globalReady.subscribe(async (ready) => {
 		if (ready) {
-			lastError = await Wasm.parseInput($inputs.current);
+			if ($InputStore.current.length > 0) {
+				lastError = await Wasm.parseInput($InputStore.current);
+			} else {
+				const example_index = 1
+				const example = examples[example_index - 1];
+				
+				$InputStore.current = example.text;
+				
+				if (example.arguments) {
+					for (const key of Object.keys(config.io)) {
+						const inputKey = key as NumericConfigKeys;
+						if (example.arguments[inputKey]) {
+							$args[inputKey] = example.arguments[inputKey]!;
+						} else {
+							$args[inputKey] = config.io[inputKey].default;
+						}
+					}
+				}
+
+				lastError = null;
+			}
 		}
 	});
 </script>
@@ -340,14 +378,14 @@
 			<h2>Input</h2>
 			<div class="examples-container">
 				<select
-					bind:value={$inputs.selectedExample}
+					bind:value={$InputStore.selectedExample}
 					name="examples"
 					id="examples"
 					on:input={handle_select}
 				>
 					<option value={0}>Custom</option>
 					{#each examples as example, index}
-						<option value={index + 1}>{example.name}{typeof index + 1}{index + 1}</option>
+						<option value={index + 1}>{example.name}</option>
 					{/each}
 				</select>
 			</div>
@@ -355,7 +393,7 @@
 				<textarea
 					placeholder=""
 					class="scrollbar-custom"
-					bind:value={$inputs.current}
+					bind:value={$InputStore.current}
 					autocorrect="off"
 					autocapitalize="off"
 					spellcheck="false"
