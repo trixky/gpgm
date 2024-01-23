@@ -15,7 +15,7 @@ RUN go mod download
 RUN GOOS=js GOARCH=wasm go build -o /build/main.wasm
 
 # Third build stage:
-FROM node:18-alpine3.17
+FROM node:18-alpine3.18
 
 WORKDIR /app
 RUN chown node:node /app
@@ -29,7 +29,7 @@ USER node
 COPY --from=files --chown=node:node /src/  ./
 COPY --from=go --chown=node:node /build/  ./static/wasm/src
 
-RUN yarn set version berry
+RUN yarn set version canary
 
 RUN yarn install --inline-builds
 RUN yarn build

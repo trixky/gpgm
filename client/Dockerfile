@@ -1,6 +1,6 @@
-FROM node:16-alpine3.15 as builder
+FROM node:18-alpine3.18 as builder
 
-RUN yarn set version berry
+RUN yarn set version canary
 
 FROM builder
 
